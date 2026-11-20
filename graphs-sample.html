@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics & Reports — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" data-sidebar-active="ui-graphs"></aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Analytics & Intelligence</div>
+          <div class="crumb">
+            Home / Analytics ▸ Performance & Graphs
+            <span class="badge badge-success" style="margin-left:8px">
+              <span class="dot"></span> Live Telemetry
+            </span>
+          </div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search analytics, outlets, metrics…" />
+        </div>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Analytics Filter Toolbar -->
+        <section class="analytics-toolbar">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <!-- Date range selector -->
+            <div class="segmented-control" id="date-range-control">
+              <button class="segmented-btn" data-range="today">Today</button>
+              <button class="segmented-btn active" data-range="7d">Last 7 Days</button>
+              <button class="segmented-btn" data-range="30d">Last 30 Days</button>
+              <button class="segmented-btn" data-range="quarter">This Quarter</button>
+            </div>
+
+            <!-- Outlet picker -->
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:0.75rem;font-weight:700;color:var(--muted-foreground)">Outlet:</span>
+              <select class="input" id="outlet-filter" style="width:auto;padding:5px 12px;font-size:0.78rem;font-weight:600">
+                <option value="all" selected>All Outlets (4 active)</option>
+                <option value="hq">HQ — Durbar Marg</option>
+                <option value="jhamsikhel">Jhamsikhel Hub</option>
+                <option value="lakeside">Lakeside Pokhara</option>
+                <option value="bouddha">Bouddha Express</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:0.72rem;color:var(--muted-foreground)" id="sync-timestamp">Last synced: just now</span>
+            <button class="btn btn-sm btn-ghost" id="btn-refresh" title="Refresh live telemetry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Refresh
+            </button>
+            <button class="btn btn-sm btn-outline" id="btn-export" title="Export active data as CSV">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </section>
+
+        <!-- Executive KPI Cards with Sparklines & Active Metric Linking -->
+        <section class="stats" id="kpi-grid">
+          <!-- Revenue KPI Card -->
+          <div class="card stat interactive active" data-metric="revenue" title="Click to view Revenue trend">
+            <div class="row">
+              <span class="label">Total Revenue</span>
+              <div class="stat-icon" style="background:var(--primary-soft, rgba(236,56,118,0.12));color:var(--primary)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <div class="value" id="kpi-rev-val">
+              Rs. 428.5k
+              <span class="badge badge-success" id="kpi-rev-badge">▲ 14.8%</span>
+            </div>
+            <div class="row" style="margin-top:2px">
+              <span style="font-size:0.72rem;color:var(--muted-foreground)" id="kpi-rev-sub">Rs. 61.2k / day run-rate</span>
+              <div class="spark" id="sp1"></div>
+            </div>
+          </div>
+
+          <!-- Orders KPI Card -->
+          <div class="card stat interactive" data-metric="orders" title="Click to view Orders trend">
+            <div class="row">
+              <span class="label">Total Orders</span>
+              <div class="stat-icon" style="background:rgba(86,145,234,0.12);color:var(--info)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              </div>
+            </div>
+            <div class="value" id="kpi-ord-val">
+              3,842
+              <span class="badge badge-success" id="kpi-ord-badge">▲ 8.2%</span>
+            </div>
+            <div class="row" style="margin-top:2px">
+              <span style="font-size:0.72rem;color:var(--muted-foreground)" id="kpi-ord-sub">96.4% on-time fulfillment</span>
+              <div class="spark" id="sp2"></div>
+            </div>
+          </div>
+
+          <!-- Avg Basket KPI Card -->
+          <div class="card stat interactive" data-metric="basket" title="Click to view Average Basket trend">
+            <div class="row">
+              <span class="label">Avg Basket Value</span>
+              <div class="stat-icon" style="background:rgba(47,191,113,0.12);color:var(--success)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+            </div>
+            <div class="value" id="kpi-bsk-val">
+              Rs. 845
+              <span class="badge badge-success" id="kpi-bsk-badge">▲ 4.6%</span>
+            </div>
+            <div class="row" style="margin-top:2px">
+              <span style="font-size:0.72rem;color:var(--muted-foreground)" id="kpi-bsk-sub">2.6 items per ticket</span>
+              <div class="spark" id="sp3"></div>
+            </div>
+          </div>
+
+          <!-- Refunds KPI Card -->
+          <div class="card stat interactive" data-metric="refunds" title="Click to view Refund & Dispute trend">
+            <div class="row">
+              <span class="label">Refunds & Disputes</span>
+              <div class="stat-icon" style="background:rgba(240,86,78,0.12);color:var(--destructive)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </div>
+            </div>
+            <div class="value" id="kpi-ref-val">
+              18
+              <span class="badge badge-success" id="kpi-ref-badge">▼ 18.5%</span>
+            </div>
+            <div class="row" style="margin-top:2px">
+              <span style="font-size:0.72rem;color:var(--muted-foreground)" id="kpi-ref-sub">0.42% of gross GMV</span>
+              <div class="spark" id="sp4"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Analytics Grid -->
+        <div class="analytics-grid">
+
+          <!-- Hero Chart: Timeline & Forecasting (Full Width) -->
+          <section class="card" style="grid-column:1/-1;overflow:hidden">
+            <div class="card-head">
+              <div style="display:flex;align-items:center;gap:10px">
+                <h3 id="hero-chart-title" style="margin:0;font-size:1.05rem">Revenue Trajectory & Forecasting</h3>
+                <span class="badge badge-brand" id="hero-chart-pill">All Outlets</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <!-- Granularity -->
+                <div class="segmented-control" id="granularity-control">
+                  <button class="segmented-btn active" data-gran="daily">Daily</button>
+                  <button class="segmented-btn" data-gran="weekly">Weekly</button>
+                  <button class="segmented-btn" data-gran="monthly">Monthly</button>
+                </div>
+                <!-- Chart View Type (Area Curve vs Column Bars) -->
+                <div class="segmented-control" id="hero-type-control">
+                  <button class="segmented-btn active" data-type="area" title="Smooth Area View">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><path d="M3 18 L9 12 L15 15 L21 7"/></svg>
+                    Trend
+                  </button>
+                  <button class="segmented-btn" data-type="bars" title="Column Volume View">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="5" width="4" height="16"/><rect x="17" y="13" width="4" height="8"/></svg>
+                    Columns
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Comparison Metric Sub-Deck -->
+            <div class="hero-stats-row">
+              <div class="hero-stats-cards">
+                <div class="hero-stat-card active" id="card-current" title="Click to toggle Current Period">
+                  <div class="hero-stat-dot" style="background:var(--primary)"></div>
+                  <div class="hero-stat-info">
+                    <span class="hero-stat-title">Current Period</span>
+                    <span class="hero-stat-num" id="hero-num-current">Rs. 428,500</span>
+                  </div>
+                  <span class="badge badge-success" id="hero-badge-current">+14.8%</span>
+                </div>
+
+                <div class="hero-stat-card active" id="card-prev" title="Click to toggle Previous Period">
+                  <div class="hero-stat-dot" style="background:var(--info)"></div>
+                  <div class="hero-stat-info">
+                    <span class="hero-stat-title">Previous Period</span>
+                    <span class="hero-stat-num" id="hero-num-prev">Rs. 370,400</span>
+                  </div>
+                  <span class="badge badge-muted">Benchmark</span>
+                </div>
+
+                <div class="hero-stat-card active" id="card-target" title="Click to toggle Target Benchmark">
+                  <div class="hero-stat-dot" style="background:var(--success)"></div>
+                  <div class="hero-stat-info">
+                    <span class="hero-stat-title">Target Quota</span>
+                    <span class="hero-stat-num" id="hero-num-target">Rs. 395,000</span>
+                  </div>
+                  <span class="badge badge-brand" id="hero-badge-target">108.4% Hit</span>
+                </div>
+              </div>
+
+              <div style="font-size:0.75rem;color:var(--muted-foreground);" id="hero-chart-context">
+                Saturday Peak: <b style="color:var(--foreground)">Rs. 84,600</b> · Outperforming target by <b style="color:var(--success)">+14.8%</b>
+              </div>
+            </div>
+
+            <div class="card-pad" style="padding:16px 20px 10px">
+              <div id="ch-area" class="hero-chart-container" style="width:100%;position:relative"></div>
+            </div>
+            <!-- Hero Footer KPI Strip -->
+            <div class="chart-footer-metrics">
+              <div class="metric-item">
+                <span class="sublabel">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  <span id="hero-peak-label">Peak Day</span>
+                </span>
+                <span class="subval" id="hero-stat-peak">Saturday · Rs. 84.6k</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span id="hero-runrate-label">Daily Run-Rate</span>
+                </span>
+                <span class="subval" id="hero-stat-avg">Rs. 61.2k / day</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  Target Quota
+                </span>
+                <span class="subval" id="hero-stat-target" style="color:var(--success)">108.4% (Exceeded)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Net Growth
+                </span>
+                <span class="subval" id="hero-stat-var" style="color:var(--primary)">+14.8% vs prev</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sales by Channel (Grouped / Stacked Bars) -->
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3>Sales by Channel</h3>
+                <span class="hint">Customer touchpoint revenue distribution</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <div class="segmented-control" id="bars-mode-control">
+                  <button class="segmented-btn active" data-mode="grouped">Grouped</button>
+                  <button class="segmented-btn" data-mode="stacked">Stacked</button>
+                </div>
+                <div class="legend">
+                  <span><i style="background:var(--primary)"></i>Dine-in</span>
+                  <span><i style="background:var(--info)"></i>Delivery</span>
+                  <span><i style="background:var(--success)"></i>Pick-up</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-pad" style="flex:1">
+              <div id="ch-bars" class="bars-chart-container" style="position:relative"></div>
+            </div>
+            <div class="chart-footer-metrics" style="grid-template-columns:repeat(3,1fr)">
+              <div class="metric-item">
+                <span class="sublabel">Dine-in GMV</span>
+                <span class="subval" style="color:var(--primary)">Rs. 222.8k (52%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Delivery GMV</span>
+                <span class="subval" style="color:var(--info)">Rs. 137.1k (32%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Pick-up / Kiosk</span>
+                <span class="subval" style="color:var(--success)">Rs. 68.6k (16%)</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Category Mix & Velocity (Donut & Ranked List) -->
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3>Category Mix & Velocity</h3>
+                <span class="hint">Top-selling culinary groups by revenue</span>
+              </div>
+              <span class="badge badge-brand">Trailing 30D</span>
+            </div>
+            <div class="card-pad" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;flex:1">
+              <div id="ch-donut" style="flex:0 0 240px;position:relative;margin:0 auto"></div>
+              <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px">
+                <div class="category-item" data-category="chicken">
+                  <div class="category-row-top">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                      <i style="width:10px;height:10px;border-radius:3px;background:var(--primary);flex-shrink:0"></i>
+                      <b class="category-name">Fried Chicken & Combos</b>
+                    </div>
+                    <div class="category-vals">
+                      <span class="category-amount">Rs. 180k</span>
+                      <span class="badge badge-muted">42%</span>
+                    </div>
+                  </div>
+                  <div class="category-mini-bar">
+                    <div class="category-mini-bar-fill" style="width:42%;background:var(--primary)"></div>
+                  </div>
+                </div>
+
+                <div class="category-item" data-category="burgers">
+                  <div class="category-row-top">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                      <i style="width:10px;height:10px;border-radius:3px;background:var(--info);flex-shrink:0"></i>
+                      <b class="category-name">Signature Burgers</b>
+                    </div>
+                    <div class="category-vals">
+                      <span class="category-amount">Rs. 102.8k</span>
+                      <span class="badge badge-muted">24%</span>
+                    </div>
+                  </div>
+                  <div class="category-mini-bar">
+                    <div class="category-mini-bar-fill" style="width:24%;background:var(--info)"></div>
+                  </div>
+                </div>
+
+                <div class="category-item" data-category="wraps">
+                  <div class="category-row-top">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                      <i style="width:10px;height:10px;border-radius:3px;background:var(--success);flex-shrink:0"></i>
+                      <b class="category-name">Rolls & Wraps</b>
+                    </div>
+                    <div class="category-vals">
+                      <span class="category-amount">Rs. 77.1k</span>
+                      <span class="badge badge-muted">18%</span>
+                    </div>
+                  </div>
+                  <div class="category-mini-bar">
+                    <div class="category-mini-bar-fill" style="width:18%;background:var(--success)"></div>
+                  </div>
+                </div>
+
+                <div class="category-item" data-category="drinks">
+                  <div class="category-row-top">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                      <i style="width:10px;height:10px;border-radius:3px;background:var(--warning);flex-shrink:0"></i>
+                      <b class="category-name">Craft Beverages</b>
+                    </div>
+                    <div class="category-vals">
+                      <span class="category-amount">Rs. 42.8k</span>
+                      <span class="badge badge-muted">10%</span>
+                    </div>
+                  </div>
+                  <div class="category-mini-bar">
+                    <div class="category-mini-bar-fill" style="width:10%;background:var(--warning)"></div>
+                  </div>
+                </div>
+
+                <div class="category-item" data-category="desserts">
+                  <div class="category-row-top">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                      <i style="width:10px;height:10px;border-radius:3px;background:var(--destructive);flex-shrink:0"></i>
+                      <b class="category-name">Desserts & Sides</b>
+                    </div>
+                    <div class="category-vals">
+                      <span class="category-amount">Rs. 25.8k</span>
+                      <span class="badge badge-muted">6%</span>
+                    </div>
+                  </div>
+                  <div class="category-mini-bar">
+                    <div class="category-mini-bar-fill" style="width:6%;background:var(--destructive)"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Added Footer Metrics for Card 2 to align with Card 1 -->
+            <div class="chart-footer-metrics" style="grid-template-columns:repeat(3,1fr)">
+              <div class="metric-item">
+                <span class="sublabel">Top Category</span>
+                <span class="subval" style="color:var(--primary)">Fried Chicken (42%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Fastest Growth</span>
+                <span class="subval" style="color:var(--info)">Burgers (+22.4%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Avg Gross Margin</span>
+                <span class="subval" style="color:var(--success)">68.5% Margin</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Multi-Outlet Radar Performance Benchmark -->
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3>Outlet Operational Benchmark</h3>
+                <span class="hint">Multi-axis quality & service index (0-100)</span>
+              </div>
+              <div class="legend">
+                <span><i style="background:var(--primary)"></i>HQ Durbar Marg</span>
+                <span><i style="background:var(--info)"></i>Jhamsikhel Hub</span>
+              </div>
+            </div>
+            <div class="card-pad" style="display:grid;place-items:center;padding:18px 10px;flex:1">
+              <div id="ch-radar" style="position:relative"></div>
+            </div>
+            <div class="chart-footer-metrics" style="grid-template-columns:repeat(3,1fr)">
+              <div class="metric-item">
+                <span class="sublabel">Top Performing Axis</span>
+                <span class="subval" style="color:var(--primary)">Food Quality (92 · HQ)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Highest CSAT Rating</span>
+                <span class="subval" style="color:var(--info)">CSAT (88 · Jhamsikhel)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Variance Index</span>
+                <span class="subval" style="color:var(--success)">±4.2 pts (Benchmark)</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Daily Targets & Radial Gauges -->
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3>Daily Operational Targets</h3>
+                <span class="hint">Live throughput vs quota thresholds</span>
+              </div>
+              <span class="badge badge-success"><span class="dot"></span> On Track</span>
+            </div>
+            <div class="card-pad" style="display:flex;gap:8px;justify-content:space-around;padding-top:20px;padding-bottom:20px;align-items:center;flex:1">
+              <div class="gauge-item">
+                <div id="g1" style="position:relative;margin:0 auto"></div>
+                <div style="font-size:0.75rem;font-weight:700;margin-top:6px">Revenue Quota</div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground)">Rs. 428k of Rs. 465k</div>
+              </div>
+              <div class="gauge-item">
+                <div id="g2" style="position:relative;margin:0 auto"></div>
+                <div style="font-size:0.75rem;font-weight:700;margin-top:6px">Customer CSAT</div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground)">4.4 / 5.0 Star Rating</div>
+              </div>
+              <div class="gauge-item">
+                <div id="g3" style="position:relative;margin:0 auto"></div>
+                <div style="font-size:0.75rem;font-weight:700;margin-top:6px">Capacity Load</div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground)">64% Optimal Seating</div>
+              </div>
+            </div>
+            <div class="chart-footer-metrics" style="grid-template-columns:repeat(3,1fr)">
+              <div class="metric-item">
+                <span class="sublabel">Revenue Quota</span>
+                <span class="subval" style="color:var(--primary)">Rs. 428k (92.0%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Customer CSAT</span>
+                <span class="subval" style="color:var(--success)">4.4 / 5.0 (88.0%)</span>
+              </div>
+              <div class="metric-item">
+                <span class="sublabel">Capacity Load</span>
+                <span class="subval" style="color:var(--warning)">64.0% (Optimal)</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Live Kitchen Stock & Critical Ingredient Health (Full Width) -->
+          <section class="card" style="grid-column:1/-1">
+            <div class="card-head">
+              <div>
+                <h3>Kitchen Stock & Ingredient Telemetry</h3>
+                <span class="hint">Automated low-stock thresholds & supply replenishment alerts</span>
+              </div>
+              <button class="btn btn-sm btn-outline" id="btn-reorder">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Reorder Supplies
+              </button>
+            </div>
+            <div class="card-pad" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;margin-bottom:6px">
+                  <b>Zinger Chicken Fillets</b>
+                  <span class="badge badge-success">84% · Healthy</span>
+                </div>
+                <div class="progress success" style="height:8px"><i style="width:84%"></i></div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground);margin-top:5px">420 kg on hand · ~3.5 days runway</div>
+              </div>
+
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;margin-bottom:6px">
+                  <b>Brioche Burger Buns</b>
+                  <span class="badge badge-brand">62% · Good</span>
+                </div>
+                <div class="progress" style="height:8px"><i style="width:62%"></i></div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground);margin-top:5px">310 packs on hand · ~2.2 days runway</div>
+              </div>
+
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;margin-bottom:6px">
+                  <b>French Fries (Frozen)</b>
+                  <span class="badge badge-warning">38% · Moderate</span>
+                </div>
+                <div class="progress warning" style="height:8px"><i style="width:38%"></i></div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground);margin-top:5px">95 kg on hand · Reorder recommended</div>
+              </div>
+
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;margin-bottom:6px">
+                  <b>Gourmet Mayo & Sauces</b>
+                  <span class="badge badge-danger">14% · Critical Low</span>
+                </div>
+                <div class="progress danger" style="height:8px"><i style="width:14%"></i></div>
+                <div style="font-size:0.7rem;color:var(--muted-foreground);margin-top:5px">12 L remaining · Threshold breached</div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script src="./admin-charts.js"></script>
+  <script>
+    'use strict';
+
+    /* State management for analytics filters */
+    const state = {
+      dateRange: '7d',
+      activeMetric: 'revenue',
+      outlet: 'all',
+      granularity: 'daily',
+      heroType: 'area',
+      barsMode: 'grouped',
+      seriesVisibility: {
+        current: true,
+        prev: true,
+        target: true
+      }
+    };
+
+    /* Dynamic dataset model */
+    const DATASETS = {
+      revenue: {
+        title: 'Revenue Trajectory & Forecasting',
+        unit: 'Rs. ',
+        today: {
+          headlineVal: 'Rs. 484,000',
+          headlineBadge: '▲ +18.2% vs yesterday',
+          headlineSub: 'Live intraday revenue tracking at 106.8% of daily benchmark',
+          labels: ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'],
+          current: [24000, 56000, 48000, 72000, 98000, 114000, 72000],
+          prev:    [28000, 44000, 40000, 58000, 80000,  92000, 64000],
+          target:  [20000, 48000, 45000, 65000, 85000, 100000, 75000],
+          peak: '8 PM · Rs. 114.0k',
+          avg: 'Rs. 69.1k / slot',
+          targetPct: '106.8% (Exceeded)',
+          variance: '+18.2% growth'
+        },
+        '7d': {
+          headlineVal: 'Rs. 428,500',
+          headlineBadge: '▲ +14.8% vs prev period',
+          headlineSub: 'Showing 7-day trajectory across All Outlets · Target exceeded by Rs. 38.5k',
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          current: [42500, 48800, 52400, 58400, 73800, 84600, 68000],
+          prev:    [46000, 42000, 39500, 48200, 60800, 68400, 56000],
+          target:  [40000, 44000, 48000, 54000, 62000, 70000, 64000],
+          peak: 'Saturday · Rs. 84.6k',
+          avg: 'Rs. 61.2k / day',
+          targetPct: '108.4% (Exceeded)',
+          variance: '+14.8% growth'
+        },
+        '30d': {
+          headlineVal: 'Rs. 1,727,000',
+          headlineBadge: '▲ +13.7% vs last month',
+          headlineSub: 'Trailing 4-week consolidated GMV across dining & digital channels',
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          current: [385000, 418000, 442000, 482000],
+          prev:    [360000, 372000, 388000, 410000],
+          target:  [370000, 395000, 420000, 450000],
+          peak: 'Week 4 · Rs. 482k',
+          avg: 'Rs. 431.8k / week',
+          targetPct: '107.1% (Exceeded)',
+          variance: '+13.7% growth'
+        },
+        quarter: {
+          headlineVal: 'Rs. 10,660,000',
+          headlineBadge: '▲ +15.2% vs Q3',
+          headlineSub: 'Quarter-to-date revenue milestone · 4 active outlets',
+          labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          current: [1420000, 1580000, 1690000, 1840000, 1980000, 2150000],
+          prev:    [1300000, 1360000, 1440000, 1580000, 1690000, 1820000],
+          target:  [1350000, 1480000, 1600000, 1750000, 1880000, 2050000],
+          peak: 'December · Rs. 2.15M',
+          avg: 'Rs. 1.78M / month',
+          targetPct: '105.4% (Exceeded)',
+          variance: '+15.2% growth'
+        }
+      },
+      orders: {
+        title: 'Order Volume & Throughput',
+        unit: '',
+        today: {
+          headlineVal: '646 orders',
+          headlineBadge: '▲ +14.6% vs yesterday',
+          headlineSub: 'Peak dinner service driving higher ticket velocity',
+          labels: ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'],
+          current: [32, 82, 68, 92, 134, 148, 90],
+          prev:    [36, 68, 56, 78, 108, 124, 82],
+          target:  [30, 70, 65, 85, 120, 135, 95],
+          peak: '8 PM · 148 orders',
+          avg: '92.3 / slot',
+          targetPct: '107.8% (Exceeded)',
+          variance: '+14.6% growth'
+        },
+        '7d': {
+          headlineVal: '3,842 orders',
+          headlineBadge: '▲ +8.2% vs prev period',
+          headlineSub: 'Weekly dining & delivery tickets · 96.4% on-time fulfillment',
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          current: [420, 485, 460, 540, 680, 742, 515],
+          prev:    [440, 410, 395, 470, 590, 660, 480],
+          target:  [410, 440, 450, 500, 620, 690, 520],
+          peak: 'Saturday · 742 orders',
+          avg: '548 orders / day',
+          targetPct: '106.2% (Exceeded)',
+          variance: '+8.2% growth'
+        },
+        '30d': {
+          headlineVal: '15,250 orders',
+          headlineBadge: '▲ +7.8% vs last month',
+          headlineSub: 'Consolidated monthly customer orders across all channels',
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          current: [3420, 3680, 3940, 4210],
+          prev:    [3240, 3350, 3580, 3810],
+          target:  [3300, 3550, 3800, 4050],
+          peak: 'Week 4 · 4,210 orders',
+          avg: '3,812 / week',
+          targetPct: '104.9% (Exceeded)',
+          variance: '+7.8% growth'
+        },
+        quarter: {
+          headlineVal: '98,700 orders',
+          headlineBadge: '▲ +10.2% vs Q3',
+          headlineSub: 'Quarterly guest check orders · Steady repeat guest volume',
+          labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          current: [13400, 14600, 15800, 16900, 18200, 19800],
+          prev:    [12600, 13100, 13900, 15000, 16100, 17200],
+          target:  [12800, 13900, 15000, 16200, 17400, 18900],
+          peak: 'December · 19,800 orders',
+          avg: '16,450 / month',
+          targetPct: '105.8% (Exceeded)',
+          variance: '+10.2% growth'
+        }
+      },
+      basket: {
+        title: 'Average Basket Value (AOV)',
+        unit: 'Rs. ',
+        today: {
+          headlineVal: 'Rs. 834',
+          headlineBadge: '▲ +5.4% vs yesterday',
+          headlineSub: 'Dinner combo promotions driving higher beverage attachment',
+          labels: ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'],
+          current: [750, 820, 780, 830, 890, 920, 850],
+          prev:    [720, 760, 740, 780, 820, 860, 810],
+          target:  [730, 780, 760, 800, 840, 880, 830],
+          peak: '8 PM · Rs. 920',
+          avg: 'Rs. 834 / ticket',
+          targetPct: '103.5% (Exceeded)',
+          variance: '+5.4% growth'
+        },
+        '7d': {
+          headlineVal: 'Rs. 845',
+          headlineBadge: '▲ +4.6% vs prev period',
+          headlineSub: 'Average customer ticket spend · 2.6 items per guest check',
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          current: [790, 825, 810, 845, 885, 915, 845],
+          prev:    [770, 780, 760, 800, 835, 865, 815],
+          target:  [770, 795, 790, 820, 850, 880, 835],
+          peak: 'Saturday · Rs. 915',
+          avg: 'Rs. 845 / ticket',
+          targetPct: '104.1% (Exceeded)',
+          variance: '+4.6% growth'
+        },
+        '30d': {
+          headlineVal: 'Rs. 847',
+          headlineBadge: '▲ +4.8% vs last month',
+          headlineSub: '30-day ticket size trajectory reflecting premium menu tier',
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          current: [810, 835, 860, 885],
+          prev:    [780, 795, 815, 835],
+          target:  [790, 815, 840, 865],
+          peak: 'Week 4 · Rs. 885',
+          avg: 'Rs. 847 / ticket',
+          targetPct: '103.2% (Exceeded)',
+          variance: '+4.8% growth'
+        },
+        quarter: {
+          headlineVal: 'Rs. 841',
+          headlineBadge: '▲ +5.6% vs Q3',
+          headlineSub: 'Quarterly average spend index per party',
+          labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          current: [780, 805, 825, 850, 875, 910],
+          prev:    [750, 765, 780, 805, 825, 855],
+          target:  [760, 785, 805, 830, 850, 880],
+          peak: 'December · Rs. 910',
+          avg: 'Rs. 841 / ticket',
+          targetPct: '103.8% (Exceeded)',
+          variance: '+5.6% growth'
+        }
+      },
+      refunds: {
+        title: 'Refunds & Disputes Volume',
+        unit: '',
+        today: {
+          headlineVal: '15 disputes',
+          headlineBadge: '▼ -22.0% (Improved)',
+          headlineSub: 'Kitchen order dispute rate below 0.3% of total volume',
+          labels: ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM', '8 PM', '10 PM'],
+          current: [1, 2, 1, 2, 3, 4, 2],
+          prev:    [2, 3, 2, 4, 4, 5, 3],
+          target:  [2, 2, 2, 3, 3, 3, 2],
+          peak: '8 PM · 4 disputes',
+          avg: '2.1 / slot',
+          targetPct: 'Below threshold',
+          variance: '-22.0% (Improved)'
+        },
+        '7d': {
+          headlineVal: '18 disputes',
+          headlineBadge: '▼ -18.5% (Improved)',
+          headlineSub: 'Only 0.42% of gross transaction volume · Top hygiene rating',
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          current: [3, 2, 4, 2, 3, 2, 2],
+          prev:    [5, 4, 5, 4, 4, 3, 3],
+          target:  [4, 3, 4, 3, 3, 3, 2],
+          peak: 'Wednesday · 4 disputes',
+          avg: '2.5 / day',
+          targetPct: '0.42% of volume',
+          variance: '-18.5% (Improved)'
+        },
+        '30d': {
+          headlineVal: '71 disputes',
+          headlineBadge: '▼ -21.4% (Improved)',
+          headlineSub: 'Customer returns and cancelled orders down across all branches',
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+          current: [22, 19, 16, 14],
+          prev:    [29, 25, 21, 18],
+          target:  [24, 21, 18, 15],
+          peak: 'Week 1 · 22 disputes',
+          avg: '17.7 / week',
+          targetPct: 'Trending downward',
+          variance: '-21.4% (Improved)'
+        },
+        quarter: {
+          headlineVal: '476 disputes',
+          headlineBadge: '▼ -24.8% vs Q3',
+          headlineSub: '99.5% order fulfillment accuracy achieved throughout H2',
+          labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          current: [95, 88, 82, 76, 71, 64],
+          prev:    [125, 116, 108, 98, 94, 86],
+          target:  [100, 92, 85, 80, 75, 70],
+          peak: 'July · 95 disputes',
+          avg: '79.3 / month',
+          targetPct: 'Consistent decline',
+          variance: '-24.8% (Improved)'
+        }
+      }
+    };
+
+    /* Channel breakdown datasets across granularities */
+    const CHANNEL_DATA = {
+      daily: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        series: [
+          { name: 'Dine-in', data: [22000, 25500, 23000, 31000, 41000, 48500, 42000] },
+          { name: 'Delivery', data: [14500, 16800, 15500, 19800, 24500, 27600, 24200] },
+          { name: 'Pick-up', data: [6000,  6500,  6700,  7600,  8300,  8500,  9000] }
+        ]
+      },
+      weekly: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        series: [
+          { name: 'Dine-in', data: [185000, 210000, 228000, 252000] },
+          { name: 'Delivery', data: [120000, 138000, 149000, 164000] },
+          { name: 'Pick-up', data: [55000,  61000,  64000,  68000] }
+        ]
+      },
+      monthly: {
+        labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        series: [
+          { name: 'Dine-in', data: [720000, 790000, 850000, 920000, 990000, 1080000] },
+          { name: 'Delivery', data: [480000, 540000, 580000, 630000, 680000, 740000] },
+          { name: 'Pick-up', data: [220000, 250000, 260000, 290000, 310000, 330000] }
+        ]
+      }
+    };
+
+    /* Extract theme colors dynamically */
+    function colors() {
+      const cs = getComputedStyle(document.documentElement);
+      return {
+        primary: cs.getPropertyValue('--primary').trim() || '#EC3876',
+        info: cs.getPropertyValue('--info').trim() || '#5691EA',
+        success: cs.getPropertyValue('--success').trim() || '#2FBF71',
+        warning: cs.getPropertyValue('--warning').trim() || '#FFC250',
+        danger: cs.getPropertyValue('--destructive').trim() || '#F0564E',
+        muted: cs.getPropertyValue('--muted-foreground').trim() || '#64748b'
+      };
+    }
+
+    /* Format currency/numbers */
+    function formatVal(metric, val) {
+      if (metric === 'revenue' || metric === 'basket') {
+        if (Math.abs(val) >= 1e6) {
+          const m = val / 1e6;
+          return 'Rs. ' + (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + 'M';
+        }
+        if (Math.abs(val) >= 1e3) {
+          const k = val / 1e3;
+          return 'Rs. ' + (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
+        }
+        return 'Rs. ' + Math.round(val);
+      }
+      if (Math.abs(val) >= 1e3) {
+        const k = val / 1e3;
+        return (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
+      }
+      return String(Math.round(val));
+    }
+
+    /* Render Hero Area Chart */
+    function renderHeroChart() {
+      const C = colors();
+      const chArea = document.getElementById('ch-area');
+      if (!chArea) return;
+      chArea.innerHTML = '';
+
+      const m = DATASETS[state.activeMetric] || DATASETS.revenue;
+      const d = m[state.dateRange] || m['7d'];
+
+      // Update Card Header Callouts & Context
+      const titleEl = document.getElementById('hero-chart-title');
+      const headlineValEl = document.getElementById('hero-headline-val');
+      const headlineBadgeEl = document.getElementById('hero-headline-badge');
+      const headlineSubEl = document.getElementById('hero-chart-sub');
+      const pillEl = document.getElementById('hero-chart-pill');
+
+      if (titleEl) titleEl.textContent = m.title;
+      if (headlineValEl) headlineValEl.textContent = d.headlineVal || (m.unit + fmt(d.current.reduce((a, b) => a + b, 0)));
+      if (headlineBadgeEl) {
+        headlineBadgeEl.textContent = d.headlineBadge || d.variance;
+        const isPositive = (d.headlineBadge || d.variance).includes('+') || (d.headlineBadge || d.variance).includes('Improved');
+        headlineBadgeEl.className = 'badge ' + (isPositive ? 'badge-success' : 'badge-danger');
+      }
+      if (headlineSubEl) {
+        headlineSubEl.textContent = d.headlineSub || ('Comparing ' + state.dateRange.toUpperCase() + ' ' + state.activeMetric + ' trajectory vs previous period');
+      }
+      if (pillEl) {
+        pillEl.textContent = state.outlet === 'all' ? 'All Outlets' : ('Outlet: ' + state.outlet.toUpperCase());
+      }
+
+      // Update Footer KPI Strip
+      const peakEl = document.getElementById('hero-stat-peak');
+      const avgEl = document.getElementById('hero-stat-avg');
+      const targetEl = document.getElementById('hero-stat-target');
+      const varEl = document.getElementById('hero-stat-var');
+      const peakLabel = document.getElementById('hero-peak-label');
+      const runrateLabel = document.getElementById('hero-runrate-label');
+
+      if (peakEl) peakEl.textContent = d.peak;
+      if (avgEl) avgEl.textContent = d.avg;
+      if (targetEl) targetEl.textContent = d.targetPct;
+      if (varEl) varEl.textContent = d.variance;
+
+      if (peakLabel) {
+        peakLabel.textContent = state.granularity === 'daily' ? 'Peak Day'
+          : state.granularity === 'weekly' ? 'Peak Week'
+          : 'Peak Month';
+      }
+      if (runrateLabel) {
+        runrateLabel.textContent = state.granularity === 'daily' ? 'Daily Run-Rate'
+          : state.granularity === 'weekly' ? 'Weekly Run-Rate'
+          : 'Monthly Run-Rate';
+      }
+
+      // Outlet scale factor (HQ: 42%, Jhamsikhel: 28%, Lakeside: 18%, Bouddha: 12%, All: 100%)
+      const outletMultiplier = state.outlet === 'hq' ? 0.42
+        : state.outlet === 'jhamsikhel' ? 0.28
+        : state.outlet === 'lakeside' ? 0.18
+        : state.outlet === 'bouddha' ? 0.12
+        : 1.0;
+
+      const scale = arr => outletMultiplier === 1.0 ? arr : arr.map(v => Math.round(v * outletMultiplier));
+      const curData = scale(d.current);
+      const prvData = scale(d.prev);
+      const tgtData = scale(d.target);
+
+      // Filter series according to active toggles with distinct colors
+      const seriesList = [];
+      if (state.seriesVisibility.current) {
+        seriesList.push({
+          name: 'Current Period',
+          color: state.activeMetric === 'refunds' ? C.danger : C.primary,
+          data: curData,
+          dots: true,
+          fill: true
+        });
+      }
+      if (state.seriesVisibility.prev) {
+        seriesList.push({
+          name: 'Previous Period',
+          color: C.info,
+          data: prvData,
+          dashed: true,
+          dots: false,
+          fill: false
+        });
+      }
+      if (state.seriesVisibility.target) {
+        seriesList.push({
+          name: 'Target Benchmark',
+          color: C.success,
+          data: tgtData,
+          dashed: true,
+          dots: false,
+          fill: false
+        });
+      }
+
+      // Update Sub-Deck Comparison Cards
+      const numCurrent = document.getElementById('hero-num-current');
+      const badgeCurrent = document.getElementById('hero-badge-current');
+      const numPrev = document.getElementById('hero-num-prev');
+      const numTarget = document.getElementById('hero-num-target');
+      const contextEl = document.getElementById('hero-chart-context');
+
+      const currTotal = curData.reduce((a, b) => a + b, 0);
+      const prevTotal = prvData.reduce((a, b) => a + b, 0);
+      const targetTotal = tgtData.reduce((a, b) => a + b, 0);
+
+      if (numCurrent) {
+        numCurrent.textContent = (outletMultiplier === 1.0 && d.headlineVal) ? d.headlineVal : formatVal(state.activeMetric, currTotal);
+      }
+      if (badgeCurrent) {
+        badgeCurrent.textContent = d.headlineBadge || d.variance;
+        const isPos = (d.headlineBadge || d.variance).includes('+') || (d.headlineBadge || d.variance).includes('Improved');
+        badgeCurrent.className = 'badge ' + (isPos ? 'badge-success' : 'badge-danger');
+      }
+      if (numPrev) numPrev.textContent = formatVal(state.activeMetric, prevTotal);
+      if (numTarget) numTarget.textContent = formatVal(state.activeMetric, targetTotal);
+      const badgeTarget = document.getElementById('hero-badge-target');
+      if (badgeTarget) {
+        const hitVal = (d.targetPct || '').match(/[\d.]+/);
+        badgeTarget.textContent = (hitVal ? hitVal[0] : (targetTotal > 0 ? ((currTotal / targetTotal) * 100).toFixed(1) : '100')) + '% Hit';
+      }
+      if (contextEl) {
+        contextEl.innerHTML = 'Peak slot: <b style="color:var(--foreground)">' + d.peak + '</b> · Trailing delta: <b style="color:var(--success)">' + d.variance + '</b>';
+      }
+
+      // Render based on selected hero chart type (Area curve or Column bars)
+      if (state.heroType === 'bars') {
+        EmberCharts.bars(chArea, {
+          labels: d.labels,
+          stacked: false,
+          series: seriesList.length ? seriesList : [{ name: 'Empty', color: C.muted, data: curData.map(() => 0) }],
+          formatY: v => formatVal(state.activeMetric, v),
+          formatTip: v => formatVal(state.activeMetric, v)
+        });
+      } else {
+        EmberCharts.area(chArea, {
+          labels: d.labels,
+          series: seriesList.length ? seriesList : [{ name: 'Empty', color: C.muted, data: curData.map(() => 0) }],
+          formatY: v => formatVal(state.activeMetric, v),
+          formatTip: v => formatVal(state.activeMetric, v)
+        });
+      }
+    }
+
+    /* Render Channel Bars Chart */
+    function renderChannelBars() {
+      const C = colors();
+      const el = document.getElementById('ch-bars');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const outletMultiplier = state.outlet === 'hq' ? 0.42
+        : state.outlet === 'jhamsikhel' ? 0.28
+        : state.outlet === 'lakeside' ? 0.18
+        : state.outlet === 'bouddha' ? 0.12
+        : 1.0;
+
+      const chData = CHANNEL_DATA[state.granularity] || CHANNEL_DATA.daily;
+      const scale = arr => outletMultiplier === 1.0 ? arr : arr.map(v => Math.round(v * outletMultiplier));
+
+      EmberCharts.bars(el, {
+        labels: chData.labels,
+        stacked: state.barsMode === 'stacked',
+        series: [
+          { name: 'Dine-in', color: C.primary, data: scale(chData.series[0].data) },
+          { name: 'Delivery', color: C.info, data: scale(chData.series[1].data) },
+          { name: 'Pick-up', color: C.success, data: scale(chData.series[2].data) },
+        ],
+        height: 280,
+        formatY: v => formatVal('revenue', v),
+        formatTip: v => formatVal('revenue', v)
+      });
+    }
+
+    /* Render Category Donut */
+    function renderCategoryDonut() {
+      const C = colors();
+      const el = document.getElementById('ch-donut');
+      if (!el) return;
+      el.innerHTML = '';
+
+      EmberCharts.donut(el, {
+        data: [
+          { label: 'Fried Chicken & Combos', value: 180000, color: C.primary },
+          { label: 'Signature Burgers', value: 102800, color: C.info },
+          { label: 'Rolls & Wraps', value: 77100, color: C.success },
+          { label: 'Craft Beverages', value: 42800, color: C.warning },
+          { label: 'Desserts & Sides', value: 25800, color: C.danger },
+        ],
+        center: 'Rs. 428k',
+        sub: 'total category sales',
+        formatTip: v => formatVal('revenue', v)
+      });
+    }
+
+    /* Render Outlet Radar */
+    function renderRadar() {
+      const C = colors();
+      const el = document.getElementById('ch-radar');
+      if (!el) return;
+      el.innerHTML = '';
+
+      EmberCharts.radar(el, {
+        axes: ['Speed', 'Quality', 'Service', 'Cleanliness', 'Value', 'Consistency'],
+        max: 100,
+        series: [
+          { name: 'HQ Durbar Marg', color: C.primary, data: [88, 92, 80, 86, 78, 88] },
+          { name: 'Jhamsikhel Hub', color: C.info, data: [76, 84, 88, 82, 84, 76] }
+        ]
+      });
+    }
+
+    /* Render Target Gauges */
+    function renderGauges() {
+      const C = colors();
+      ['g1', 'g2', 'g3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+      });
+
+      EmberCharts.gauge(document.getElementById('g1'), { value: 92, sub: 'Daily quota', color: C.primary });
+      EmberCharts.gauge(document.getElementById('g2'), { value: 88, sub: 'CSAT rating', color: C.success });
+      EmberCharts.gauge(document.getElementById('g3'), { value: 64, sub: 'Capacity load', color: C.warning });
+    }
+
+    /* Update Executive KPI Cards based on active date range */
+    function updateTopKPICards() {
+      const range = state.dateRange || '7d';
+      const map = [
+        { id: 'rev', key: 'revenue', subSuffix: ' run-rate' },
+        { id: 'ord', key: 'orders', subSuffix: ' throughput' },
+        { id: 'bsk', key: 'basket', subSuffix: ' avg ticket' },
+        { id: 'ref', key: 'refunds', subSuffix: ' dispute rate' }
+      ];
+
+      map.forEach(m => {
+        const d = (DATASETS[m.key] && DATASETS[m.key][range]) || DATASETS[m.key]['7d'];
+        if (!d) return;
+        const valEl = document.getElementById('kpi-' + m.id + '-val');
+        const badgeEl = document.getElementById('kpi-' + m.id + '-badge');
+        const subEl = document.getElementById('kpi-' + m.id + '-sub');
+
+        if (badgeEl) {
+          badgeEl.textContent = d.headlineBadge || d.variance;
+          const isPos = (d.headlineBadge || d.variance).includes('+') || (d.headlineBadge || d.variance).includes('Improved') || (d.headlineBadge || d.variance).includes('▲');
+          badgeEl.className = 'badge ' + (isPos ? 'badge-success' : 'badge-danger');
+        }
+        if (valEl) {
+          valEl.innerHTML = (d.headlineVal || '') + ' ';
+          if (badgeEl) valEl.appendChild(badgeEl);
+        }
+        if (subEl) {
+          subEl.textContent = d.avg + m.subSuffix;
+        }
+      });
+    }
+
+    /* Render Mini Sparklines in KPI Cards */
+    function renderSparklines() {
+      const C = colors();
+      ['sp1', 'sp2', 'sp3', 'sp4'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+      });
+
+      const range = state.dateRange || '7d';
+      const revData = (DATASETS.revenue[range] || DATASETS.revenue['7d']).current;
+      const ordData = (DATASETS.orders[range] || DATASETS.orders['7d']).current;
+      const bskData = (DATASETS.basket[range] || DATASETS.basket['7d']).current;
+      const refData = (DATASETS.refunds[range] || DATASETS.refunds['7d']).current;
+
+      EmberCharts.sparkline(document.getElementById('sp1'), { data: revData, color: C.primary });
+      EmberCharts.sparkline(document.getElementById('sp2'), { data: ordData, color: C.info });
+      EmberCharts.sparkline(document.getElementById('sp3'), { data: bskData, color: C.success });
+      EmberCharts.sparkline(document.getElementById('sp4'), { data: refData, color: C.danger });
+    }
+
+    /* Unified Timeframe and Granularity Synchronizer */
+    function setTimeframe(range, gran) {
+      const RANGE_TO_GRAN = { today: 'daily', '7d': 'daily', '30d': 'weekly', quarter: 'monthly' };
+      const GRAN_TO_RANGE = { daily: '7d', weekly: '30d', monthly: 'quarter' };
+
+      if (gran) {
+        state.granularity = gran;
+        state.dateRange = GRAN_TO_RANGE[gran] || '7d';
+      } else if (range) {
+        state.dateRange = range;
+        state.granularity = RANGE_TO_GRAN[range] || 'daily';
+      }
+
+      // Sync active state on date-range-control
+      const dateCtrl = document.getElementById('date-range-control');
+      if (dateCtrl) {
+        dateCtrl.querySelectorAll('.segmented-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.range === state.dateRange);
+        });
+      }
+
+      // Sync active state on granularity-control
+      const granCtrl = document.getElementById('granularity-control');
+      if (granCtrl) {
+        granCtrl.querySelectorAll('.segmented-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.gran === state.granularity);
+        });
+      }
+
+      updateTopKPICards();
+      renderHeroChart();
+      renderSparklines();
+      renderChannelBars();
+    }
+
+    /* Master Render Function */
+    function renderAll() {
+      updateTopKPICards();
+      renderSparklines();
+      renderHeroChart();
+      renderChannelBars();
+      renderCategoryDonut();
+      renderRadar();
+      renderGauges();
+    }
+
+    /* Wire Event Handlers */
+    function setupInteractions() {
+      // Date range controls
+      const dateCtrl = document.getElementById('date-range-control');
+      if (dateCtrl) {
+        dateCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const range = btn.dataset.range || '7d';
+            setTimeframe(range, null);
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast('Timeline updated: ' + btn.textContent);
+            }
+          });
+        });
+      }
+
+      // Outlet filter dropdown
+      const outletFilter = document.getElementById('outlet-filter');
+      if (outletFilter) {
+        outletFilter.addEventListener('change', e => {
+          state.outlet = e.target.value;
+          renderHeroChart();
+          renderChannelBars();
+          if (window.EmberDemo && window.EmberDemo.toast) {
+            window.EmberDemo.toast('Filtered by ' + e.target.options[e.target.selectedIndex].text);
+          }
+        });
+      }
+
+      // KPI cards click to switch Hero Metric
+      const kpiGrid = document.getElementById('kpi-grid');
+      if (kpiGrid) {
+        kpiGrid.querySelectorAll('.stat.interactive').forEach(card => {
+          card.addEventListener('click', () => {
+            kpiGrid.querySelectorAll('.stat.interactive').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            state.activeMetric = card.dataset.metric || 'revenue';
+            renderHeroChart();
+          });
+        });
+      }
+
+      // Hero Granularity switcher
+      const granCtrl = document.getElementById('granularity-control');
+      if (granCtrl) {
+        granCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const gran = btn.dataset.gran || 'daily';
+            setTimeframe(null, gran);
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast('View switched to ' + btn.textContent + ' granularity');
+            }
+          });
+        });
+      }
+
+      // Bars mode switcher (Grouped / Stacked)
+      const barsModeCtrl = document.getElementById('bars-mode-control');
+      if (barsModeCtrl) {
+        barsModeCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            barsModeCtrl.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.barsMode = btn.dataset.mode || 'grouped';
+            renderChannelBars();
+          });
+        });
+      }
+
+      // Hero Chart view type switcher (Trend vs Columns)
+      const typeCtrl = document.getElementById('hero-type-control');
+      if (typeCtrl) {
+        typeCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            typeCtrl.querySelectorAll('.segmented-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.heroType = btn.dataset.type || 'area';
+            renderHeroChart();
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast('Switched to ' + btn.textContent.trim() + ' view');
+            }
+          });
+        });
+      }
+
+      // Interactive Comparison Sub-Deck Cards Toggle
+      ['current', 'prev', 'target'].forEach(key => {
+        const card = document.getElementById('card-' + key);
+        if (card) {
+          card.addEventListener('click', () => {
+            state.seriesVisibility[key] = !state.seriesVisibility[key];
+            if (state.seriesVisibility[key]) {
+              card.classList.remove('muted');
+              card.classList.add('active');
+            } else {
+              card.classList.remove('active');
+              card.classList.add('muted');
+            }
+            renderHeroChart();
+          });
+        }
+      });
+
+      // Category item hover highlighting synchronized with Donut slices
+      const catItems = document.querySelectorAll('.category-item');
+      catItems.forEach((item, idx) => {
+        item.addEventListener('mouseenter', () => {
+          const slices = document.querySelectorAll('#ch-donut .donut-slice');
+          if (slices[idx]) {
+            slices[idx].dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+          }
+        });
+        item.addEventListener('mouseleave', () => {
+          const slices = document.querySelectorAll('#ch-donut .donut-slice');
+          if (slices[idx]) {
+            slices[idx].dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+          }
+        });
+      });
+
+      // Refresh Button
+      const btnRefresh = document.getElementById('btn-refresh');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => {
+          const svg = btnRefresh.querySelector('svg');
+          if (svg) svg.style.animation = 'spin 0.6s linear infinite';
+          setTimeout(() => {
+            if (svg) svg.style.animation = '';
+            const ts = document.getElementById('sync-timestamp');
+            if (ts) ts.textContent = 'Last synced: ' + new Date().toLocaleTimeString();
+            renderAll();
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast('Analytics telemetry refreshed with latest POS sync.');
+            }
+          }, 600);
+        });
+      }
+
+      // Export CSV Button
+      const btnExport = document.getElementById('btn-export');
+      if (btnExport) {
+        btnExport.addEventListener('click', () => {
+          const m = DATASETS[state.activeMetric] || DATASETS.revenue;
+          const d = m[state.dateRange] || m['7d'];
+          let csv = 'Period,Current,Previous,Target\n';
+          d.labels.forEach((lb, i) => {
+            csv += [lb, d.current[i] || 0, d.prev[i] || 0, d.target[i] || 0].join(',') + '\n';
+          });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'koklass-analytics-' + state.activeMetric + '-' + state.dateRange + '.csv');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          if (window.EmberDemo && window.EmberDemo.toast) {
+            window.EmberDemo.toast('CSV exported: ' + state.activeMetric.toUpperCase() + ' data.');
+          }
+        });
+      }
+
+      // Reorder low stock button
+      const btnReorder = document.getElementById('btn-reorder');
+      if (btnReorder) {
+        btnReorder.addEventListener('click', () => {
+          if (window.EmberDemo && window.EmberDemo.toast) {
+            window.EmberDemo.toast('Replenishment purchase order dispatched for low-stock ingredients!');
+          }
+        });
+      }
+    }
+
+    // Initialize
+    renderAll();
+    setupInteractions();
+
+    // Re-render when theme or mode changes
+    new MutationObserver(renderAll).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'data-theme']
+    });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(window.__chartResizeTimer);
+      window.__chartResizeTimer = setTimeout(renderAll, 150);
+    });
+  </script>
+</body>
+</html>

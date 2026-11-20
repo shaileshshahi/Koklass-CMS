@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create config — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" data-sidebar-active="configs-create"></aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Sample create</div>
+          <div class="crumb">Home / Theme ▸ Samples ▸ Create <span class="badge badge-warning" style="margin-left:6px">Dummy data</span></div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search…" />
+        </div>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Demo notice -->
+        <section style="display:flex;align-items:center;gap:10px;background:var(--warning);color:var(--warning-foreground);border-radius:12px;padding:10px 16px;font-size:.8rem;font-weight:700;flex-wrap:wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          Theme sample — dummy form. Copy the markup as a starting point for your real create page.
+        </section>
+
+        <form id="cfg-form" novalidate>
+          <div class="form-grid-2">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <!-- Definition -->
+              <section class="card">
+                <div class="card-head"><h3>Definition</h3><span class="hint">How this config is identified</span></div>
+                <div class="card-pad form-grid">
+                  <div class="field full" id="g-key">
+                    <label>Key <span class="req">*</span></label>
+                    <input class="input" id="f-key" placeholder="e.g. orders.auto_accept" autocomplete="off" oninput="live()" />
+                    <div class="help">Dot-namespaced, lowercase. Shown to developers in the API.</div>
+                  </div>
+                  <div class="field full" id="g-label">
+                    <label>Label <span class="req">*</span></label>
+                    <input class="input" id="f-label" placeholder="e.g. Auto-accept orders" oninput="live()" />
+                    <div class="help">Human-friendly name shown in the admin UI.</div>
+                  </div>
+                  <div class="field full">
+                    <label>Description</label>
+                    <input class="input" id="f-desc" placeholder="What does this setting control?" />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Value -->
+              <section class="card">
+                <div class="card-head"><h3>Value</h3><span class="hint">Typed per the selected data type</span></div>
+                <div class="card-pad form-grid">
+                  <div class="field">
+                    <label>Data type <span class="req">*</span></label>
+                    <div class="dd" id="f-type" data-dd data-placeholder="Choose type…"></div>
+                    <input type="hidden" id="type-hidden" />
+                    <div class="help">Drives the value editor below.</div>
+                  </div>
+                  <div class="field">
+                    <label>Group</label>
+                    <div class="dd" id="f-group" data-dd data-placeholder="General"></div>
+                    <div class="help">Sidebar grouping for related configs.</div>
+                  </div>
+
+                  <div class="field full" id="wrap-value">
+                    <label>Value <span class="req">*</span></label>
+                    <input class="input" id="f-value" placeholder="Default value" oninput="live()" />
+                    <div class="err-msg" id="v-err" hidden><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span></span></div>
+                  </div>
+
+                  <!-- boolean editor -->
+                  <div class="field full" id="wrap-bool" hidden>
+                    <label>Default state</label>
+                    <div class="switch-row">
+                      <div class="txt"><b id="bool-lab">Enabled by default</b><span>Stored as JSON true/false</span></div>
+                      <label class="switch"><input type="checkbox" id="f-bool" checked /><i></i></label>
+                    </div>
+                  </div>
+
+                  <!-- color editor -->
+                  <div class="field full" id="wrap-color" hidden>
+                    <label>Default color</label>
+                    <div class="igroup">
+                      <span>#</span>
+                      <input class="input" id="f-colorhex" value="EC3876" maxlength="6" style="max-width:130px" />
+                      <input type="color" id="f-color" value="#EC3876" style="width:46px;height:38px;padding:2px;border:1px solid var(--input);border-radius:0 10px 10px 0;background:var(--background);cursor:pointer" />
+                      <input class="input" id="f-colorprev" readonly value="#EC3876" />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Side rail -->
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <section class="card">
+                <div class="card-head"><h3>Publish</h3></div>
+                <div class="card-pad" style="display:flex;flex-direction:column;gap:0">
+                  <div class="switch-row">
+                    <div class="txt"><b>Enabled</b><span>Config takes effect immediately</span></div>
+                    <label class="switch"><input type="checkbox" id="f-active" checked /><i></i></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="txt"><b>Public</b><span>Expose via public settings API</span></div>
+                    <label class="switch"><input type="checkbox" id="f-public" /><i></i></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="txt"><b>Requires restart</b><span>Cache must flush before it applies</span></div>
+                    <label class="switch"><input type="checkbox" id="f-restart" /><i></i></label>
+                  </div>
+                  <div class="field" style="margin-top:12px">
+                    <label>Visibility</label>
+                    <div class="dd" id="f-vis" data-dd data-value="admin" data-placeholder="Visibility"></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+                    <button type="submit" class="btn btn-primary">Create config</button>
+                    <button type="button" class="btn btn-outline" onclick="window.location.href='./config-list.html'">Cancel</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card">
+                <div class="card-head"><h3>Preview</h3><span class="hint">What dev teams will call</span></div>
+                <div class="card-pad">
+                  <div style="background:var(--secondary);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.78rem;line-height:1.7;color:var(--foreground)">
+                    <div><span style="color:var(--muted-foreground)">GET</span> /api/v1/settings/<b id="pv-key" style="color:var(--primary)">…</b></div>
+                    <div style="color:var(--muted-foreground);margin-top:6px">→ { "type": "<span id="pv-type">string</span>", "value": <span id="pv-val">null</span> }</div>
+                  </div>
+                  <div class="help" style="margin-top:10px">Keys are validated against <code>^[a-z0-9]+(\.[a-z0-9_-]+)+$</code>.</div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    'use strict';
+
+    let typeV = 'string';
+    const KEY_RE = /^[a-z0-9]+(\.[a-z0-9_-]+)+$/;
+
+    window.bindDropdown(document.getElementById('f-type'), [
+      { v: 'string', t: 'String' }, { v: 'number', t: 'Number' },
+      { v: 'boolean', t: 'Boolean' }, { v: 'json', t: 'JSON' }, { v: 'color', t: 'Color' },
+    ], v => { typeV = v; syncEditor(); live(); });
+    window.bindDropdown(document.getElementById('f-group'), [
+      { v: 'general', t: 'General' }, { v: 'orders', t: 'Orders' }, { v: 'payments', t: 'Payments' },
+      { v: 'email', t: 'Email' }, { v: 'catalog', t: 'Catalog' }, { v: 'users', t: 'Users' },
+    ], () => live());
+    window.bindDropdown(document.getElementById('f-vis'), [
+      { v: 'admin', t: 'Admin only' }, { v: 'staff', t: 'Staff' }, { v: 'public', t: 'Public' },
+    ]);
+
+    function syncEditor() {
+      document.getElementById('wrap-value').hidden = typeV === 'boolean' || typeV === 'color';
+      document.getElementById('wrap-bool').hidden = typeV !== 'boolean';
+      document.getElementById('wrap-color').hidden = typeV !== 'color';
+      const vi = document.getElementById('f-value');
+      vi.placeholder = { string: 'e.g. en-US', number: 'e.g. 120', json: '{ "a": 1 }' }[typeV] || '';
+      vi.inputMode = typeV === 'number' ? 'decimal' : 'text';
+    }
+
+    function live() {
+      const key = document.getElementById('f-key').value.trim();
+      const label = document.getElementById('f-label').value.trim();
+      document.getElementById('pv-key').textContent = key || '…';
+      document.getElementById('pv-type').textContent = typeV;
+      let val = 'null';
+      if (typeV === 'boolean') val = document.getElementById('f-bool').checked;
+      else if (typeV === 'color') val = '"' + (document.getElementById('f-colorprev').value) + '"';
+      else { const raw = document.getElementById('f-value').value.trim(); if (raw) val = typeV === 'json' ? raw : (typeV === 'number' ? raw : '"' + raw + '"'); }
+      document.getElementById('pv-val').textContent = val;
+      document.getElementById('bool-lab').textContent = document.getElementById('f-bool').checked ? 'Enabled by default' : 'Disabled by default';
+
+      // inline validation
+      const gk = document.getElementById('g-key'), gl = document.getElementById('g-label');
+      setField(gk, key === '' ? null : (KEY_RE.test(key) ? 'ok' : 'err'), key && !KEY_RE.test(key) ? 'Use lowercase dot.namespace format — e.g. orders.auto_accept' : '');
+      setField(gl, label === '' ? null : 'ok', '');
+    }
+    function setField(group, state, msg) {
+      const inp = group.querySelector('.input');
+      inp.classList.remove('is-error', 'is-success');
+      let err = group.querySelector('.err-msg'); if (err) err.remove();
+      if (state === 'err') { inp.classList.add('is-error'); if (msg) { const d = document.createElement('div'); d.className = 'err-msg'; d.textContent = msg; group.appendChild(d); } }
+      if (state === 'ok') inp.classList.add('is-success');
+    }
+
+    // color pickers
+    const cp = document.getElementById('f-color'), cx = document.getElementById('f-colorhex'), cprev = document.getElementById('f-colorprev');
+    cp.addEventListener('input', () => { cx.value = cp.value.slice(1).toUpperCase(); cprev.value = cp.value; live(); });
+    cx.addEventListener('input', () => { if (/^[0-9a-fA-F]{6}$/.test(cx.value)) { cp.value = '#' + cx.value; cprev.value = '#' + cx.value; live(); } });
+
+    document.getElementById('cfg-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const key = document.getElementById('f-key').value.trim();
+      const label = document.getElementById('f-label').value.trim();
+      let bad = false;
+      if (!key) { setField(document.getElementById('g-key'), 'err', 'Key is required.'); bad = true; }
+      else if (!KEY_RE.test(key)) { setField(document.getElementById('g-key'), 'err', 'Use lowercase dot.namespace format.'); bad = true; }
+      if (!label) { setField(document.getElementById('g-label'), 'err', 'Label is required.'); bad = true; }
+      if (typeV !== 'boolean' && typeV !== 'color' && !document.getElementById('f-value').value.trim()) {
+        setField(document.getElementById('wrap-value'), 'err', 'Value is required.'); bad = true;
+      }
+      if (bad) { showToast('Fix the highlighted fields'); return; }
+      try { sessionStorage.setItem('koklass-new-config', JSON.stringify({ key, label })); } catch (err) {}
+      showToast('Config "' + label + '" created');
+      setTimeout(() => { window.location.href = './config-list.html'; }, 500);
+    });
+
+    syncEditor(); live();
+  </script>
+</body>
+</html>

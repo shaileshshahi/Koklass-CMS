@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forms — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    .form-lib { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+    .form-lib .card-pad { display: flex; flex-direction: column; gap: 14px; }
+    .stack { display: flex; flex-direction: column; gap: 14px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" data-sidebar-active="ui-forms"></aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Forms — all components</div>
+          <div class="crumb">Home / Theme ▸ Elements ▸ Forms <span class="badge badge-warning" style="margin-left:6px">Demo only</span></div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search…" />
+        </div>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <div class="form-lib">
+
+          <!-- ============ 1. Basic inputs ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Basic inputs</h3><span class="hint">text · email · password · number</span></div>
+            <div class="card-pad stack">
+              <div class="field">
+                <label>Text <span class="req">*</span></label>
+                <input class="input" placeholder="Type anything…" />
+              </div>
+              <div class="field">
+                <label>Email <span class="req">*</span></label>
+                <input class="input" type="email" placeholder="you@koklass.com" />
+                <div class="help">We'll never share your email.</div>
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="pass-wrap">
+                  <input class="input" id="pw" type="password" placeholder="••••••••" />
+                  <button type="button" class="pass-eye" onclick="togglePw(this)" aria-label="Show password">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Number</label>
+                <input class="input" type="number" min="0" max="100" value="42" />
+              </div>
+              <div class="field">
+                <label>Disabled</label>
+                <input class="input" disabled placeholder="Disabled input" />
+              </div>
+              <div class="field">
+                <label>Read-only</label>
+                <input class="input" readonly value="read-only value" />
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2. Input groups ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Input groups</h3><span class="hint">addons · icons · buttons</span></div>
+            <div class="card-pad stack">
+              <div class="field">
+                <label>Currency</label>
+                <div class="igroup">
+                  <span>Rs.</span>
+                  <input class="input" value="1500.00" inputmode="decimal" />
+                  <span>NPR</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>With icon</label>
+                <div class="igroup">
+                  <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg></span>
+                  <input class="input" placeholder="your-domain.com" />
+                </div>
+              </div>
+              <div class="field">
+                <label>With button</label>
+                <div class="igroup">
+                  <input class="input" placeholder="https://koklass.com" />
+                  <button type="button" class="btn btn-primary btn-sm" style="border-radius:0 10px 10px 0">Go</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>OTP code</label>
+                <div class="otp" id="otp">
+                  <input maxlength="1" inputmode="numeric" /><input maxlength="1" inputmode="numeric" /><input maxlength="1" inputmode="numeric" /><input maxlength="1" inputmode="numeric" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Star rating</label>
+                <div class="rating" id="rate">
+                  <button type="button">★</button><button type="button">★</button><button type="button">★</button><button type="button">★</button><button type="button">★</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3. Selects & dropdowns ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Selects & dropdowns</h3><span class="hint">theme-matched custom menus</span></div>
+            <div class="card-pad stack">
+              <div class="field">
+                <label>Custom dropdown (replaces select)</label>
+                <div class="dd" id="dd1" data-dd data-placeholder="Choose an option…"></div>
+              </div>
+              <div class="field">
+                <label>Preselected</label>
+                <div class="dd" id="dd2" data-dd data-value="durbar" data-placeholder="Choose outlet…"></div>
+              </div>
+              <div class="field">
+                <label>Native select (compact contexts)</label>
+                <select class="input">
+                  <option>Small footprint select</option>
+                  <option>Option two</option>
+                  <option>Option three</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Segmented control</label>
+                <div class="seg" id="seg1">
+                  <button type="button" class="on">Day</button><button type="button">Week</button><button type="button">Month</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 4. Choices ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Checkboxes & radios</h3><span class="hint">single & list styles</span></div>
+            <div class="card-pad stack">
+              <div class="field">
+                <label>Checkboxes</label>
+                <div class="check-list">
+                  <label><input type="checkbox" class="cb" checked /> Email notifications</label>
+                  <label><input type="checkbox" class="cb" checked /> Push notifications</label>
+                  <label><input type="checkbox" class="cb" /> SMS alerts</label>
+                  <label><input type="checkbox" class="cb" disabled /> Weekly digest (plan locked)</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Radio group</label>
+                <div class="radio-row">
+                  <label><input type="radio" name="r1" checked /> Pick up</label>
+                  <label><input type="radio" name="r1" /> Dine in</label>
+                  <label><input type="radio" name="r1" /> Delivery</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Mixed inline</label>
+                <div class="check-list">
+                  <label><input type="checkbox" class="cb" /> Remember this device</label>
+                </div>
+                <div class="radio-row" style="margin-top:8px">
+                  <label><input type="radio" name="r2" checked /> Compact</label>
+                  <label><input type="radio" name="r2" /> Comfortable</label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 5. Toggles ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Toggle switches</h3><span class="hint">iOS-style, with labels</span></div>
+            <div class="card-pad">
+              <div class="switch-row">
+                <div class="txt"><b>Auto-accept orders</b><span>Orders are accepted without staff review</span></div>
+                <label class="switch"><input type="checkbox" checked /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div class="txt"><b>Out-of-stock hiding</b><span>Sold-out items vanish from the menu</span></div>
+                <label class="switch"><input type="checkbox" checked /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div class="txt"><b>Maintenance mode</b><span>Storefront shows a maintenance page</span></div>
+                <label class="switch"><input type="checkbox" /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div class="txt"><b>Beta analytics</b><span>Opt in to the new charts module</span></div>
+                <label class="switch"><input type="checkbox" disabled /><i></i></label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 6. Pickers ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Date, time & color</h3><span class="hint">native pickers, themed shells</span></div>
+            <div class="card-pad stack">
+              <div class="field">
+                <label>Date</label>
+                <input class="input" type="date" value="2026-11-18" />
+              </div>
+              <div class="field">
+                <label>Time</label>
+                <input class="input" type="time" value="17:30" />
+              </div>
+              <div class="field">
+                <label>DateTime local</label>
+                <input class="input" type="datetime-local" value="2026-11-18T17:30" />
+              </div>
+              <div class="field">
+                <label>Month</label>
+                <input class="input" type="month" value="2026-11" />
+              </div>
+              <div class="field">
+                <label>Week</label>
+                <input class="input" type="week" value="2026-W46" />
+              </div>
+              <div class="field">
+                <label>Color</label>
+                <div class="igroup">
+                  <span>#</span>
+                  <input class="input" value="EC3876" maxlength="6" />
+                  <input type="color" value="#EC3876" style="width:46px;height:38px;padding:2px;border:1px solid var(--input);border-radius:0 10px 10px 0;background:var(--background);cursor:pointer" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Range slider — <span class="range-val" id="rv">30</span></label>
+                <input type="range" class="range" min="0" max="100" value="30" oninput="document.getElementById('rv').textContent=this.value" />
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 7. Text areas & tags ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Textareas & tags</h3><span class="hint">with counters</span></div>
+            <div class="card-pad stack">
+              <div class="field" style="grid-column:1/-1">
+                <label>Bio <span class="req">*</span></label>
+                <textarea class="input" id="bio" rows="3" maxlength="160" placeholder="Tell us about your outlet…" oninput="count()"></textarea>
+                <div class="help" style="display:flex;justify-content:space-between"><span>Markdown supported.</span><span><b id="bio-n">0</b>/160</span></div>
+              </div>
+              <div class="field">
+                <label>Tags input</label>
+                <div class="tags-box" id="tags">
+                  <span class="tag">spicy <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                  <span class="tag">vegan <button type="button" onclick="this.parentNode.remove()">×</button></span>
+                  <input id="tag-in" placeholder="Add tag…" />
+                </div>
+                <div class="help">Press Enter to add, × to remove.</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 8. Upload ============ -->
+          <section class="card">
+            <div class="card-head"><h3>File upload</h3><span class="hint">drag & drop dropzone</span></div>
+            <div class="card-pad">
+              <label class="dropzone" id="dz" for="file-in">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                <b>Drop files here or click to browse</b>
+                <span>PNG, JPG, WEBP up to 5 MB</span>
+              </label>
+              <input type="file" id="file-in" hidden multiple accept="image/*" />
+              <div id="file-list" style="display:flex;flex-direction:column;gap:6px;margin-top:10px"></div>
+            </div>
+          </section>
+
+          <!-- ============ 9. Validation ============ -->
+          <section class="card">
+            <div class="card-head"><h3>Validation states</h3><span class="hint">error · success · disabled</span></div>
+            <div class="card-pad stack">
+              <div class="field has-error">
+                <label>Username <span class="req">*</span></label>
+                <input class="input is-error" value="koko!" />
+                <div class="err-msg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Only letters, numbers and dots are allowed.</div>
+              </div>
+              <div class="field">
+                <label>Workspace slug</label>
+                <input class="input is-success" value="koklass-hq" />
+                <div class="ok-msg">✓ koklass-hq is available</div>
+              </div>
+              <div class="field">
+                <label>Disabled with tooltip</label>
+                <input class="input" disabled value="Managed by SSO" />
+                <div class="help">Managed by your identity provider.</div>
+              </div>
+              <div class="field">
+                <label>Loading state</label>
+                <input class="input" placeholder="Validating…" />
+                <div class="help" style="color:var(--info)">● checking with server…</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Submit bar -->
+        <section class="card card-pad" style="display:flex;justify-content:flex-end;gap:10px">
+          <button class="btn btn-ghost" onclick="showToast('Form reset (demo)')">Reset</button>
+          <button class="btn btn-primary" onclick="showToast('All form components valid — submitted (demo)')">Submit everything</button>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    'use strict';
+
+    function togglePw(btn) { const i = document.getElementById('pw'); i.type = i.type === 'password' ? 'text' : 'password'; }
+    window.togglePw = togglePw;
+
+    /* Custom dropdown demos */
+    window.bindDropdown(document.getElementById('dd1'), [
+      { v: 'a', t: 'Option Alpha' }, { v: 'b', t: 'Option Beta' }, { v: 'c', t: 'Option Gamma' },
+    ]);
+    window.bindDropdown(document.getElementById('dd2'), [
+      { v: 'hq', t: 'HQ' }, { v: 'durbar', t: 'Durbar Marg' }, { v: 'jhamsikhel', t: 'Jhamsikhel' },
+    ]);
+
+    /* Segmented control */
+    document.querySelectorAll('#seg1 button').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('#seg1 button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    }));
+
+    /* OTP auto-advance */
+    const otps = document.querySelectorAll('#otp input');
+    otps.forEach((o, i) => o.addEventListener('input', () => { if (o.value && otps[i + 1]) otps[i + 1].focus(); }));
+    otps.forEach((o, i) => o.addEventListener('keydown', e => { if (e.key === 'Backspace' && !o.value && otps[i - 1]) otps[i - 1].focus(); }));
+
+    /* Star rating */
+    document.querySelectorAll('#rate button').forEach((b, i) => b.addEventListener('click', () => {
+      document.querySelectorAll('#rate button').forEach((x, j) => x.classList.toggle('on', j <= i));
+    }));
+    document.querySelectorAll('#rate button')[2].click();
+
+    /* Char counter */
+    window.count = function () {
+      document.getElementById('bio-n').textContent = document.getElementById('bio').value.length;
+    };
+
+    /* Tags: Enter adds */
+    document.getElementById('tag-in').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const v = e.target.value.trim();
+        if (!v) return;
+        const s = document.createElement('span');
+        s.className = 'tag';
+        s.innerHTML = v.replace(/</g, '&lt;') + ' <button type="button">×</button>';
+        s.querySelector('button').onclick = () => s.remove();
+        e.target.before(s);
+        e.target.value = '';
+      }
+    });
+
+    /* Dropzone */
+    const dz = document.getElementById('dz'), fin = document.getElementById('file-in'), flist = document.getElementById('file-list');
+    ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
+    dz.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+    fin.addEventListener('change', () => addFiles(fin.files));
+    function addFiles(fs) {
+      Array.from(fs).forEach(f => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:.78rem;background:var(--secondary);border-radius:8px;padding:6px 10px';
+        row.innerHTML = '<b style="flex:1">' + f.name.replace(/</g, '&lt;') + '</b><span style="color:var(--muted-foreground)">' + (f.size / 1024).toFixed(0) + ' KB</span>';
+        flist.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

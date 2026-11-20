@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theme Studio & Configuration — Koklass-CMS</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Preload supported Google Fonts for instant typography previews -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* =========================================================================
+       Theme Studio — Layout, Visual Hierarchy & Component Styles
+       ========================================================================= */
+
+    /* =========================================================================
+       Theme Studio — Split-Screen Architecture
+       Left configuration panel scrolls independently while right preview stays sticky
+       ========================================================================= */
+
+    @media (min-width: 1024px) {
+
+      html,
+      body.theme-studio-page {
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      body.theme-studio-page .app {
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      body.theme-studio-page .sidebar {
+        height: 100vh;
+        flex: none;
+      }
+
+      body.theme-studio-page .main {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      body.theme-studio-page .topbar {
+        flex: none;
+        height: 65px;
+        z-index: 30;
+      }
+
+      body.theme-studio-page .content {
+        flex: 1 1 0;
+        min-height: 0;
+        height: calc(100vh - 65px);
+        overflow: hidden;
+        padding: 18px 28px;
+      }
+
+      .studio-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr);
+        gap: 24px;
+        height: 100%;
+        min-height: 0;
+        align-items: stretch;
+      }
+
+      .controls-column {
+        height: 100%;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 14px;
+        padding-bottom: 40px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+
+      .controls-column::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .controls-column::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .controls-column::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 99px;
+      }
+
+      .controls-column::-webkit-scrollbar-thumb:hover {
+        background: var(--muted-foreground);
+      }
+
+      .preview-column {
+        height: 100%;
+        min-height: 0;
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding-right: 4px;
+        padding-bottom: 24px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+
+      .preview-column::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .preview-column::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 99px;
+      }
+
+      .preview-sticky {
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .studio-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .controls-column {
+        overflow: visible;
+        height: auto;
+      }
+
+      .preview-column {
+        position: static;
+        overflow: visible;
+        height: auto;
+      }
+    }
+
+    /* Studio section cards */
+    .studio-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: border-color 150ms ease;
+    }
+
+    .studio-card:focus-within {
+      border-color: var(--ring);
+    }
+
+    .studio-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: color-mix(in srgb, var(--card) 92%, var(--muted) 8%);
+    }
+
+    .studio-header h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .studio-header h3 svg {
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+    }
+
+    .studio-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Sub-section headers */
+    .section-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Logo Uploader Dropzone */
+    .logo-drop {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: 2px dashed var(--input);
+      border-radius: calc(var(--radius) - 2px);
+      padding: 16px;
+      background: var(--background);
+      transition: all 150ms ease;
+      cursor: pointer;
+    }
+
+    .logo-drop:hover,
+    .logo-drop.dragover {
+      border-color: var(--ring);
+      background: var(--primary-soft);
+    }
+
+    .logo-preview-box {
+      width: 60px;
+      height: 60px;
+      flex: none;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .logo-preview-box img {
+      max-width: 44px;
+      max-height: 44px;
+      object-fit: contain;
+    }
+
+    .logo-drop .txt b {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--foreground);
+    }
+
+    .logo-drop .txt span {
+      font-size: 0.72rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Color Customizer */
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch-input {
+      width: 46px;
+      height: 46px;
+      flex: none;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      cursor: pointer;
+    }
+
+    .color-swatch-input::-webkit-color-swatch-wrapper {
+      padding: 4px;
+    }
+
+    .color-swatch-input::-webkit-color-swatch {
+      border: none;
+      border-radius: 6px;
+    }
+
+    .color-hex-input {
+      width: 110px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.88rem;
+    }
+
+    /* Palette presets */
+    .preset-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .preset-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 999px;
+      padding: 6px 12px 6px 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--foreground);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--ring);
+      transform: translateY(-1px);
+    }
+
+    .preset-chip.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .preset-chip i {
+      width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      display: inline-block;
+      flex: none;
+    }
+
+    /* Live 100-900 color ramp */
+    .live-ramp {
+      display: flex;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      height: 38px;
+    }
+
+    .live-ramp i {
+      flex: 1;
+      height: 100%;
+      display: grid;
+      place-items: end center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      padding-bottom: 2px;
+      cursor: default;
+    }
+
+    /* =========================================================================
+       Typography Controls — Cards & Sliders
+       ========================================================================= */
+    .font-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .font-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 120ms ease;
+      text-align: left;
+    }
+
+    .font-card:hover {
+      border-color: var(--ring);
+      transform: translateY(-1px);
+    }
+
+    .font-card.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: var(--focus-ring);
+    }
+
+    .font-card .specimen {
+      font-size: 1.4rem;
+      line-height: 1;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .font-card .name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .font-card .category {
+      font-size: 0.65rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Segmented Button Groups */
+    .seg-group {
+      display: flex;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .seg-btn {
+      flex: 1;
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 120ms ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .seg-btn:hover {
+      color: var(--foreground);
+    }
+
+    .seg-btn.active {
+      background: var(--card);
+      color: var(--foreground);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Range slider row */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .slider-val-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    /* Mode Cards */
+    .mode-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mode-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      transition: all 120ms ease;
+    }
+
+    .mode-card:hover {
+      border-color: var(--ring);
+    }
+
+    .mode-card.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: var(--focus-ring);
+    }
+
+    .mode-card .big {
+      font-size: 1.3rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* =========================================================================
+       Right Sticky Live Preview Deck & Scoped Sandbox
+       ========================================================================= */
+    .preview-canvas {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: background 200ms ease, border-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .preview-canvas-head {
+      padding: 12px 16px;
+      background: color-mix(in srgb, var(--card) 90%, var(--muted) 10%);
+      border-bottom: 1px solid var(--border);
+      color: var(--card-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+    }
+
+    /* Scoped Dark Mode Tokens specifically for preview container */
+    .preview-canvas.dark {
+      color-scheme: dark;
+      --border: #2E3642;
+      --input: #3A4150;
+      --background: #14181F;
+      --foreground: #F2F4F7;
+      --card: #1C222B;
+      --card-foreground: #F2F4F7;
+      --popover: #1C222B;
+      --popover-foreground: #F2F4F7;
+      --muted: #242B36;
+      --muted-foreground: #A9B1BC;
+      --secondary: #242B36;
+      --secondary-foreground: #F2F4F7;
+    }
+
+    .preview-canvas.dark .specimen-card {
+      background: var(--background);
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+
+    .preview-canvas.dark .sandbox-body {
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    .preview-canvas.dark .sandbox-kpi {
+      background: var(--background);
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+
+    .preview-canvas.dark .input {
+      background: var(--background);
+      border-color: var(--input);
+      color: var(--foreground);
+    }
+
+    .preview-canvas.dark .btn-outline {
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+
+    .preview-canvas.dark .btn-ghost {
+      color: var(--muted-foreground);
+    }
+
+    .preview-canvas.dark .badge-muted {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+
+    .preview-canvas.dark .brand-mark {
+      background: var(--background);
+      border-color: var(--border);
+    }
+
+    /* Typography specimen board inside preview */
+    .specimen-card {
+      padding: 20px;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 150ms ease;
+    }
+
+    .specimen-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .specimen-heading {
+      margin: 0;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      color: var(--foreground);
+    }
+
+    .specimen-subheading {
+      font-size: 1.05rem;
+      color: var(--muted-foreground);
+      line-height: 1.35;
+    }
+
+    .specimen-body {
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    .specimen-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--primary);
+      width: fit-content;
+    }
+
+    /* Interactive components sandbox in preview */
+    .sandbox-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sandbox-kpi {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .sandbox-kpi .val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--foreground);
+    }
+
+    /* Action bar controls */
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+    }
+
+    .action-badge.unsaved {
+      color: var(--warning);
+    }
+
+    .action-badge.saved {
+      color: var(--success);
+    }
+
+    .action-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      background: currentColor;
+    }
+
+    /* =========================================================================
+       Theme Studio Responsive Multi-Column Grids & Mobile Layouts (< 1024px & < 768px)
+       ========================================================================= */
+    .studio-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .studio-mobile-nav {
+      display: none;
+    }
+
+    .mobile-back-to-edit {
+      display: none;
+    }
+
+    /* Topbar layout desktop defaults */
+    .studio-topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .studio-topbar .topbar-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .studio-topbar .action-badge {
+      margin-left: auto;
+    }
+
+    .studio-topbar .topbar-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .studio-topbar .mode-btn-wrap {
+      margin-left: 2px;
+    }
+
+    /* Tablet & Small Desktop (< 1024px) */
+    @media (max-width: 1023px) {
+      html, body.theme-studio-page {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
+
+      body.theme-studio-page .app {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
+
+      body.theme-studio-page .main {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
+
+      body.theme-studio-page .content {
+        padding: 12px 14px 40px !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .studio-mobile-nav {
+        display: flex;
+        gap: 6px;
+        background: color-mix(in srgb, var(--card) 85%, var(--muted) 15%);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) - 2px);
+        padding: 4px;
+        margin-bottom: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 15;
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(8px);
+      }
+
+      .studio-tab-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: none;
+        background: transparent;
+        border-radius: calc(var(--radius) - 4px);
+        font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted-foreground);
+        cursor: pointer;
+        transition: all 140ms ease;
+      }
+
+      .studio-tab-btn:hover {
+        color: var(--foreground);
+      }
+
+      .studio-tab-btn.active {
+        background: var(--card);
+        color: var(--foreground);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .studio-tab-btn .tab-live-badge {
+        font-size: 0.65rem;
+        background: var(--primary-soft);
+        color: var(--primary);
+        padding: 2px 6px;
+        border-radius: 99px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      /* Tab Switcher Display Logic on Mobile/Tablet */
+      .studio-layout[data-mobile-active-tab="preview"] .controls-column {
+        display: none !important;
+      }
+
+      .studio-layout[data-mobile-active-tab="preview"] .preview-column {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      .studio-layout:not([data-mobile-active-tab="preview"]) .preview-column {
+        display: none !important;
+      }
+
+      .studio-layout:not([data-mobile-active-tab="preview"]) .controls-column {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      .mobile-back-to-edit {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+        margin-top: 14px;
+        padding: 10px;
+        font-weight: 700;
+      }
+
+      .specimen-tag {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .specimen-meta-pill {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .specimen-heading {
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+    }
+
+    /* Mobile Screens (< 768px): Stacking, Presets Wrap & Condensed Header */
+    @media (max-width: 768px) {
+      .studio-topbar {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto auto;
+        grid-template-areas:
+          "menu title status mode"
+          "actions actions actions actions";
+        padding: 8px 12px 10px !important;
+        gap: 8px 8px !important;
+        height: auto !important;
+        align-items: center;
+        box-sizing: border-box;
+      }
+
+      .mobile-menu-btn {
+        grid-area: menu;
+      }
+
+      .studio-topbar .topbar-title-wrap {
+        grid-area: title;
+        min-width: 0;
+      }
+
+      .studio-topbar .topbar-title-wrap .crumb {
+        display: none;
+      }
+
+      .studio-topbar .topbar-title-wrap .page-title {
+        font-size: 0.96rem;
+        white-space: nowrap;
+      }
+
+      .studio-topbar .action-badge {
+        grid-area: status;
+        font-size: 0.72rem;
+        white-space: nowrap;
+        justify-self: end;
+        margin-left: 0;
+      }
+
+      .studio-topbar .mode-btn-wrap {
+        grid-area: mode;
+        justify-self: end;
+        margin-left: 0;
+      }
+
+      .studio-topbar .topbar-actions-row {
+        grid-area: actions;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+      }
+
+      .studio-topbar .topbar-actions-row .btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 8px;
+        font-size: 0.74rem;
+        white-space: nowrap;
+        min-width: 0;
+        height: 32px;
+      }
+
+      .studio-topbar .topbar-actions-row .btn svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* Stack multi-column form inputs vertically at 100% width */
+      .studio-grid-2col {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      .field .input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .studio-header {
+        padding: 12px 14px;
+      }
+
+      .studio-body {
+        padding: 14px;
+        gap: 14px;
+      }
+
+      .studio-card {
+        margin-bottom: 14px;
+      }
+
+      /* Allow curated color preset pills to wrap cleanly onto new lines */
+      .preset-chips {
+        width: 100%;
+        gap: 6px;
+      }
+
+      .preset-chip {
+        padding: 5px 10px 5px 6px;
+        font-size: 0.75rem;
+      }
+
+      .font-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .font-card {
+        padding: 8px 10px;
+      }
+
+      .font-card .specimen {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* Extra Small Smart Phones (< 440px) */
+    @media (max-width: 440px) {
+      .studio-topbar .topbar-actions-row #btn-copy-css span {
+        display: none;
+      }
+      .studio-topbar .topbar-actions-row #btn-copy-css {
+        flex: 0.55;
+      }
+      .studio-topbar .topbar-actions-row #btn-reset-defaults {
+        flex: 0.9;
+        font-size: 0.7rem;
+      }
+      .studio-topbar .topbar-actions-row #btn-save-theme {
+        flex: 1.2;
+      }
+      .mode-cards {
+        gap: 6px;
+      }
+      .mode-card {
+        padding: 8px 4px;
+        font-size: 0.72rem;
+      }
+      .color-picker-row {
+        gap: 10px;
+      }
+      .color-picker-row > div:last-child {
+        width: 100%;
+        flex: 1 1 100% !important;
+        margin-top: 4px;
+      }
+    }
+  </style>
+</head>
+
+<body class="theme-studio-page">
+  <div class="app">
+    <!-- ===== Sidebar (shared) ===== -->
+    <aside class="sidebar" data-sidebar-active="configs-theme"></aside>
+
+    <!-- ===== Main Content ===== -->
+    <div class="main">
+      <header class="topbar studio-topbar">
+        <div class="topbar-title-wrap">
+          <div class="page-title">Theme Studio</div>
+          <div class="crumb">Configs / Theme Engine &amp; Typography</div>
+        </div>
+
+        <div class="action-badge" id="save-status-badge">
+          <span class="dot"></span>
+          <span id="save-status-text">All changes saved</span>
+        </div>
+
+        <div class="topbar-actions-row">
+          <button class="btn btn-ghost btn-sm" id="btn-reset-defaults" title="Restore original theme settings">
+            Reset defaults
+          </button>
+          <button class="btn btn-outline btn-sm" id="btn-copy-css" title="Copy CSS tokens to clipboard">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <span>Export CSS</span>
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-save-theme">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            <span>Save Theme</span>
+          </button>
+        </div>
+
+        <div class="mode-btn-wrap">
+          <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- Mobile Edit / Preview View Switcher -->
+        <div class="studio-mobile-nav" id="studio-mobile-nav">
+          <button type="button" class="studio-tab-btn active" data-tab="controls">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <span>Edit Settings</span>
+          </button>
+          <button type="button" class="studio-tab-btn" data-tab="preview">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span>Live Preview</span>
+            <span class="tab-live-badge">Live</span>
+          </button>
+        </div>
+
+        <div class="studio-layout">
+
+          <!-- =================================================================
+               LEFT: Controls Studio
+               ================================================================= -->
+          <div class="controls-column">
+
+            <!-- Card 1: Brand Identity -->
+            <section class="studio-card">
+              <div class="studio-header">
+                <h3>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                  Brand Identity &amp; Assets
+                </h3>
+                <span class="badge badge-muted">Core Tokens</span>
+              </div>
+              <div class="studio-body">
+                <div class="studio-grid-2col">
+                  <div class="field">
+                    <label for="cfg-name">Brand Name <span class="req">*</span></label>
+                    <input class="input" id="cfg-name" placeholder="Koklass" maxlength="24" />
+                    <div class="help">Rendered across the sidebar, title bars, and bills</div>
+                  </div>
+                  <div class="field">
+                    <label for="cfg-tagline">Tagline / Subtitle</label>
+                    <input class="input" id="cfg-tagline" placeholder="Admin panel &amp; dining suite" />
+                    <div class="help">Displayed below brand in headers</div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Brand Logo</label>
+                  <label class="logo-drop" id="logo-drop" for="cfg-logo">
+                    <div class="logo-preview-box">
+                      <img id="logo-preview-img" data-brand-logo src="./logo.svg" alt="Brand Logo" />
+                    </div>
+                    <div class="txt" style="flex:1;">
+                      <b>Upload Logo Mark</b>
+                      <span id="logo-file-name">logo.svg · Click or drag SVG / PNG image (≤ 2 MB)</span>
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-sm" id="btn-reset-logo" style="display:none;"
+                      onclick="event.preventDefault(); resetLogoToDefault();">
+                      Reset
+                    </button>
+                  </label>
+                  <input type="file" id="cfg-logo" accept="image/svg+xml,image/png,image/jpeg,image/webp" hidden />
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 2: Color Palette -->
+            <section class="studio-card">
+              <div class="studio-header">
+                <h3>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m4.93 4.93 4.24 4.24" />
+                    <path d="m14.83 9.17 4.24-4.24" />
+                    <path d="m14.83 14.83 4.24 4.24" />
+                    <path d="m9.17 14.83-4.24 4.24" />
+                  </svg>
+                  Color Palette &amp; Surface Tinting
+                </h3>
+                <span class="badge badge-brand">Dynamic Ramp</span>
+              </div>
+              <div class="studio-body">
+                <div class="color-picker-row">
+                  <input type="color" class="color-swatch-input" id="cfg-color" value="#EC3876"
+                    aria-label="Pick brand color" />
+                  <input type="text" class="input color-hex-input" id="cfg-color-hex" value="#EC3876" maxlength="7" />
+                  <div style="font-size:0.75rem;color:var(--muted-foreground);flex:1;">
+                    Pick any brand color. Hover states, soft chips, focus rings, and surface tinting are automatically
+                    derived in HSL space.
+                  </div>
+                </div>
+
+                <div class="section-title">Curated Color Presets</div>
+                <div class="preset-chips" id="preset-chips">
+                  <button type="button" class="preset-chip active" data-color="#EC3876"><i
+                      style="background:#EC3876"></i>Koklass Pink</button>
+                  <button type="button" class="preset-chip" data-color="#EA4E1B"><i style="background:#EA4E1B"></i>Ember
+                    Orange</button>
+                  <button type="button" class="preset-chip" data-color="#E4002B"><i
+                      style="background:#E4002B"></i>Crimson Red</button>
+                  <button type="button" class="preset-chip" data-color="#16885C"><i style="background:#16885C"></i>Fresh
+                    Emerald</button>
+                  <button type="button" class="preset-chip" data-color="#2270E0"><i style="background:#2270E0"></i>Ocean
+                    Indigo</button>
+                  <button type="button" class="preset-chip" data-color="#7B1FA2"><i style="background:#7B1FA2"></i>Royal
+                    Purple</button>
+                  <button type="button" class="preset-chip" data-color="#00A896"><i style="background:#00A896"></i>Cyber
+                    Teal</button>
+                  <button type="button" class="preset-chip" data-color="#3B4252"><i
+                      style="background:#3B4252"></i>Nordic Slate</button>
+                </div>
+
+                <div class="section-title">Derived 100–900 Ember Color Scale</div>
+                <div class="live-ramp" id="live-ramp" title="100–900 shades"></div>
+              </div>
+            </section>
+
+            <!-- Card 3: Typography Customization (NEW) -->
+            <section class="studio-card">
+              <div class="studio-header">
+                <h3>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 7 4 4 20 4 20 7" />
+                    <line x1="9" y1="20" x2="15" y2="20" />
+                    <line x1="12" y1="4" x2="12" y2="20" />
+                  </svg>
+                  Typography Engine (Google Fonts)
+                </h3>
+                <span class="badge badge-success">Live Web Fonts</span>
+              </div>
+              <div class="studio-body">
+
+                <!-- Heading Font -->
+                <div class="section-title">Heading Font Family</div>
+                <div class="font-grid" id="heading-font-grid">
+                  <div class="font-card" data-font="Nunito" style="font-family:'Nunito', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Nunito</span>
+                    <span class="category">Default · Humanist</span>
+                  </div>
+                  <div class="font-card" data-font="Inter" style="font-family:'Inter', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Inter</span>
+                    <span class="category">Modern UI · Neutral</span>
+                  </div>
+                  <div class="font-card" data-font="Poppins" style="font-family:'Poppins', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Poppins</span>
+                    <span class="category">Geometric · Clean</span>
+                  </div>
+                  <div class="font-card" data-font="Roboto" style="font-family:'Roboto', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Roboto</span>
+                    <span class="category">Neo-grotesque</span>
+                  </div>
+                  <div class="font-card" data-font="Playfair Display" style="font-family:'Playfair Display', serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Playfair</span>
+                    <span class="category">Editorial Serif</span>
+                  </div>
+                  <div class="font-card" data-font="Space Mono" style="font-family:'Space Mono', monospace;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Space Mono</span>
+                    <span class="category">Brutalist Monospace</span>
+                  </div>
+                  <div class="font-card" data-font="Plus Jakarta Sans"
+                    style="font-family:'Plus Jakarta Sans', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Jakarta</span>
+                    <span class="category">High Precision</span>
+                  </div>
+                </div>
+
+                <div class="studio-grid-2col" style="margin-top:6px;">
+                  <div class="field">
+                    <label>Heading Font Weight</label>
+                    <div class="seg-group" id="heading-weight-group">
+                      <button type="button" class="seg-btn" data-weight="600">600 Semi</button>
+                      <button type="button" class="seg-btn" data-weight="700">700 Bold</button>
+                      <button type="button" class="seg-btn active" data-weight="800">800 Extra</button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Heading Size Scale</label>
+                    <div class="seg-group" id="heading-scale-group">
+                      <button type="button" class="seg-btn" data-scale="0.95">Compact</button>
+                      <button type="button" class="seg-btn active" data-scale="1.0">Default</button>
+                      <button type="button" class="seg-btn" data-scale="1.1">Prominent</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Body Font -->
+                <div class="section-title" style="margin-top:10px;">Body Text Font Family</div>
+                <div class="font-grid" id="body-font-grid">
+                  <div class="font-card" data-font="Nunito" style="font-family:'Nunito', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Nunito</span>
+                    <span class="category">Rounded UI</span>
+                  </div>
+                  <div class="font-card" data-font="Inter" style="font-family:'Inter', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Inter</span>
+                    <span class="category">Optimal Body</span>
+                  </div>
+                  <div class="font-card" data-font="Roboto" style="font-family:'Roboto', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Roboto</span>
+                    <span class="category">Classic Clean</span>
+                  </div>
+                  <div class="font-card" data-font="Poppins" style="font-family:'Poppins', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Poppins</span>
+                    <span class="category">Modern Crisp</span>
+                  </div>
+                  <div class="font-card" data-font="Space Mono" style="font-family:'Space Mono', monospace;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Space Mono</span>
+                    <span class="category">Tech Monospace</span>
+                  </div>
+                  <div class="font-card" data-font="Plus Jakarta Sans"
+                    style="font-family:'Plus Jakarta Sans', sans-serif;">
+                    <span class="specimen">Aa</span>
+                    <span class="name">Jakarta</span>
+                    <span class="category">Product Design</span>
+                  </div>
+                </div>
+
+                <div class="studio-grid-2col" style="margin-top:6px;">
+                  <div class="field">
+                    <label>Body Font Weight</label>
+                    <div class="seg-group" id="body-weight-group">
+                      <button type="button" class="seg-btn active" data-weight="400">400 Regular</button>
+                      <button type="button" class="seg-btn" data-weight="500">500 Medium</button>
+                      <button type="button" class="seg-btn" data-weight="600">600 Semi</button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Base Font Size</label>
+                    <div class="slider-row">
+                      <input type="range" id="cfg-font-size" min="13" max="17" step="0.5" value="14.5" />
+                      <span class="slider-val-badge" id="font-size-badge">14.5px</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 4: Appearance & Geometry -->
+            <section class="studio-card">
+              <div class="studio-header">
+                <h3>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <line x1="9" y1="3" x2="9" y2="21" />
+                  </svg>
+                  Appearance &amp; Geometry
+                </h3>
+              </div>
+              <div class="studio-body">
+                <div class="field">
+                  <label>Default Appearance Mode</label>
+                  <div class="mode-cards" id="mode-cards">
+                    <button type="button" class="mode-card" data-mode="light"><span class="big">☀️</span>Light</button>
+                    <button type="button" class="mode-card" data-mode="dark"><span class="big">🌙</span>Dark</button>
+                    <button type="button" class="mode-card" data-mode="system"><span
+                        class="big">🖥️</span>System</button>
+                  </div>
+                </div>
+
+                <div class="field" style="margin-top:4px;">
+                  <label>Corner Radius Scale</label>
+                  <div class="seg-group" id="radius-group">
+                    <button type="button" class="seg-btn" data-radius="6px">Sharp (6px)</button>
+                    <button type="button" class="seg-btn active" data-radius="12px">Default (12px)</button>
+                    <button type="button" class="seg-btn" data-radius="18px">Curved (18px)</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- =================================================================
+               RIGHT: Sticky Live Preview Deck
+               ================================================================= -->
+          <div class="preview-column">
+            <div class="preview-sticky">
+
+              <div class="preview-canvas">
+                <div class="preview-canvas-head">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="badge badge-brand">Live Feedback</span>
+                    <b style="font-size:0.82rem;">Real-time Preview</b>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <button type="button" class="btn btn-ghost btn-sm" id="btn-toggle-preview-mode"
+                      style="height:26px;padding:2px 8px;font-size:0.72rem;gap:4px;"
+                      title="Toggle preview container between light and dark mode">
+                      <span id="preview-mode-icon">🌙</span> <span id="preview-mode-text">Dark mode</span>
+                    </button>
+                    <span class="badge badge-muted" id="preview-mode-tag">Light Mode</span>
+                  </div>
+                </div>
+
+                <!-- Specimen Area -->
+                <div class="specimen-card" id="preview-specimen-area">
+                  <div class="specimen-tag">
+                    <span>Typography Specimen</span>
+                    <span class="specimen-meta-pill" id="specimen-meta-tag">Heading: Nunito 800 · Body: Nunito
+                      400</span>
+                  </div>
+
+                  <h2 class="specimen-heading" id="specimen-headline" style="font-size:1.6rem;font-weight:800;">
+                    Where Himalayan Taste Meets Digital Craft
+                  </h2>
+                  <div class="specimen-subheading" id="specimen-subheadline" style="font-weight:600;">
+                    Orchestrating kitchen dispatch, outlet dining, and brand experience.
+                  </div>
+                  <p class="specimen-body" id="specimen-paragraph">
+                    Koklass-CMS brings enterprise dining control into a cohesive dashboard. Every button, badge, input
+                    focus ring, and card responds dynamically to your brand color and Google font pairing.
+                  </p>
+                </div>
+
+                <!-- UI Components Sandbox -->
+                <div class="sandbox-body">
+                  <!-- Mini App Bar -->
+                  <div
+                    style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--muted);border-radius:10px;">
+                    <div class="brand-mark" style="width:30px;height:30px;border-radius:8px;">
+                      <img data-brand-logo src="./logo.svg" alt="" style="width:18px;height:auto;display:block;" />
+                    </div>
+                    <b style="font-size:0.85rem;" data-brand-name>Koklass</b>
+                    <span class="badge badge-brand">Pro</span>
+                    <div class="spacer" style="flex:1;"></div>
+                    <button class="btn btn-primary btn-sm" style="padding:4px 12px;font-size:0.75rem;">Quick
+                      Action</button>
+                  </div>
+
+                  <!-- KPI Stat Card -->
+                  <div class="sandbox-kpi">
+                    <div>
+                      <div
+                        style="font-size:0.7rem;font-weight:700;color:var(--muted-foreground);text-transform:uppercase;">
+                        Today's Revenue</div>
+                      <div class="val" id="sandbox-rev">Rs. 84,650</div>
+                      <span class="badge badge-success" style="font-size:0.68rem;margin-top:2px;">+14.2% vs
+                        yesterday</span>
+                    </div>
+                    <svg class="spark" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2">
+                      <path d="M23 6l-9.5 9.5-5-5L1 18" />
+                      <path d="M17 6h6v6" />
+                    </svg>
+                  </div>
+
+                  <!-- Action Buttons Row -->
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm">Primary</button>
+                    <button class="btn btn-outline btn-sm">Outline</button>
+                    <button class="btn btn-ghost btn-sm">Ghost</button>
+                    <button class="btn btn-danger btn-sm">Danger</button>
+                  </div>
+
+                  <!-- Sidebar Navigation Preview -->
+                  <div style="display:flex;flex-direction:column;gap:5px;padding:8px 10px;background:var(--background);border:1px solid var(--border);border-radius:calc(var(--radius) - 2px);transition:background 200ms ease, border-color 200ms ease;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 4px;">
+                      <span style="font-size:0.68rem;font-weight:800;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:0.04em;">Sidebar Nav Tokens</span>
+                      <span style="font-size:0.68rem;color:var(--primary);font-weight:700;">Live Sync</span>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                      <div class="nav-link active" style="flex:1;padding:6px 10px;font-size:0.76rem;cursor:default;">
+                        <svg viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M3 3h7v9H3ZM14 3h7v5h-7ZM14 12h7v9h-7ZM3 16h7v5H3Z"/></svg>
+                        <span>Active Item</span>
+                      </div>
+                      <div class="nav-link" style="flex:1;padding:6px 10px;font-size:0.76rem;cursor:default;">
+                        <svg viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <span>Resting Nav</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Form Input with Focus Ring -->
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <input class="input" style="height:36px;font-size:0.82rem;flex:1;"
+                      placeholder="Focus me to test brand ring…" />
+                    <button class="btn btn-primary btn-sm" style="height:36px;">Search</button>
+                  </div>
+
+                  <!-- Badges Palette -->
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                    <span class="badge badge-brand"><span class="dot"></span>Brand</span>
+                    <span class="badge badge-success"><span class="dot"></span>Active</span>
+                    <span class="badge badge-warning"><span class="dot"></span>Pending</span>
+                    <span class="badge badge-danger"><span class="dot"></span>Rejected</span>
+                    <span class="badge badge-muted">Muted</span>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <div
+                      style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted-foreground);">
+                      <span>Order Fulfillment</span>
+                      <b style="color:var(--primary);">92%</b>
+                    </div>
+                    <div class="progress"
+                      style="height:8px;border-radius:99px;background:var(--muted);overflow:hidden;">
+                      <i style="display:block;height:100%;width:92%;background:var(--primary);border-radius:99px;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile Back to Edit Button -->
+              <button type="button" class="btn btn-outline btn-sm mobile-back-to-edit" id="btn-back-to-edit">
+                ← Back to Edit Settings
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    /* =========================================================================
+       Theme Studio — Controller & Live Synchronization
+       ========================================================================= */
+    const $ = id => document.getElementById(id);
+
+    // Initial config load
+    const initialConfig = getThemeConfig();
+    let draft = {
+      name: initialConfig.name || 'Koklass',
+      tagline: initialConfig.tagline || 'Admin panel & dining suite',
+      logo: initialConfig.logo || './logo.svg',
+      primary: initialConfig.primary || '#EC3876',
+      defaultMode: initialConfig.defaultMode || 'system',
+      fontHeading: initialConfig.fontHeading || 'Nunito',
+      fontBody: initialConfig.fontBody || 'Nunito',
+      headingWeight: initialConfig.headingWeight || '800',
+      headingScale: initialConfig.headingScale || '1.0',
+      bodyWeight: initialConfig.bodyWeight || '400',
+      baseFontSize: initialConfig.baseFontSize || '14.5px',
+      borderRadius: initialConfig.borderRadius || '12px'
+    };
+
+    let draftLogoIsCustom = (draft.logo || '').startsWith('data:');
+    let hasUnsavedChanges = false;
+
+    function setUnsaved(state) {
+      hasUnsavedChanges = state;
+      const badge = $('save-status-badge');
+      const text = $('save-status-text');
+      if (hasUnsavedChanges) {
+        badge.className = 'action-badge unsaved';
+        text.textContent = 'Unsaved changes';
+      } else {
+        badge.className = 'action-badge saved';
+        text.textContent = 'All changes saved';
+      }
+    }
+
+    // Google Fonts Loader
+    function ensureFontLoaded(name) {
+      if (window.loadFont) window.loadFont(name);
+    }
+
+    // Apply draft to document & preview canvas in real time
+    function applyDraft() {
+      // Apply through global demo engine
+      applyThemeDraft(draft);
+
+      // Color displays
+      $('cfg-color-hex').value = (draft.primary || '#EC3876').toUpperCase();
+      $('cfg-color').value = draft.primary || '#EC3876';
+
+      // Update preset chips
+      document.querySelectorAll('.preset-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.color.toUpperCase() === (draft.primary || '').toUpperCase());
+      });
+
+      // Update derived 100-900 ramp
+      const ramp = deriveRamp(draft.primary || '#EC3876');
+      $('live-ramp').innerHTML = Object.keys(ramp).map(k =>
+        `<i style="background:${ramp[k]}" title="${k}: ${ramp[k]}">${k}</i>`
+      ).join('');
+
+      // Logo displays
+      $('logo-preview-img').src = draft.logo || './logo.svg';
+      $('btn-reset-logo').style.display = draftLogoIsCustom ? 'inline-flex' : 'none';
+      $('logo-file-name').textContent = draftLogoIsCustom
+        ? 'Custom uploaded logo active'
+        : (draft.logo + ' · Click or drag SVG / PNG image (≤ 2 MB)');
+
+      // Mode cards
+      document.querySelectorAll('.mode-card').forEach(c =>
+        c.classList.toggle('active', c.dataset.mode === draft.defaultMode)
+      );
+
+      // Font Cards Selection
+      document.querySelectorAll('#heading-font-grid .font-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.font === draft.fontHeading);
+      });
+      document.querySelectorAll('#body-font-grid .font-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.font === draft.fontBody);
+      });
+
+      // Font Weight Segmented Buttons
+      document.querySelectorAll('#heading-weight-group .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.weight === draft.headingWeight);
+      });
+      document.querySelectorAll('#heading-scale-group .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scale === draft.headingScale);
+      });
+      document.querySelectorAll('#body-weight-group .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.weight === draft.bodyWeight);
+      });
+
+      // Radius Segmented Buttons
+      document.querySelectorAll('#radius-group .seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.radius === draft.borderRadius);
+      });
+
+      // Font size slider & readout
+      const numericSize = parseFloat(draft.baseFontSize) || 14.5;
+      $('cfg-font-size').value = numericSize;
+      $('font-size-badge').textContent = numericSize + 'px';
+
+      // Typography Specimen Updates
+      const headlineEl = $('specimen-headline');
+      const subheadlineEl = $('specimen-subheadline');
+      const bodyEl = $('specimen-paragraph');
+
+      headlineEl.style.fontFamily = `'${draft.fontHeading}', sans-serif`;
+      headlineEl.style.fontWeight = draft.headingWeight;
+      headlineEl.style.fontSize = (1.6 * parseFloat(draft.headingScale || 1.0)) + 'rem';
+
+      subheadlineEl.style.fontFamily = `'${draft.fontHeading}', sans-serif`;
+      subheadlineEl.style.fontWeight = Math.max(500, parseInt(draft.headingWeight) - 100);
+
+      bodyEl.style.fontFamily = `'${draft.fontBody}', sans-serif`;
+      bodyEl.style.fontWeight = draft.bodyWeight;
+      bodyEl.style.fontSize = draft.baseFontSize;
+
+      $('specimen-meta-tag').textContent = `Heading: ${draft.fontHeading} ${draft.headingWeight} · Body: ${draft.fontBody} ${draft.bodyWeight} (${draft.baseFontSize})`;
+
+      // Resolve & scope appearance mode specifically to the preview container
+      const isPreviewDark = draft.defaultMode === 'dark' ? true
+        : draft.defaultMode === 'light' ? false
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      const previewCanvas = $('preview-canvas');
+      if (previewCanvas && window.applyScopedTheme) {
+        window.applyScopedTheme(previewCanvas, draft, isPreviewDark);
+      }
+
+      // Update preview mode tag & quick toggle button text
+      const modeTag = $('preview-mode-tag');
+      if (modeTag) {
+        modeTag.textContent = draft.defaultMode === 'system'
+          ? `System (${isPreviewDark ? 'Dark' : 'Light'})`
+          : (isPreviewDark ? 'Dark Mode' : 'Light Mode');
+      }
+      const modeIcon = $('preview-mode-icon');
+      const modeText = $('preview-mode-text');
+      if (modeIcon && modeText) {
+        modeIcon.textContent = isPreviewDark ? '☀️' : '🌙';
+        modeText.textContent = isPreviewDark ? 'Light' : 'Dark';
+      }
+    }
+
+    // ---------- Event Bindings: Brand Name & Tagline ----------
+    $('cfg-name').value = draft.name === 'Koklass' ? '' : draft.name;
+    $('cfg-name').addEventListener('input', e => {
+      draft.name = e.target.value.trim() || 'Koklass';
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('cfg-tagline').value = draft.tagline || '';
+    $('cfg-tagline').addEventListener('input', e => {
+      draft.tagline = e.target.value.trim();
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    // ---------- Event Bindings: Colors & Presets ----------
+    $('cfg-color').addEventListener('input', e => {
+      draft.primary = e.target.value;
+      setUnsaved(true);
+      applyDraft();
+    });
+    $('cfg-color-hex').addEventListener('input', e => {
+      const val = e.target.value.trim();
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+        draft.primary = val;
+        setUnsaved(true);
+        applyDraft();
+      }
+    });
+
+    $('preset-chips').addEventListener('click', e => {
+      const chip = e.target.closest('.preset-chip');
+      if (!chip) return;
+      draft.primary = chip.dataset.color;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    // ---------- Event Bindings: Typography Engine ----------
+    $('heading-font-grid').addEventListener('click', e => {
+      const card = e.target.closest('.font-card');
+      if (!card) return;
+      draft.fontHeading = card.dataset.font;
+      ensureFontLoaded(draft.fontHeading);
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('body-font-grid').addEventListener('click', e => {
+      const card = e.target.closest('.font-card');
+      if (!card) return;
+      draft.fontBody = card.dataset.font;
+      ensureFontLoaded(draft.fontBody);
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('heading-weight-group').addEventListener('click', e => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      draft.headingWeight = btn.dataset.weight;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('heading-scale-group').addEventListener('click', e => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      draft.headingScale = btn.dataset.scale;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('body-weight-group').addEventListener('click', e => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      draft.bodyWeight = btn.dataset.weight;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    $('cfg-font-size').addEventListener('input', e => {
+      draft.baseFontSize = e.target.value + 'px';
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    // ---------- Event Bindings: Appearance & Radius ----------
+    $('mode-cards').addEventListener('click', e => {
+      const card = e.target.closest('.mode-card');
+      if (!card) return;
+      draft.defaultMode = card.dataset.mode;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    const previewToggleBtn = $('btn-toggle-preview-mode');
+    if (previewToggleBtn) {
+      previewToggleBtn.addEventListener('click', () => {
+        const isCurrentDark = $('preview-canvas') && $('preview-canvas').classList.contains('dark');
+        draft.defaultMode = isCurrentDark ? 'light' : 'dark';
+        setUnsaved(true);
+        applyDraft();
+      });
+    }
+
+    $('radius-group').addEventListener('click', e => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      draft.borderRadius = btn.dataset.radius;
+      setUnsaved(true);
+      applyDraft();
+    });
+
+    // ---------- Event Bindings: Logo Upload & Drag-and-Drop ----------
+    $('cfg-logo').addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { showToast('Logo must be ≤ 2 MB'); return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        draft.logo = reader.result;
+        draftLogoIsCustom = true;
+        setUnsaved(true);
+        applyDraft();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    const drop = $('logo-drop');
+    ['dragover', 'dragleave', 'drop'].forEach(ev => {
+      drop.addEventListener(ev, e => {
+        e.preventDefault();
+        drop.classList.toggle('dragover', ev === 'dragover');
+        if (ev === 'drop') {
+          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+          if (file) {
+            if (file.size > 2 * 1024 * 1024) { showToast('Logo must be ≤ 2 MB'); return;  }
+            const reader = new FileReader();
+            reader.onload = () => {
+              draft.logo = reader.result;
+              draftLogoIsCustom = true;
+              setUnsaved(true);
+              applyDraft();
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      });
+    });
+
+    function resetLogoToDefault() {
+      draft.logo = './logo.svg';
+      draftLogoIsCustom = false;
+      $('cfg-logo').value = '';
+      setUnsaved(true);
+      applyDraft();
+    }
+
+    // ---------- Save & Export Actions ----------
+    function saveTheme() {
+      saveThemeConfig(draft);
+      setUnsaved(false);
+      showToast('Theme saved! Applied across all admin pages');
+    }
+
+    $('btn-save-theme').addEventListener('click', saveTheme);
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        saveTheme();
+      }
+    });
+
+    $('btn-reset-defaults').addEventListener('click', () => {
+      draft = {
+        name: 'Koklass',
+        tagline: 'Admin panel & dining suite',
+        logo: './logo.svg',
+        primary: '#EC3876',
+        defaultMode: 'system',
+        fontHeading: 'Nunito',
+        fontBody: 'Nunito',
+        headingWeight: '800',
+        headingScale: '1.0',
+        bodyWeight: '400',
+        baseFontSize: '14.5px',
+        borderRadius: '12px'
+      };
+      draftLogoIsCustom = false;
+      $('cfg-name').value = '';
+      $('cfg-tagline').value = '';
+      try { localStorage.removeItem('koklass-theme-config'); } catch (e) {}
+      saveThemeConfig(draft);
+      setUnsaved(false);
+      applyDraft();
+      showToast('Restored default theme settings');
+    });
+
+    $('btn-copy-css').addEventListener('click', () => {
+      const b = deriveBrand(draft.primary);
+      const cssSnippet = `/* Koklass-CMS Theme Tokens */
+:root {
+  --primary: ${draft.primary};
+  --primary-hover: ${b.hover};
+  --primary-soft: ${b.soft};
+  --radius: ${draft.borderRadius};
+  --font-heading: '${draft.fontHeading}', sans-serif;
+  --font-sans: '${draft.fontBody}', sans-serif;
+  --font-weight-heading: ${draft.headingWeight};
+  --font-weight-body: ${draft.bodyWeight};
+  --font-size-base: ${draft.baseFontSize};
+}`;
+      navigator.clipboard.writeText(cssSnippet).then(() => {
+        showToast('CSS variables copied to clipboard');
+      }).catch(() => {
+        showToast('Failed to copy CSS');
+      });
+    });
+
+    // ---------- Mobile Edit / Preview Tab Switcher ----------
+    const mobileNav = $('studio-mobile-nav');
+    if (mobileNav) {
+      mobileNav.addEventListener('click', e => {
+        const btn = e.target.closest('.studio-tab-btn');
+        if (!btn) return;
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.studio-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        const layout = document.querySelector('.studio-layout');
+        if (layout) {
+          layout.dataset.mobileActiveTab = tab;
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    const btnBackToEdit = $('btn-back-to-edit');
+    if (btnBackToEdit) {
+      btnBackToEdit.addEventListener('click', () => {
+        const editTab = document.querySelector('.studio-tab-btn[data-tab="controls"]');
+        if (editTab) editTab.click();
+      });
+    }
+
+    // Initial setup
+    applyDraft();
+  </script>
+</body>
+
+</html>

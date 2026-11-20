@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employees — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar (shared: rendered by admin-sidebar.js) ===== -->
+    <aside class="sidebar" data-sidebar-active="employee-list"></aside>
+
+    <!-- ===== Main ===== -->
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Employees</div>
+          <div class="crumb">Home / Employees / List</div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search…" />
+        </div>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Toolbar -->
+        <section class="toolbar">
+          <button class="btn btn-primary" onclick="window.location.href='./employee-create.html'">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            New employee
+          </button>
+          <div class="spacer"></div>
+          <div class="field-sm">
+            <svg class="lead" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="filter-name" type="search" placeholder="Filter by name…" oninput="render()" />
+          </div>
+          <div class="field-sm">
+            <div class="dd" id="filter-role" data-dd data-placeholder="All roles"></div>
+          </div>
+          <div class="field-sm">
+            <div class="dd" id="filter-status" data-dd data-placeholder="All status"></div>
+          </div>
+        </section>
+
+        <!-- Table -->
+        <section class="card">
+          <div class="card-head">
+            <h3>Team members <span class="hint" id="count-hint"></span></h3>
+            <span class="hint">Demo data — edit/delete works in-page</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" class="cb" aria-label="Select all" /></th>
+                  <th>Employee</th>
+                  <th>Role</th>
+                  <th>Outlet</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span class="info" id="page-info"></span>
+            <button class="page-btn" disabled>‹</button>
+            <button class="page-btn current">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">›</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== Delete modal ===== -->
+  <div class="modal-backdrop" id="delete-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="del-title">
+      <div class="modal-head">
+        <div class="modal-warn">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        </div>
+        <div>
+          <h3 id="del-title">Delete employee?</h3>
+        </div>
+      </div>
+      <div class="modal-body">
+        You're about to permanently remove <b id="del-name">this employee</b> and revoke their access. This action can't be undone.
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeDelete()">Cancel</button>
+        <button class="btn btn-danger" id="del-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    // ---------- Demo data store ----------
+    const seed = [
+      { id: 1, name: 'Tsering Wongel', email: 'tsering@koklass.com', role: 'Admin',    outlet: 'HQ',             status: 'Active',    joined: '2023-04-11' },
+      { id: 2, name: 'Rita Dongol',     email: 'rita@koklass.com',    role: 'Manager',  outlet: 'Durbar Marg',    status: 'Active',    joined: '2023-08-02' },
+      { id: 3, name: 'Bikash Khatri',   email: 'bikash@koklass.com',  role: 'Cashier',  outlet: 'Jhamsikhel',     status: 'Active',    joined: '2024-01-19' },
+      { id: 4, name: 'Sita Pariyar',    email: 'sita@koklass.com',    role: 'Admin',    outlet: 'HQ',             status: 'Suspended', joined: '2022-11-30' },
+      { id: 5, name: 'Laxman Magrati',  email: 'laxman@koklass.com',  role: 'Rider',    outlet: 'Lakeside',       status: 'Active',    joined: '2024-06-05' },
+      { id: 6, name: 'Anjali Rai',      email: 'anjali@koklass.com',  role: 'Manager',  outlet: 'Suryabinayak',   status: 'Invited',   joined: '2026-11-14' },
+      { id: 7, name: 'Deepak Shrestha', email: 'deepak@koklass.com',  role: 'Cashier',  outlet: 'Durbar Marg',    status: 'Active',    joined: '2025-02-27' },
+    ];
+    let employees = JSON.parse(JSON.stringify(seed)); // fresh copy; create/edit/delete mutate this
+    // Merge in employees created via the Create page this session
+    try {
+      const added = JSON.parse(sessionStorage.getItem('koklass-new-employee') || 'null');
+      if (added && added.name && !employees.some(e => e.email === added.email)) {
+        employees.push(added);
+        sessionStorage.removeItem('koklass-new-employee');
+      }
+    } catch (e) {}
+    window.__employees = employees;
+
+    const initials = n => n.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const avatarHue = id => ['var(--primary)', 'var(--success)', 'var(--info)', 'var(--warning)', 'var(--destructive)'][id % 5];
+    const fmt = d => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const statusBadge = s => s === 'Active' ? '<span class="badge badge-success"><span class="dot"></span>Active</span>'
+      : s === 'Suspended' ? '<span class="badge badge-danger"><span class="dot"></span>Suspended</span>'
+      : '<span class="badge badge-warning"><span class="dot"></span>Invited</span>';
+
+    function render() {
+      const q = (document.getElementById('filter-name').value || '').toLowerCase();
+      const roleEl = document.getElementById('filter-role');
+      const statusEl = document.getElementById('filter-status');
+      const role = roleEl.getValue ? (roleEl.getValue() || '') : '';
+      const status = statusEl.getValue ? (statusEl.getValue() || '') : '';
+      const list = employees.filter(e =>
+        (!q || e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q)) &&
+        (!role || e.role === role) && (!status || e.status === status));
+
+      document.getElementById('rows').innerHTML = list.map(e => `
+        <tr>
+          <td><input type="checkbox" class="cb" aria-label="Select ${e.name}" /></td>
+          <td><div class="cell-user">
+            <div class="avatar" style="background:${avatarHue(e.id)}">${initials(e.name)}</div>
+            <div><b>${e.name}</b><span>${e.email}</span></div>
+          </div></td>
+          <td><span class="badge ${e.role === 'Admin' ? 'badge-brand' : 'badge-muted'}">${e.role}</span></td>
+          <td>${e.outlet}</td>
+          <td>${statusBadge(e.status)}</td>
+          <td class="cell-num">${fmt(e.joined)}</td>
+          <td><div class="cell-actions">
+            <a class="icon-act edit" href="./employee-edit.html?id=${e.id}" title="Edit employee">
+              <svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </a>
+            <button class="icon-act del" title="Delete employee" onclick="askDelete(${e.id})">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            </button>
+          </div></td>
+        </tr>`).join('') || `<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted-foreground);">No employees match the filters.</td></tr>`;
+
+      document.getElementById('count-hint').textContent = `· ${list.length} shown`;
+      document.getElementById('page-info').textContent = `Showing ${list.length} of ${employees.length} employees`;
+    }
+
+    // ---------- Delete flow ----------
+    let deleteId = null;
+    function askDelete(id) {
+      deleteId = id;
+      const e = employees.find(x => x.id === id);
+      document.getElementById('del-name').textContent = e ? e.name + ' (' + e.email + ')' : 'this employee';
+      document.getElementById('delete-backdrop').classList.add('open');
+    }
+    function closeDelete() {
+      document.getElementById('delete-backdrop').classList.remove('open');
+      deleteId = null;
+    }
+    document.getElementById('del-confirm').addEventListener('click', () => {
+      const gone = employees.find(e => e.id === deleteId);
+      employees = employees.filter(e => e.id !== deleteId);
+      window.__employees = employees;
+      closeDelete();
+      render();
+      showToast(`Deleted ${gone ? gone.name : 'employee'}`);
+    });
+    document.getElementById('delete-backdrop').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeDelete();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDelete(); });
+
+    render();
+
+    // Support "?askDelete=ID" arriving from the edit page's danger zone
+    const askId = Number(new URLSearchParams(location.search).get('askDelete'));
+    if (askId && employees.some(e => e.id === askId)) askDelete(askId);
+
+    // Theme-styled custom dropdown filters (replace native select popups)
+    window.__fRole = window.bindDropdown(document.getElementById('filter-role'),
+      [{ v: '', t: 'All roles' }, { v: 'Admin', t: 'Admin' }, { v: 'Manager', t: 'Manager' },
+       { v: 'Cashier', t: 'Cashier' }, { v: 'Rider', t: 'Rider' }],
+      () => render());
+    window.__fStatus = window.bindDropdown(document.getElementById('filter-status'),
+      [{ v: '', t: 'All status' }, { v: 'Active', t: 'Active' }, { v: 'Suspended', t: 'Suspended' },
+       { v: 'Invited', t: 'Invited' }],
+      () => render());
+    window.__fRole.el.getValue = window.__fRole.get;
+    window.__fStatus.el.getValue = window.__fStatus.get;
+  </script>
+</body>
+</html>

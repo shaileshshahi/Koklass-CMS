@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create employee — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar (shared: rendered by admin-sidebar.js) ===== -->
+    <aside class="sidebar" data-sidebar-active="employee-create"></aside>
+
+    <!-- ===== Main ===== -->
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">New employee</div>
+          <div class="crumb">Home / Employees / Create</div>
+        </div>
+        <div class="spacer" style="flex:1;"></div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="card-head">
+            <h3>Employee details</h3>
+            <span class="hint">All fields marked * are required</span>
+          </div>
+          <form id="create-form" class="card-pad" style="display:flex;flex-direction:column;gap:18px;" onsubmit="return false;">
+            <div class="form-grid">
+              <div class="section-title">Identity</div>
+              <div class="field">
+                <label for="f-name">Full name <span class="req">*</span></label>
+                <input class="input" id="f-name" placeholder="e.g. Anita Gurung" />
+              </div>
+              <div class="field">
+                <label for="f-email">Work email <span class="req">*</span></label>
+                <input class="input" id="f-email" type="email" placeholder="anita@koklass.com" />
+                <div class="help">Used for panel login and notifications</div>
+              </div>
+              <div class="field">
+                <label for="f-phone">Phone</label>
+                <input class="input" id="f-phone" type="tel" placeholder="98XX-XXX-XXX" />
+              </div>
+
+              <div class="section-title">Access</div>
+              <div class="field">
+                <label for="f-role">Role <span class="req">*</span></label>
+                <select id="f-role">
+                  <option value="">Select role…</option>
+                  <option>Admin</option>
+                  <option>Manager</option>
+                  <option>Cashier</option>
+                  <option>Rider</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-outlet">Outlet <span class="req">*</span></label>
+                <select id="f-outlet">
+                  <option value="">Select outlet…</option>
+                  <option>HQ</option>
+                  <option>Durbar Marg</option>
+                  <option>Jhamsikhel</option>
+                  <option>Suryabinayak</option>
+                  <option>Lakeside</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Status on save</label>
+                <div class="radio-row" style="padding-top:8px;">
+                  <label><input type="radio" name="status" value="Active" checked /> Active — can sign in now</label>
+                  <label><input type="radio" name="status" value="Invited" /> Invited — send email link</label>
+                </div>
+              </div>
+              <div class="field">
+                <label for="f-pass">Temporary password <span class="req">*</span></label>
+                <div class="pass-wrap">
+                  <input class="input" id="f-pass" type="password" placeholder="min. 8 characters" />
+                  <button type="button" class="pass-eye" onclick="const p=document.getElementById('f-pass');p.type=p.type==='password'?'text':'password';">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="help">User is prompted to change this on first sign-in</div>
+              </div>
+
+              <div class="section-title">Notes</div>
+              <div class="field full">
+                <label for="f-note">Internal note</label>
+                <textarea id="f-note" placeholder="Anything the admins should know (optional)"></textarea>
+              </div>
+            </div>
+          </form>
+          <div class="form-foot">
+            <button class="btn btn-ghost" onclick="window.location.href='./employee-list.html'">Cancel</button>
+            <button class="btn btn-primary" id="save-btn">Create employee</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const get = id => document.getElementById(id);
+      const missing = [
+        !get('f-name').value.trim() && 'Full name',
+        !get('f-email').value.trim() && 'Work email',
+        !get('f-role').value && 'Role',
+        !get('f-outlet').value && 'Outlet',
+        !get('f-pass').value && 'Temporary password',
+      ].filter(Boolean);
+
+      if (missing.length) {
+        missing.forEach(m => showToast('Missing: ' + m));
+        return;
+      }
+      if (get('f-pass').value.length < 8) { showToast('Password must be at least 8 characters'); return; }
+
+      // Persist into the shared in-memory demo store, then go to the list
+      // (list page also reads sessionStorage to survive navigation)
+      const rec = {
+        id: Date.now() % 100000,
+        name: get('f-name').value.trim(),
+        email: get('f-email').value.trim(),
+        phone: get('f-phone').value.trim(),
+        role: get('f-role').value,
+        outlet: get('f-outlet').value,
+        status: document.querySelector('input[name="status"]:checked').value,
+        joined: new Date().toISOString().slice(0, 10),
+      };
+      try {
+        sessionStorage.setItem('koklass-new-employee', JSON.stringify(rec));
+      } catch (e) {}
+      showToast('Created ' + rec.name + ' — opening list…');
+      setTimeout(() => (window.location.href = './employee-list.html'), 700);
+    });
+  </script>
+</body>
+</html>

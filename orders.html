@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* Order-specific components & modal extensions */
+    .order-items-summary {
+      font-size: 0.82rem;
+      color: var(--foreground);
+      max-width: 260px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-items-count {
+      font-size: 0.72rem;
+      color: var(--muted-foreground);
+    }
+    .order-modal {
+      width: 620px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .order-stepper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--muted);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .step-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 120ms ease;
+      white-space: nowrap;
+    }
+    .step-pill:hover {
+      border-color: var(--ring);
+      color: var(--foreground);
+    }
+    .step-pill.current {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--primary);
+    }
+    .step-pill.done {
+      background: rgba(47, 191, 113, 0.15);
+      color: var(--success);
+      border-color: rgba(47, 191, 113, 0.3);
+    }
+    .receipt-box {
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--background);
+      margin-top: 14px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      padding: 5px 0;
+    }
+    .receipt-row.total {
+      font-weight: 800;
+      font-size: 1.05rem;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 8px;
+      color: var(--foreground);
+    }
+    .menu-item-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .menu-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 140ms ease, background 140ms ease;
+    }
+    .menu-card:hover {
+      border-color: var(--ring);
+    }
+    .menu-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .menu-card .title {
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .menu-card .price {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      margin-top: 4px;
+    }
+    .menu-qty-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .menu-qty-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+    .menu-qty-btn:hover {
+      border-color: var(--ring);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar (shared) ===== -->
+    <aside class="sidebar" data-sidebar-active="orders"></aside>
+
+    <!-- ===== Main ===== -->
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Orders</div>
+          <div class="crumb">Home / Orders / Overview</div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="topbar-search" placeholder="Search orders, customer…" oninput="onSearchChange(this.value)" />
+        </div>
+        <button class="icon-btn" aria-label="Notifications" onclick="showToast('No new unread alerts')">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Stat Cards -->
+        <section class="stats">
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Total Orders</span>
+              <span class="badge badge-success">+14.2%</span>
+            </div>
+            <div class="value">
+              <span id="stat-total-count">1,428</span>
+              <svg class="spark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <div class="row">
+              <span style="font-size:0.72rem;color:var(--muted-foreground);">Live active database</span>
+              <span class="hint" id="stat-active-hint">8 active in kitchen</span>
+            </div>
+          </div>
+
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Kitchen / In-prep</span>
+              <span class="badge badge-brand">Active</span>
+            </div>
+            <div class="value" id="stat-kitchen-count">8</div>
+            <div class="row">
+              <span style="font-size:0.72rem;color:var(--muted-foreground);">Orders currently cooking</span>
+              <span class="badge badge-warning" id="stat-pending-badge">3 pending</span>
+            </div>
+          </div>
+
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Today's Revenue</span>
+              <span class="badge badge-brand">Live</span>
+            </div>
+            <div class="value" id="stat-revenue">Rs. 84,650</div>
+            <div class="row">
+              <span style="font-size:0.72rem;color:var(--muted-foreground);">Average per order</span>
+              <span style="font-size:0.72rem;font-weight:700;">Rs. 1,480</span>
+            </div>
+          </div>
+
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Fulfillment Rate</span>
+              <span class="badge badge-success">98.2%</span>
+            </div>
+            <div class="value">
+              <span>98.2%</span>
+              <svg class="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div class="row">
+              <span style="font-size:0.72rem;color:var(--muted-foreground);">Completed today</span>
+              <span style="font-size:0.72rem;font-weight:700;" id="stat-completed-count">48 served</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Toolbar -->
+        <section class="toolbar">
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            New order
+          </button>
+          <button class="btn btn-outline" onclick="exportOrdersCSV()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <div class="spacer"></div>
+          <div class="field-sm">
+            <svg class="lead" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="filter-search" type="search" placeholder="Filter by ID, customer…" oninput="render()" style="width: 220px;" />
+          </div>
+          <div class="field-sm">
+            <div class="dd" id="filter-status" data-dd data-placeholder="All statuses"></div>
+          </div>
+          <div class="field-sm">
+            <div class="dd" id="filter-type" data-dd data-placeholder="All types"></div>
+          </div>
+          <div class="field-sm">
+            <div class="dd" id="filter-payment" data-dd data-placeholder="All payments"></div>
+          </div>
+        </section>
+
+        <!-- Bulk Action Bar -->
+        <section class="bulkbar" id="bulkbar">
+          <span class="count" id="bulk-count">0</span> selected
+          <button class="btn btn-sm btn-outline" onclick="bulkSetStatus('Completed')">Mark as Completed</button>
+          <button class="btn btn-sm btn-outline" onclick="bulkSetPayment('Paid')">Mark as Paid</button>
+          <button class="btn btn-sm btn-danger" onclick="bulkCancelOrders()">Cancel Orders</button>
+          <div class="spacer" style="flex:1"></div>
+          <button class="btn btn-sm btn-ghost" onclick="clearSelection()">Clear</button>
+        </section>
+
+        <!-- Orders Table Card -->
+        <section class="card">
+          <div class="card-head">
+            <h3>All Orders <span class="hint" id="count-hint"></span></h3>
+            <span class="hint">Click an order ID to view receipt and update timeline</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" class="cb" id="select-all" aria-label="Select all" onchange="toggleSelectAll(this.checked)" /></th>
+                  <th class="sortable" onclick="toggleSort('id')">Order ID <span class="sort-ind">↕</span></th>
+                  <th>Customer</th>
+                  <th>Type & Location</th>
+                  <th>Items</th>
+                  <th class="sortable" onclick="toggleSort('total')">Amount <span class="sort-ind">↕</span></th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th class="sortable" onclick="toggleSort('time')">Placed <span class="sort-ind">↕</span></th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="order-rows"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span class="info" id="page-info">Showing orders</span>
+            <button class="page-btn" id="btn-prev" onclick="prevPage()">‹</button>
+            <span id="page-numbers" style="display:inline-flex;gap:4px;"></span>
+            <button class="page-btn" id="btn-next" onclick="nextPage()">›</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== Order Details & Invoice Modal ===== -->
+  <div class="modal-backdrop" id="modal-details-backdrop">
+    <div class="modal order-modal" role="dialog" aria-modal="true" aria-labelledby="details-title">
+      <div class="modal-head" style="justify-content:space-between;align-items:center;">
+        <div>
+          <h3 id="details-title">Order #KOK-0000</h3>
+          <span class="hint" id="details-sub">Placed 5 minutes ago</span>
+        </div>
+        <div id="details-status-badge"></div>
+      </div>
+      <div class="modal-body" id="print-area">
+        <!-- Status Stepper / Quick status progression -->
+        <label style="display:block;font-size:0.72rem;font-weight:700;color:var(--muted-foreground);margin-bottom:6px;">ORDER TIMELINE</label>
+        <div class="order-stepper" id="details-stepper"></div>
+
+        <!-- Customer & Outlet Meta -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;background:var(--muted);padding:12px;border-radius:10px;">
+          <div>
+            <div style="font-size:0.7rem;color:var(--muted-foreground);text-transform:uppercase;font-weight:700;">Customer</div>
+            <b id="details-cust-name" style="font-size:0.85rem;">-</b>
+            <div id="details-cust-phone" style="font-size:0.75rem;color:var(--muted-foreground);">-</div>
+          </div>
+          <div>
+            <div style="font-size:0.7rem;color:var(--muted-foreground);text-transform:uppercase;font-weight:700;">Service / Channel</div>
+            <b id="details-channel" style="font-size:0.85rem;">-</b>
+            <div id="details-outlet" style="font-size:0.75rem;color:var(--muted-foreground);">-</div>
+          </div>
+        </div>
+
+        <!-- Itemized receipt table -->
+        <table class="table" style="margin-top:6px;">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="text-align:center;">Qty</th>
+              <th style="text-align:right;">Price</th>
+              <th style="text-align:right;">Total</th>
+            </tr>
+          </thead>
+          <tbody id="details-items-body"></tbody>
+        </table>
+
+        <!-- Receipt breakdown -->
+        <div class="receipt-box">
+          <div class="receipt-row"><span>Subtotal</span><span id="details-subtotal">Rs. 0</span></div>
+          <div class="receipt-row"><span>VAT (13%)</span><span id="details-vat">Rs. 0</span></div>
+          <div class="receipt-row"><span>Service / Packaging</span><span id="details-service">Rs. 0</span></div>
+          <div class="receipt-row total"><span>Grand Total</span><span id="details-grand-total" style="color:var(--primary);">Rs. 0</span></div>
+          <div class="receipt-row" style="margin-top:4px;">
+            <span style="font-size:0.75rem;color:var(--muted-foreground);">Payment Status</span>
+            <span id="details-payment-badge"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-outline btn-sm" onclick="printInvoice()">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print Receipt
+        </button>
+        <button class="btn btn-ghost" onclick="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== New Order Modal ===== -->
+  <div class="modal-backdrop" id="modal-create-backdrop">
+    <div class="modal order-modal" role="dialog" aria-modal="true" aria-labelledby="create-order-title">
+      <div class="modal-head">
+        <div class="modal-warn" style="color:var(--primary);background:var(--primary-soft);">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div>
+          <h3 id="create-order-title">Create New Order</h3>
+          <span class="hint">Add a walk-in, phone, or dine-in order directly to the queue</span>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div class="field">
+            <label>Customer Name <span class="req">*</span></label>
+            <input type="text" class="input" id="new-cust-name" placeholder="e.g. Ayush Tamang" required />
+          </div>
+          <div class="field">
+            <label>Phone Number <span class="req">*</span></label>
+            <input type="tel" class="input" id="new-cust-phone" placeholder="98XXXXXXXX" required />
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div class="field">
+            <label>Order Type</label>
+            <div class="field-sm">
+              <div class="dd" id="new-order-type" data-dd></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Outlet / Table</label>
+            <input type="text" class="input" id="new-order-outlet" placeholder="e.g. Table 4, Durbar Marg" value="Table 3 (Durbar Marg)" />
+          </div>
+        </div>
+
+        <label style="display:block;font-size:0.72rem;font-weight:700;color:var(--muted-foreground);margin-bottom:4px;">SELECT ITEMS <span class="req">*</span></label>
+        <div class="menu-item-picker" id="create-menu-picker"></div>
+
+        <div class="receipt-box" style="margin-top:14px;">
+          <div class="receipt-row"><span>Estimated Subtotal</span><span id="create-est-subtotal">Rs. 0</span></div>
+          <div class="receipt-row total"><span>Estimated Grand Total</span><span id="create-est-total" style="color:var(--primary);">Rs. 0</span></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+          <div class="field">
+            <label>Payment Method</label>
+            <div class="field-sm">
+              <div class="dd" id="new-payment-method" data-dd></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Payment Status</label>
+            <div class="field-sm">
+              <div class="dd" id="new-payment-status" data-dd></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeCreateModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateOrder()">Create & Send to Kitchen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Cancel / Delete Confirmation Modal ===== -->
+  <div class="modal-backdrop" id="modal-cancel-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+      <div class="modal-head">
+        <div class="modal-warn">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        </div>
+        <div>
+          <h3 id="cancel-title">Cancel this order?</h3>
+        </div>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to cancel order <b id="cancel-order-label">#ORD-0000</b>? If prepaid, a refund may need to be processed manually.
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeCancelModal()">Go back</button>
+        <button class="btn btn-danger" id="cancel-confirm-btn" onclick="confirmCancelOrder()">Cancel Order</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    /* =========================================================================
+       Koklass Orders Manager — State, Seed Data, and Interactive Engine
+       ========================================================================= */
+
+    // Popular menu items available for order placement
+    const MENU_CATALOG = [
+      { id: 'm1', name: 'Chicken Thakali Set', price: 480 },
+      { id: 'm2', name: 'Buff Steamed Momo (10 pcs)', price: 220 },
+      { id: 'm3', name: 'Chicken Jhol Momo', price: 290 },
+      { id: 'm4', name: 'Mutton Sekuwa', price: 580 },
+      { id: 'm5', name: 'Newari Khaja Set (Samay Baji)', price: 450 },
+      { id: 'm6', name: 'Aloo Sadeko', price: 180 },
+      { id: 'm7', name: 'Special Butter Tea (Su-Chya)', price: 110 },
+      { id: 'm8', name: 'Everest Draft Beer (500ml)', price: 380 }
+    ];
+
+    // Seed Orders (realistic restaurant & delivery orders)
+    const SEED_ORDERS = [
+      {
+        id: 'KOK-3048',
+        customer: 'Aarav Sharma',
+        phone: '9841203948',
+        type: 'Dine-in',
+        location: 'Durbar Marg · Table 4',
+        status: 'Preparing',
+        payment: 'Paid',
+        payMethod: 'Fonepay QR',
+        items: [
+          { name: 'Chicken Thakali Set', qty: 2, price: 480 },
+          { name: 'Special Butter Tea (Su-Chya)', qty: 2, price: 110 }
+        ],
+        time: '6 min ago',
+        timestamp: Date.now() - 6 * 60 * 1000
+      },
+      {
+        id: 'KOK-3047',
+        customer: 'Pooja Shrestha',
+        phone: '9813940212',
+        type: 'Delivery',
+        location: 'Jhamsikhel · Sanepa Rd',
+        status: 'Out for Delivery',
+        payment: 'Paid',
+        payMethod: 'eSewa',
+        items: [
+          { name: 'Chicken Jhol Momo', qty: 3, price: 290 },
+          { name: 'Aloo Sadeko', qty: 1, price: 180 }
+        ],
+        time: '18 min ago',
+        timestamp: Date.now() - 18 * 60 * 1000
+      },
+      {
+        id: 'KOK-3046',
+        customer: 'Bishal Thapa',
+        phone: '9860119283',
+        type: 'Dine-in',
+        location: 'HQ · Table 12',
+        status: 'Pending',
+        payment: 'Unpaid',
+        payMethod: 'Cash',
+        items: [
+          { name: 'Buff Steamed Momo (10 pcs)', qty: 2, price: 220 },
+          { name: 'Mutton Sekuwa', qty: 1, price: 580 }
+        ],
+        time: '24 min ago',
+        timestamp: Date.now() - 24 * 60 * 1000
+      },
+      {
+        id: 'KOK-3045',
+        customer: 'Sneha Gurung',
+        phone: '9801827491',
+        type: 'Takeaway',
+        location: 'Lakeside Outlet',
+        status: 'Completed',
+        payment: 'Paid',
+        payMethod: 'Card (POS)',
+        items: [
+          { name: 'Newari Khaja Set (Samay Baji)', qty: 2, price: 450 },
+          { name: 'Special Butter Tea (Su-Chya)', qty: 1, price: 110 }
+        ],
+        time: '45 min ago',
+        timestamp: Date.now() - 45 * 60 * 1000
+      },
+      {
+        id: 'KOK-3044',
+        customer: 'Kiran KC',
+        phone: '9849182374',
+        type: 'Delivery',
+        location: 'Suryabinayak · Kamalbinayak',
+        status: 'Preparing',
+        payment: 'Paid',
+        payMethod: 'Fonepay QR',
+        items: [
+          { name: 'Chicken Thakali Set', qty: 3, price: 480 },
+          { name: 'Buff Steamed Momo (10 pcs)', qty: 2, price: 220 },
+          { name: 'Everest Draft Beer (500ml)', qty: 2, price: 380 }
+        ],
+        time: '1 hr ago',
+        timestamp: Date.now() - 60 * 60 * 1000
+      },
+      {
+        id: 'KOK-3043',
+        customer: 'Manish Basnet',
+        phone: '9818294711',
+        type: 'Dine-in',
+        location: 'Durbar Marg · Table 2',
+        status: 'Completed',
+        payment: 'Paid',
+        payMethod: 'Cash',
+        items: [
+          { name: 'Buff Steamed Momo (10 pcs)', qty: 4, price: 220 }
+        ],
+        time: '2 hr ago',
+        timestamp: Date.now() - 120 * 60 * 1000
+      },
+      {
+        id: 'KOK-3042',
+        customer: 'Sunita Rai',
+        phone: '9841827402',
+        type: 'Delivery',
+        location: 'Baluwatar · Gairidhara',
+        status: 'Cancelled',
+        payment: 'Refunded',
+        payMethod: 'Fonepay QR',
+        items: [
+          { name: 'Chicken Thakali Set', qty: 1, price: 480 }
+        ],
+        time: '3 hr ago',
+        timestamp: Date.now() - 180 * 60 * 1000
+      },
+      {
+        id: 'KOK-3041',
+        customer: 'Rajendra Maharjan',
+        phone: '9851029384',
+        type: 'Dine-in',
+        location: 'Jhamsikhel · Table 8',
+        status: 'Completed',
+        payment: 'Paid',
+        payMethod: 'Fonepay QR',
+        items: [
+          { name: 'Mutton Sekuwa', qty: 2, price: 580 },
+          { name: 'Aloo Sadeko', qty: 2, price: 180 },
+          { name: 'Everest Draft Beer (500ml)', qty: 4, price: 380 }
+        ],
+        time: '4 hr ago',
+        timestamp: Date.now() - 240 * 60 * 1000
+      }
+    ];
+
+    let orders = JSON.parse(JSON.stringify(SEED_ORDERS));
+    let selectedOrderIds = new Set();
+    let currentSort = { col: 'time', asc: false };
+    let currentPage = 1;
+    const pageSize = 6;
+    let viewingOrderId = null;
+    let cancellingOrderId = null;
+    let createQuantities = {};
+
+    // Helper functions
+    const initials = name => name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    const avatarHue = id => {
+      const palette = ['var(--primary)', 'var(--success)', 'var(--info)', 'var(--warning)', '#9b5de5', '#00bbf9'];
+      let hash = 0;
+      for (let i = 0; i < id.length; i++) hash = (hash + id.charCodeAt(i)) % palette.length;
+      return palette[hash];
+    };
+
+    function computeOrderTotal(order) {
+      const subtotal = order.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const vat = Math.round(subtotal * 0.13);
+      const service = Math.round(subtotal * 0.10);
+      return { subtotal, vat, service, total: subtotal + vat + service };
+    }
+
+    function formatCurrency(n) {
+      return 'Rs. ' + Number(n).toLocaleString('en-IN');
+    }
+
+    function statusBadge(s) {
+      switch (s) {
+        case 'Pending':
+          return '<span class="badge badge-warning"><span class="dot"></span>Pending</span>';
+        case 'Preparing':
+          return '<span class="badge badge-info"><span class="dot"></span>Preparing</span>';
+        case 'Out for Delivery':
+          return '<span class="badge badge-brand"><span class="dot"></span>Out for Delivery</span>';
+        case 'Completed':
+          return '<span class="badge badge-success"><span class="dot"></span>Completed</span>';
+        case 'Cancelled':
+          return '<span class="badge badge-danger"><span class="dot"></span>Cancelled</span>';
+        default:
+          return `<span class="badge badge-muted">${s}</span>`;
+      }
+    }
+
+    function paymentBadge(p) {
+      switch (p) {
+        case 'Paid':
+          return '<span class="badge badge-success">Paid</span>';
+        case 'Unpaid':
+          return '<span class="badge badge-warning">Unpaid</span>';
+        case 'Refunded':
+          return '<span class="badge badge-danger">Refunded</span>';
+        default:
+          return `<span class="badge badge-muted">${p}</span>`;
+      }
+    }
+
+    function typeBadge(t) {
+      if (t === 'Dine-in') return '<span class="badge badge-brand">Dine-in</span>';
+      if (t === 'Delivery') return '<span class="badge badge-info">Delivery</span>';
+      return '<span class="badge badge-muted">Takeaway</span>';
+    }
+
+    // Refresh KPI Stats
+    function updateStats() {
+      const activeKitchen = orders.filter(o => o.status === 'Preparing' || o.status === 'Pending').length;
+      const pendingCount = orders.filter(o => o.status === 'Pending').length;
+      const completedCount = orders.filter(o => o.status === 'Completed').length;
+      const totalRev = orders
+        .filter(o => o.payment === 'Paid')
+        .reduce((sum, o) => sum + computeOrderTotal(o).total, 0);
+
+      document.getElementById('stat-total-count').textContent = (1420 + orders.length).toLocaleString();
+      document.getElementById('stat-kitchen-count').textContent = activeKitchen;
+      document.getElementById('stat-active-hint').textContent = `${activeKitchen} active in kitchen`;
+      document.getElementById('stat-pending-badge').textContent = `${pendingCount} pending`;
+      document.getElementById('stat-revenue').textContent = formatCurrency(totalRev + 42000);
+      document.getElementById('stat-completed-count').textContent = `${completedCount} served`;
+    }
+
+    // Render Table
+    function render() {
+      updateStats();
+
+      const q = (document.getElementById('filter-search').value || '').trim().toLowerCase();
+      const statusEl = document.getElementById('filter-status');
+      const typeEl = document.getElementById('filter-type');
+      const payEl = document.getElementById('filter-payment');
+
+      const filterStatus = statusEl && statusEl.getValue ? statusEl.getValue() : '';
+      const filterType = typeEl && typeEl.getValue ? typeEl.getValue() : '';
+      const filterPay = payEl && payEl.getValue ? payEl.getValue() : '';
+
+      let list = orders.filter(o => {
+        const matchesQ = !q ||
+          o.id.toLowerCase().includes(q) ||
+          o.customer.toLowerCase().includes(q) ||
+          o.phone.includes(q) ||
+          o.location.toLowerCase().includes(q) ||
+          o.items.some(i => i.name.toLowerCase().includes(q));
+
+        const matchesStatus = !filterStatus || o.status === filterStatus;
+        const matchesType = !filterType || o.type === filterType;
+        const matchesPay = !filterPay || o.payment === filterPay;
+
+        return matchesQ && matchesStatus && matchesType && matchesPay;
+      });
+
+      // Sorting
+      list.sort((a, b) => {
+        let valA, valB;
+        if (currentSort.col === 'total') {
+          valA = computeOrderTotal(a).total;
+          valB = computeOrderTotal(b).total;
+        } else if (currentSort.col === 'id') {
+          valA = a.id;
+          valB = b.id;
+        } else {
+          valA = a.timestamp;
+          valB = b.timestamp;
+        }
+        return currentSort.asc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+      });
+
+      // Pagination
+      const totalCount = list.length;
+      const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * pageSize;
+      const pageList = list.slice(start, start + pageSize);
+
+      const rowsEl = document.getElementById('order-rows');
+      if (pageList.length === 0) {
+        rowsEl.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:36px;color:var(--muted-foreground);">No orders match the current filter criteria.</td></tr>`;
+      } else {
+        rowsEl.innerHTML = pageList.map(o => {
+          const totals = computeOrderTotal(o);
+          const isSelected = selectedOrderIds.has(o.id);
+          const itemsSummary = o.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+          const itemCount = o.items.reduce((s, i) => s + i.qty, 0);
+
+          return `
+            <tr style="${isSelected ? 'background:var(--primary-soft);' : ''}">
+              <td><input type="checkbox" class="cb" ${isSelected ? 'checked' : ''} onchange="toggleSelectOrder('${o.id}', this.checked)" /></td>
+              <td>
+                <a href="#" onclick="openOrderDetails('${o.id}'); return false;" style="font-weight:800;color:var(--primary);">
+                  ${o.id}
+                </a>
+              </td>
+              <td>
+                <div class="cell-user">
+                  <div class="avatar" style="background:${avatarHue(o.customer)}">${initials(o.customer)}</div>
+                  <div>
+                    <b>${o.customer}</b>
+                    <span>${o.phone}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <div>${typeBadge(o.type)}</div>
+                  <span style="font-size:0.75rem;color:var(--muted-foreground);">${o.location}</span>
+                </div>
+              </td>
+              <td>
+                <div class="order-items-summary" title="${itemsSummary}">${itemsSummary}</div>
+                <div class="order-items-count">${itemCount} item${itemCount > 1 ? 's' : ''}</div>
+              </td>
+              <td class="cell-num"><b>${formatCurrency(totals.total)}</b></td>
+              <td>${paymentBadge(o.payment)}</td>
+              <td>${statusBadge(o.status)}</td>
+              <td class="cell-num" style="color:var(--muted-foreground);font-size:0.78rem;">${o.time}</td>
+              <td>
+                <div class="cell-actions">
+                  <button class="icon-act" title="View Receipt / Invoice" onclick="openOrderDetails('${o.id}')">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button class="icon-act" title="Advance Stage" onclick="advanceOrderStatus('${o.id}')">
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                  <button class="icon-act del" title="Cancel Order" onclick="askCancelOrder('${o.id}')">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Metadata & pagination
+      document.getElementById('count-hint').textContent = `· ${totalCount} order${totalCount === 1 ? '' : 's'}`;
+      document.getElementById('page-info').textContent = totalCount > 0
+        ? `Showing ${start + 1}–${Math.min(start + pageSize, totalCount)} of ${totalCount} orders`
+        : '0 orders found';
+
+      document.getElementById('btn-prev').disabled = currentPage <= 1;
+      document.getElementById('btn-next').disabled = currentPage >= totalPages;
+
+      let pageBtnsHtml = '';
+      for (let p = 1; p <= totalPages; p++) {
+        pageBtnsHtml += `<button class="page-btn ${p === currentPage ? 'current' : ''}" onclick="goToPage(${p})">${p}</button>`;
+      }
+      document.getElementById('page-numbers').innerHTML = pageBtnsHtml;
+
+      // Update bulk bar
+      const bulkBar = document.getElementById('bulkbar');
+      const bulkCount = document.getElementById('bulk-count');
+      if (selectedOrderIds.size > 0) {
+        bulkBar.classList.add('show');
+        bulkCount.textContent = selectedOrderIds.size;
+      } else {
+        bulkBar.classList.remove('show');
+      }
+      document.getElementById('select-all').checked = pageList.length > 0 && pageList.every(o => selectedOrderIds.has(o.id));
+    }
+
+    // Topbar search wrapper
+    function onSearchChange(val) {
+      document.getElementById('filter-search').value = val;
+      render();
+    }
+
+    // Pagination Actions
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; render(); }
+    }
+    function nextPage() {
+      currentPage++; render();
+    }
+    function goToPage(p) {
+      currentPage = p; render();
+    }
+
+    // Sorting
+    function toggleSort(col) {
+      if (currentSort.col === col) {
+        currentSort.asc = !currentSort.asc;
+      } else {
+        currentSort.col = col;
+        currentSort.asc = true;
+      }
+      render();
+    }
+
+    // Selection
+    function toggleSelectOrder(id, isChecked) {
+      if (isChecked) selectedOrderIds.add(id);
+      else selectedOrderIds.delete(id);
+      render();
+    }
+    function toggleSelectAll(isChecked) {
+      const q = (document.getElementById('filter-search').value || '').trim().toLowerCase();
+      orders.forEach(o => {
+        if (isChecked) selectedOrderIds.add(o.id);
+        else selectedOrderIds.delete(o.id);
+      });
+      render();
+    }
+    function clearSelection() {
+      selectedOrderIds.clear();
+      render();
+    }
+
+    // Bulk Actions
+    function bulkSetStatus(newStatus) {
+      orders.forEach(o => {
+        if (selectedOrderIds.has(o.id)) o.status = newStatus;
+      });
+      showToast(`Updated ${selectedOrderIds.size} orders to ${newStatus}`);
+      selectedOrderIds.clear();
+      render();
+    }
+    function bulkSetPayment(newPay) {
+      orders.forEach(o => {
+        if (selectedOrderIds.has(o.id)) o.payment = newPay;
+      });
+      showToast(`Updated ${selectedOrderIds.size} orders payment to ${newPay}`);
+      selectedOrderIds.clear();
+      render();
+    }
+    function bulkCancelOrders() {
+      orders.forEach(o => {
+        if (selectedOrderIds.has(o.id)) o.status = 'Cancelled';
+      });
+      showToast(`Cancelled ${selectedOrderIds.size} selected orders`);
+      selectedOrderIds.clear();
+      render();
+    }
+
+    // Advance Status Pipeline
+    const PIPELINE = ['Pending', 'Preparing', 'Out for Delivery', 'Completed'];
+    function advanceOrderStatus(id) {
+      const o = orders.find(x => x.id === id);
+      if (!o) return;
+      const idx = PIPELINE.indexOf(o.status);
+      if (idx !== -1 && idx < PIPELINE.length - 1) {
+        o.status = PIPELINE[idx + 1];
+        showToast(`${o.id} moved to "${o.status}"`);
+      } else if (o.status === 'Completed') {
+        showToast(`${o.id} is already completed`);
+      } else {
+        o.status = 'Preparing';
+        showToast(`${o.id} marked as "Preparing"`);
+      }
+      render();
+      if (viewingOrderId === id) openOrderDetails(id);
+    }
+
+    // Order Details & Timeline Modal
+    function openOrderDetails(id) {
+      const o = orders.find(x => x.id === id);
+      if (!o) return;
+      viewingOrderId = id;
+
+      document.getElementById('details-title').textContent = `Order #${o.id}`;
+      document.getElementById('details-sub').textContent = `Placed ${o.time} · ${o.payMethod}`;
+      document.getElementById('details-status-badge').innerHTML = statusBadge(o.status);
+
+      // Render stepper
+      const stepperEl = document.getElementById('details-stepper');
+      stepperEl.innerHTML = PIPELINE.map((step, i) => {
+        const curIdx = PIPELINE.indexOf(o.status);
+        let cls = 'step-pill';
+        if (o.status === step) cls += ' current';
+        else if (curIdx > i) cls += ' done';
+        return `<div class="${cls}" onclick="setSpecificStatus('${o.id}', '${step}')">${i + 1}. ${step}</div>`;
+      }).join('');
+
+      document.getElementById('details-cust-name').textContent = o.customer;
+      document.getElementById('details-cust-phone').textContent = o.phone;
+      document.getElementById('details-channel').textContent = o.type;
+      document.getElementById('details-outlet').textContent = o.location;
+
+      // Table
+      const itemsBody = document.getElementById('details-items-body');
+      itemsBody.innerHTML = o.items.map(item => `
+        <tr>
+          <td><b>${item.name}</b></td>
+          <td style="text-align:center;">${item.qty}</td>
+          <td class="cell-num">${formatCurrency(item.price)}</td>
+          <td class="cell-num"><b>${formatCurrency(item.qty * item.price)}</b></td>
+        </tr>
+      `).join('');
+
+      const totals = computeOrderTotal(o);
+      document.getElementById('details-subtotal').textContent = formatCurrency(totals.subtotal);
+      document.getElementById('details-vat').textContent = formatCurrency(totals.vat);
+      document.getElementById('details-service').textContent = formatCurrency(totals.service);
+      document.getElementById('details-grand-total').textContent = formatCurrency(totals.total);
+      document.getElementById('details-payment-badge').innerHTML = paymentBadge(o.payment) + ` <span style="font-size:0.75rem;margin-left:6px;color:var(--muted-foreground);">via ${o.payMethod}</span>`;
+
+      document.getElementById('modal-details-backdrop').classList.add('open');
+    }
+
+    function setSpecificStatus(id, step) {
+      const o = orders.find(x => x.id === id);
+      if (!o) return;
+      o.status = step;
+      showToast(`${o.id} status changed to ${step}`);
+      openOrderDetails(id);
+      render();
+    }
+
+    function closeDetailsModal() {
+      document.getElementById('modal-details-backdrop').classList.remove('open');
+      viewingOrderId = null;
+    }
+
+    function printInvoice() {
+      window.print();
+    }
+
+    // Create Order Modal Flow
+    function openCreateModal() {
+      createQuantities = {};
+      MENU_CATALOG.forEach(m => { createQuantities[m.id] = 0; });
+
+      renderMenuPicker();
+      updateCreateTotals();
+
+      document.getElementById('new-cust-name').value = '';
+      document.getElementById('new-cust-phone').value = '';
+
+      document.getElementById('modal-create-backdrop').classList.add('open');
+    }
+
+    function closeCreateModal() {
+      document.getElementById('modal-create-backdrop').classList.remove('open');
+    }
+
+    function renderMenuPicker() {
+      const picker = document.getElementById('create-menu-picker');
+      picker.innerHTML = MENU_CATALOG.map(m => {
+        const qty = createQuantities[m.id] || 0;
+        return `
+          <div class="menu-card ${qty > 0 ? 'selected' : ''}">
+            <div class="title">${m.name}</div>
+            <div class="price">${formatCurrency(m.price)}</div>
+            <div class="menu-qty-control">
+              <button class="menu-qty-btn" type="button" onclick="changeMenuQty('${m.id}', -1)">-</button>
+              <span style="font-size:0.8rem;font-weight:800;min-width:20px;text-align:center;">${qty}</span>
+              <button class="menu-qty-btn" type="button" onclick="changeMenuQty('${m.id}', 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function changeMenuQty(itemId, delta) {
+      const cur = createQuantities[itemId] || 0;
+      createQuantities[itemId] = Math.max(0, cur + delta);
+      renderMenuPicker();
+      updateCreateTotals();
+    }
+
+    function updateCreateTotals() {
+      let subtotal = 0;
+      MENU_CATALOG.forEach(m => {
+        subtotal += (createQuantities[m.id] || 0) * m.price;
+      });
+      const vat = Math.round(subtotal * 0.13);
+      const service = Math.round(subtotal * 0.10);
+      const grand = subtotal + vat + service;
+
+      document.getElementById('create-est-subtotal').textContent = formatCurrency(subtotal);
+      document.getElementById('create-est-total').textContent = formatCurrency(grand);
+    }
+
+    function submitCreateOrder() {
+      const name = document.getElementById('new-cust-name').value.trim();
+      const phone = document.getElementById('new-cust-phone').value.trim();
+      const outlet = document.getElementById('new-order-outlet').value.trim() || 'Dine-in';
+
+      if (!name) {
+        showToast('Please enter customer name');
+        document.getElementById('new-cust-name').focus();
+        return;
+      }
+      if (!phone) {
+        showToast('Please enter customer phone');
+        document.getElementById('new-cust-phone').focus();
+        return;
+      }
+
+      const items = [];
+      MENU_CATALOG.forEach(m => {
+        const qty = createQuantities[m.id] || 0;
+        if (qty > 0) items.push({ name: m.name, qty, price: m.price });
+      });
+
+      if (items.length === 0) {
+        showToast('Please add at least 1 menu item to the order');
+        return;
+      }
+
+      const orderType = window.__newType ? window.__newType.get() : 'Dine-in';
+      const payMethod = window.__newPayMethod ? window.__newPayMethod.get() : 'Cash';
+      const payStatus = window.__newPayStatus ? window.__newPayStatus.get() : 'Paid';
+
+      const newId = 'KOK-' + (3049 + orders.length);
+      const newOrder = {
+        id: newId,
+        customer: name,
+        phone: phone,
+        type: orderType,
+        location: outlet,
+        status: 'Preparing',
+        payment: payStatus,
+        payMethod: payMethod,
+        items: items,
+        time: 'Just now',
+        timestamp: Date.now()
+      };
+
+      orders.unshift(newOrder);
+      closeCreateModal();
+      showToast(`Order ${newId} created & dispatched to kitchen!`);
+      render();
+    }
+
+    // Cancel Modal Flow
+    function askCancelOrder(id) {
+      cancellingOrderId = id;
+      document.getElementById('cancel-order-label').textContent = `#${id}`;
+      document.getElementById('modal-cancel-backdrop').classList.add('open');
+    }
+    function closeCancelModal() {
+      document.getElementById('modal-cancel-backdrop').classList.remove('open');
+      cancellingOrderId = null;
+    }
+    function confirmCancelOrder() {
+      if (!cancellingOrderId) return;
+      const o = orders.find(x => x.id === cancellingOrderId);
+      if (o) {
+        o.status = 'Cancelled';
+        showToast(`Order #${cancellingOrderId} has been cancelled`);
+      }
+      closeCancelModal();
+      render();
+    }
+
+    // Export CSV
+    function exportOrdersCSV() {
+      const headers = ['Order ID', 'Customer', 'Phone', 'Type', 'Location', 'Items', 'Subtotal', 'Grand Total', 'Payment', 'Status', 'Placed'];
+      const rows = orders.map(o => {
+        const t = computeOrderTotal(o);
+        const itemStr = o.items.map(i => `${i.qty}x ${i.name}`).join('; ');
+        return [
+          o.id,
+          `"${o.customer}"`,
+          `"${o.phone}"`,
+          o.type,
+          `"${o.location}"`,
+          `"${itemStr}"`,
+          t.subtotal,
+          t.total,
+          o.payment,
+          o.status,
+          `"${o.time}"`
+        ].join(',');
+      });
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `koklass-orders-${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Exported orders CSV');
+    }
+
+    // Modal click-outside & Escape key handlers
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeDetailsModal();
+        closeCreateModal();
+        closeCancelModal();
+      }
+    });
+    ['modal-details-backdrop', 'modal-create-backdrop', 'modal-cancel-backdrop'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+    });
+
+    // Custom dropdown initialization
+    window.__fStatus = window.bindDropdown(document.getElementById('filter-status'), [
+      { v: '', t: 'All statuses' },
+      { v: 'Pending', t: 'Pending' },
+      { v: 'Preparing', t: 'Preparing' },
+      { v: 'Out for Delivery', t: 'Out for Delivery' },
+      { v: 'Completed', t: 'Completed' },
+      { v: 'Cancelled', t: 'Cancelled' }
+    ], () => render());
+
+    window.__fType = window.bindDropdown(document.getElementById('filter-type'), [
+      { v: '', t: 'All types' },
+      { v: 'Dine-in', t: 'Dine-in' },
+      { v: 'Takeaway', t: 'Takeaway' },
+      { v: 'Delivery', t: 'Delivery' }
+    ], () => render());
+
+    window.__fPayment = window.bindDropdown(document.getElementById('filter-payment'), [
+      { v: '', t: 'All payments' },
+      { v: 'Paid', t: 'Paid' },
+      { v: 'Unpaid', t: 'Unpaid' },
+      { v: 'Refunded', t: 'Refunded' }
+    ], () => render());
+
+    window.__newType = window.bindDropdown(document.getElementById('new-order-type'), [
+      { v: 'Dine-in', t: 'Dine-in' },
+      { v: 'Takeaway', t: 'Takeaway' },
+      { v: 'Delivery', t: 'Delivery' }
+    ]);
+
+    window.__newPayMethod = window.bindDropdown(document.getElementById('new-payment-method'), [
+      { v: 'Fonepay QR', t: 'Fonepay QR' },
+      { v: 'Cash', t: 'Cash' },
+      { v: 'eSewa', t: 'eSewa' },
+      { v: 'Card (POS)', t: 'Card (POS)' }
+    ]);
+
+    window.__newPayStatus = window.bindDropdown(document.getElementById('new-payment-status'), [
+      { v: 'Paid', t: 'Paid' },
+      { v: 'Unpaid', t: 'Unpaid' }
+    ]);
+
+    document.getElementById('filter-status').getValue = window.__fStatus.get;
+    document.getElementById('filter-type').getValue = window.__fType.get;
+    document.getElementById('filter-payment').getValue = window.__fPayment.get;
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>

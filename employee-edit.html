@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit employee — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar (shared: rendered by admin-sidebar.js) ===== -->
+    <aside class="sidebar" data-sidebar-active="employee-list"></aside>
+
+    <!-- ===== Main ===== -->
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Edit employee</div>
+          <div class="crumb">Home / Employees / <span id="crumb-name">Edit</span></div>
+        </div>
+        <div class="spacer" style="flex:1;"></div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="card-head">
+            <h3>Employee details</h3>
+            <span class="hint">Changes apply on save</span>
+          </div>
+          <form id="edit-form" class="card-pad" style="display:flex;flex-direction:column;gap:18px;" onsubmit="return false;">
+            <div class="form-grid">
+              <div class="section-title">Identity</div>
+              <div class="field">
+                <label for="f-name">Full name <span class="req">*</span></label>
+                <input class="input" id="f-name" />
+              </div>
+              <div class="field">
+                <label for="f-email">Work email <span class="req">*</span></label>
+                <input class="input" id="f-email" type="email" />
+                <div class="help">Used for panel login and notifications</div>
+              </div>
+              <div class="field">
+                <label for="f-phone">Phone</label>
+                <input class="input" id="f-phone" type="tel" />
+              </div>
+
+              <div class="section-title">Access</div>
+              <div class="field">
+                <label for="f-role">Role <span class="req">*</span></label>
+                <select id="f-role">
+                  <option>Admin</option><option>Manager</option><option>Cashier</option><option>Rider</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-outlet">Outlet <span class="req">*</span></label>
+                <select id="f-outlet">
+                  <option>HQ</option><option>Durbar Marg</option><option>Jhamsikhel</option><option>Suryabinayak</option><option>Lakeside</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <div class="radio-row" style="padding-top:8px;">
+                  <label><input type="radio" name="status" value="Active" /> Active</label>
+                  <label><input type="radio" name="status" value="Suspended" /> Suspended</label>
+                  <label><input type="radio" name="status" value="Invited" /> Invited</label>
+                </div>
+              </div>
+
+              <div class="section-title">Security</div>
+              <div class="field full">
+                <label>Reset password</label>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                  <button type="button" class="btn btn-outline btn-sm" id="reset-pass-btn">
+                    <svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 22v-6h-6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                    Send password-reset email
+                  </button>
+                  <span class="help" style="margin:0;">Sends a one-time link to the work email above</span>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="form-foot">
+            <button class="btn btn-ghost" onclick="window.location.href='./employee-list.html'">Cancel</button>
+            <button class="btn btn-primary" id="save-btn">Save changes</button>
+          </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section class="card danger-zone">
+          <div class="card-head">
+            <h3>Danger zone</h3>
+          </div>
+          <div class="card-pad" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:220px;">
+              <b style="font-size:0.85rem;">Delete this employee</b>
+              <div style="font-size:0.75rem;color:var(--muted-foreground);">Permanently removes the account and revokes access immediately.</div>
+            </div>
+            <button class="btn btn-danger btn-sm" id="del-btn">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              Delete employee
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    // Same demo seed as the list page — a real backend would fetch /employees/:id
+    const SEED = [
+      { id: 1, name: 'Tsering Wongel', email: 'tsering@koklass.com', role: 'Admin',    outlet: 'HQ',             status: 'Active',    joined: '2023-04-11' },
+      { id: 2, name: 'Rita Dongol',     email: 'rita@koklass.com',    role: 'Manager',  outlet: 'Durbar Marg',    status: 'Active',    joined: '2023-08-02' },
+      { id: 3, name: 'Bikash Khatri',   email: 'bikash@koklass.com',  role: 'Cashier',  outlet: 'Jhamsikhel',     status: 'Active',    joined: '2024-01-19' },
+      { id: 4, name: 'Sita Pariyar',    email: 'sita@koklass.com',    role: 'Admin',    outlet: 'HQ',             status: 'Suspended', joined: '2022-11-30' },
+      { id: 5, name: 'Laxman Magrati',  email: 'laxman@koklass.com',  role: 'Rider',    outlet: 'Lakeside',       status: 'Active',    joined: '2024-06-05' },
+      { id: 6, name: 'Anjali Rai',      email: 'anjali@koklass.com',  role: 'Manager',  outlet: 'Suryabinayak',   status: 'Invited',   joined: '2026-11-14' },
+      { id: 7, name: 'Deepak Shrestha', email: 'deepak@koklass.com',  role: 'Cashier',  outlet: 'Durbar Marg',    status: 'Active',    joined: '2025-02-27' },
+    ];
+
+    const id = Number(new URLSearchParams(location.search).get('id')) || 1;
+    let rec = SEED.find(e => e.id === id);
+    // include employees created via the Create page this session
+    if (!rec) {
+      try {
+        const ne = JSON.parse(sessionStorage.getItem('koklass-new-employee') || 'null');
+        if (ne && ne.id === id) rec = ne;
+      } catch (e) {}
+    }
+    if (!rec) rec = SEED[0];
+
+    // Prefill
+    document.getElementById('f-name').value = rec.name;
+    document.getElementById('f-email').value = rec.email;
+    document.getElementById('f-phone').value = rec.phone || '';
+    document.getElementById('f-role').value = rec.role;
+    document.getElementById('f-outlet').value = rec.outlet;
+    document.querySelector(`input[name="status"][value="${rec.status || 'Active'}"]`).checked = true;
+    document.getElementById('crumb-name').textContent = rec.name;
+
+    // Save
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const name = document.getElementById('f-name').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      if (!name || !email) { showToast('Name and email are required'); return; }
+      showToast(`Saved ${name || 'employee'} (demo) — no persistence`);
+      setTimeout(() => (window.location.href = './employee-list.html'), 700);
+    });
+
+    // Reset password
+    document.getElementById('reset-pass-btn').addEventListener('click', () => {
+      showToast('Reset link sent to ' + document.getElementById('f-email').value);
+    });
+
+    // Delete from danger zone
+    document.getElementById('del-btn').addEventListener('click', () => {
+      showToast('Delete ' + rec.name + ' from the list page (demo flow)');
+      location.href = './employee-list.html?askDelete=' + rec.id;
+    });
+  </script>
+</body>
+</html>

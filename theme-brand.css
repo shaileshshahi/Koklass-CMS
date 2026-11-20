@@ -1,0 +1,28 @@
+/* Brand-tinted surfaces hook: injected by admin-demo.js when a custom brand
+   color differs from the Ember default. Recolors the neutral chrome (page
+   background, sidebar, cards, topbar) to follow the brand color, in both
+   light and dark mode, without touching the files' base values. */
+
+/* ---------- Light tint ---------- */
+:root.tinted {
+  --background-tint: color-mix(in srgb, var(--primary) 4%, #F7F8FA);
+  --surface-tint: color-mix(in srgb, var(--primary) 2%, #FFFFFF);
+  --sidebar-top: color-mix(in srgb, var(--primary) 14%, #16161E);
+  --sidebar-bottom: color-mix(in srgb, var(--primary) 6%, #101018);
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --focus-tint: rgba(255, 255, 255, 0.14);
+  --login-glow-1: var(--primary);
+  --login-glow-2: #FFC93C;
+}
+
+/* ---------- Dark tint ---------- */
+:root.tinted.dark {
+  --background-tint: color-mix(in srgb, var(--primary) 5%, #14181F);
+  --surface-tint: color-mix(in srgb, var(--primary) 3%, #1C222B);
+  --sidebar-top: color-mix(in srgb, var(--primary) 12%, #101018);
+  --sidebar-bottom: color-mix(in srgb, var(--primary) 5%, #0B0B10);
+  --sidebar-hover: rgba(255, 255, 255, 0.09);
+  --focus-tint: rgba(255, 255, 255, 0.15);
+  --login-glow-1: var(--primary);
+  --login-glow-2: color-mix(in srgb, var(--primary) 40%, #FFC93C);
+}

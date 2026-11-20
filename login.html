@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <main class="auth-shell">
+    <form class="auth-card" onsubmit="return false;">
+      <div class="auth-head">
+        <div class="brand-mark"><img data-brand-logo src="./logo.svg" alt="" style="width:30px;height:auto;display:block;" /></div>
+        <h1>Welcome back</h1>
+        <p>Sign in to the Koklass admin panel</p>
+      </div>
+
+      <div class="auth-form">
+        <div class="field">
+          <label for="username">Username <span class="req">*</span></label>
+          <input class="input" id="username" type="text" placeholder="e.g. twongel" autocomplete="username" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Password <span class="req">*</span></label>
+          <div class="pass-wrap">
+            <input class="input" id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="pass-eye" aria-label="Show password" onclick="const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-meta">
+          <label><input type="checkbox" checked /> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button class="btn btn-primary" id="login-btn" type="submit">Sign in →</button>
+
+        <div style="text-align:center;font-size:0.75rem;color:var(--muted-foreground);">or</div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-outline" type="button">SSO</button>
+          <button class="btn btn-outline" type="button">OTP</button>
+        </div>
+      </div>
+
+      <div class="auth-foot">
+        © 2026 Koklass · <a href="#">Support</a> ·
+        <button class="btn btn-ghost btn-sm" type="button" data-mode-toggle data-mode-icon>🌙</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="./admin-demo.js"></script>
+  <script>
+    document.getElementById('login-btn').addEventListener('click', function () {
+      const u = document.getElementById('username');
+      const p = document.getElementById('password');
+      if (!u.value.trim() || !p.value) {
+        [u, p.value === '' ? p : null].filter(Boolean).forEach(el => {
+          el.style.borderColor = 'var(--destructive)';
+          setTimeout(() => (el.style.borderColor = ''), 1600);
+        });
+        showToast('Enter username and password');
+        return;
+      }
+      showToast('Signed in as ' + u.value.trim() + ' (demo)');
+      // window.location.href = './dashboard.html';
+    });
+  </script>
+</body>
+</html>

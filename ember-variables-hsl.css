@@ -1,0 +1,82 @@
+/**
+ * Koklass-CMS "Ember" — HSL-triplet variant.
+ * For shadcn setups whose Tailwind wraps values in hsl(var(--x)).
+ * Primary = logo pink #EC3876 (H 339.3 S 82.6% L 57.3%).
+ * Values mirror ember-variables.css; format is "H S% L%" without the hsl() wrapper.
+ */
+
+:root {
+  color-scheme: light;
+
+  --border: 214 27% 91%;
+  --input: 210 17% 83%;
+  --ring: 339 83% 57%;
+  --background: 220 20% 97%;
+  --foreground: 220 20% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 20% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 20% 15%;
+
+  --primary: 339 83% 57%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 20% 95%;
+  --secondary-foreground: 220 20% 15%;
+
+  --muted: 220 20% 95%;
+  --muted-foreground: 217 16% 35%;
+
+  --accent: 220 20% 97%;
+  --accent-foreground: 220 20% 15%;
+
+  --destructive: 4 68% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --radius: 0.75rem;
+
+  --chart-1: 339 83% 57%;
+  --chart-2: 43 100% 62%;
+  --chart-3: 152 69% 39%;
+  --chart-4: 152 54% 47%;
+  --chart-5: 214 72% 51%;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --border: 214 19% 22%;
+  --input: 215 17% 27%;
+  --ring: 339 87% 63%;
+  --background: 216 20% 10%;
+  --foreground: 214 25% 96%;
+
+  --card: 216 21% 14%;
+  --card-foreground: 214 25% 96%;
+
+  --popover: 216 21% 14%;
+  --popover-foreground: 214 25% 96%;
+
+  --primary: 339 87% 63%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 216 21% 15%;
+  --secondary-foreground: 214 25% 96%;
+
+  --muted: 216 21% 15%;
+  --muted-foreground: 214 14% 70%;
+
+  --accent: 216 21% 15%;
+  --accent-foreground: 214 25% 96%;
+
+  --destructive: 3 83% 63%;
+  --destructive-foreground: 0 0% 100%;
+
+  --chart-1: 339 87% 63%;
+  --chart-2: 43 100% 62%;
+  --chart-3: 152 54% 51%;
+  --chart-4: 152 54% 47%;
+  --chart-5: 214 76% 63%;
+}

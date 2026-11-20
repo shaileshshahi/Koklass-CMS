@@ -1,0 +1,177 @@
+/**
+ * Koklass-CMS "Ember" theme — CSS variable shims.
+ * Primary = logo pink #EC3876 (logo.svg).
+ *
+ * Copy this file into a project and import it after the project's own :root
+ * block (or paste its contents) to recolor the app with zero component churn.
+ * Dark mode driven by `.dark`, matching Tailwind darkMode:'class'.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* shadcn contract */
+  --border: #E3E6EB;
+  --input: #CBD0D8;
+  --ring: #EC3876;
+  --background: #F7F8FA;
+  --foreground: #1E232C;
+
+  --card: #FFFFFF;
+  --card-foreground: #1E232C;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #1E232C;
+
+  --primary: #EC3876;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #EFF1F4;
+  --secondary-foreground: #1E232C;
+
+  --tertiary: #F2F2F2;
+  --tertiary-foreground: #191926;
+
+  --muted: #EFF1F4;
+  --muted-foreground: #4E5563;
+
+  --accent: #F7F8FA;
+  --accent-foreground: #1E232C;
+
+  --dark: #2A303C;
+  --dark-foreground: #FFFFFF;
+
+  --destructive: #D0342C;
+  --destructive-foreground: #FFFFFF;
+
+  --warning: #FFB020;
+  --warning-foreground: #2A1E00;
+
+  --success: #16885C;
+  --success-foreground: #FFFFFF;
+
+  --info: #2270E0;
+  --info-foreground: #FFFFFF;
+
+  --radius: 0.75rem;
+
+  /* App-specific legacy variables (kept, now Ember-colored) */
+  --lightPrimaryColor: #FA9EBE;
+  --darkPrimaryColor: #840B35;
+  --headerTextColor: #6B7482;
+  --saleBgColor: #D0342C;
+  --saleTextColor: #FFFFFF;
+  --addToCartBgColor: #EC3876;
+  --addToCartTextColor: #FFFFFF;
+  --addToCartHoverTextColor: #FFFFFF;
+  --addToCartBgHoverColor: #AF0D45;
+  --paginationBgColor: #2FBF71;
+  --footerColor: #2A303C;
+  --stockColor: #2FBF71;
+  --outOfStockColor: #D0342C;
+  --searchButtonColor: #EC3876;
+  --oldPriceColor: #4E5563;
+  --p: #2FBF71;
+
+  /* Ember extras (new code only) */
+  --primary-hover: #D31255;
+  --primary-soft: #FEE6EF;
+  --on-primary-soft: #8D0C39;
+  --scrim: rgba(20, 24, 31, 0.5);
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #EFF1F4;
+  --fg-muted: #4E5563;
+  --fg-faint: #8B93A1;
+  --shadow-sm: 0 1px 2px rgba(16, 18, 24, 0.08);
+  --shadow-md: 0 2px 6px rgba(16, 18, 24, 0.08), 0 1px 2px rgba(16, 18, 24, 0.06);
+  --shadow-lg: 0 12px 32px -8px rgba(16, 18, 24, 0.18);
+  --focus-ring: 0 0 0 3px rgba(236, 56, 118, 0.35);
+
+  /* Sidebar Tokens (Light) */
+  --sidebar-top: #FFFFFF;
+  --sidebar-bottom: #F5F7FA;
+  --sidebar-hover: rgba(236, 56, 118, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --border: #2E3642;
+  --input: #3A4150;
+  --ring: #F34F87;
+  --background: #14181F;
+  --foreground: #F2F4F7;
+
+  --card: #1C222B;
+  --card-foreground: #F2F4F7;
+
+  --popover: #1C222B;
+  --popover-foreground: #F2F4F7;
+
+  --primary: #F34F87;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #242B36;
+  --secondary-foreground: #F2F4F7;
+
+  --tertiary: #2A303C;
+  --tertiary-foreground: #E3E6EB;
+
+  --muted: #242B36;
+  --muted-foreground: #A9B1BC;
+
+  --accent: #242B36;
+  --accent-foreground: #F2F4F7;
+
+  --dark: #14181F;
+  --dark-foreground: #F2F4F7;
+
+  --destructive: #F0564E;
+  --destructive-foreground: #FFFFFF;
+
+  --warning: #FFC250;
+  --warning-foreground: #2A1E00;
+
+  --success: #2FBF71;
+  --success-foreground: #06281A;
+
+  --info: #5691EA;
+  --info-foreground: #FFFFFF;
+
+  /* App-specific legacy variables (dark) */
+  --lightPrimaryColor: #FA9EBE;
+  --darkPrimaryColor: #FA9EBE;
+  --headerTextColor: #A9B1BC;
+  --saleBgColor: #F0564E;
+  --saleTextColor: #FFFFFF;
+  --addToCartBgColor: #F34F87;
+  --addToCartTextColor: #FFFFFF;
+  --addToCartHoverTextColor: #FFFFFF;
+  --addToCartBgHoverColor: #F66A9D;
+  --paginationBgColor: #2FBF71;
+  --footerColor: #0E1218;
+  --stockColor: #2FBF71;
+  --outOfStockColor: #F0564E;
+  --searchButtonColor: #F34F87;
+  --oldPriceColor: #A9B1BC;
+  --p: #2FBF71;
+
+  /* Ember extras (dark) */
+  --primary-hover: #F66A9D;
+  --primary-soft: #3A1122;
+  --on-primary-soft: #FA9EBE;
+  --scrim: rgba(6, 8, 12, 0.68);
+  --surface-raised: #242B36;
+  --surface-sunken: #0E1218;
+  --fg-muted: #A9B1BC;
+  --fg-faint: #767E8B;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  --focus-ring: 0 0 0 3px rgba(243, 79, 135, 0.45);
+
+  /* Sidebar Tokens (Dark) */
+  --sidebar-top: #1C222B;
+  --sidebar-bottom: #14181F;
+  --sidebar-hover: rgba(243, 79, 135, 0.14);
+}

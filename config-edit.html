@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit config — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" data-sidebar-active="configs-edit"></aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Sample edit</div>
+          <div class="crumb">Home / Theme ▸ Samples ▸ Edit <span class="badge badge-warning" style="margin-left:6px">Dummy data</span></div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search…" />
+        </div>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Demo notice -->
+        <section style="display:flex;align-items:center;gap:10px;background:var(--warning);color:var(--warning-foreground);border-radius:12px;padding:10px 16px;font-size:.8rem;font-weight:700;flex-wrap:wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          Theme sample — dummy record. Copy the markup as a starting point for your real edit page.
+        </section>
+
+        <form id="cfg-form" novalidate>
+          <div class="form-grid-2">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <!-- Definition (read-only key) -->
+              <section class="card">
+                <div class="card-head"><h3>Definition</h3><span class="hint">Key is immutable once created</span></div>
+                <div class="card-pad form-grid">
+                  <div class="field full">
+                    <label>Key <span class="req">*</span></label>
+                    <input class="input" id="f-key" readonly />
+                    <div class="help">Renaming would break API consumers — create a new config instead.</div>
+                  </div>
+                  <div class="field full" id="g-label">
+                    <label>Label <span class="req">*</span></label>
+                    <input class="input" id="f-label" oninput="live()" />
+                  </div>
+                  <div class="field full">
+                    <label>Description</label>
+                    <input class="input" id="f-desc" />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Value editor (adapts to type) -->
+              <section class="card">
+                <div class="card-head"><h3>Value</h3><span class="hint">Typed per the config's data type</span></div>
+                <div class="card-pad form-grid">
+                  <div class="field full">
+                    <label>Data type</label>
+                    <input class="input" id="f-type-ro" readonly style="max-width:180px" />
+                  </div>
+                  <div class="field full" id="wrap-value">
+                    <label>Value <span class="req">*</span></label>
+                    <textarea class="input" id="f-value" rows="2" style="font-family:ui-monospace,Menlo,monospace" oninput="live()"></textarea>
+                    <div class="err-msg" id="v-err" hidden><span></span></div>
+                    <div class="ok-msg" id="v-ok" hidden>✓ Valid JSON</div>
+                  </div>
+                  <div class="field full" id="wrap-bool" hidden>
+                    <label>Current state</label>
+                    <div class="switch-row">
+                      <div class="txt"><b id="bool-lab">Enabled</b><span>Stored as JSON true/false</span></div>
+                      <label class="switch"><input type="checkbox" id="f-bool" /><i></i></label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Danger zone -->
+              <section class="card card-pad danger-zone">
+                <div class="card-head" style="padding:0 0 14px"><h3>Danger zone</h3></div>
+                <p style="font-size:.8rem;color:var(--muted-foreground);margin-bottom:12px">Deleting this config breaks any code reading it. Prefer disabling first.</p>
+                <button type="button" class="btn btn-danger btn-sm" onclick="page.del()">Delete config</button>
+              </section>
+            </div>
+
+            <!-- Side rail -->
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <section class="card">
+                <div class="card-head"><h3>Publish</h3></div>
+                <div class="card-pad" style="display:flex;flex-direction:column;gap:0">
+                  <div class="switch-row">
+                    <div class="txt"><b>Enabled</b><span>Config takes effect immediately</span></div>
+                    <label class="switch"><input type="checkbox" id="f-active" checked /><i></i></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="txt"><b>Public</b><span>Expose via public settings API</span></div>
+                    <label class="switch"><input type="checkbox" id="f-public" /><i></i></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="txt"><b>Requires restart</b><span>Cache must flush before it applies</span></div>
+                    <label class="switch"><input type="checkbox" id="f-restart" /><i></i></label>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-outline" onclick="window.location.href='./config-list.html'">Back to list</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card">
+                <div class="card-head"><h3>Recent changes</h3><span class="hint">Audit log</span></div>
+                <div class="card-pad" id="history" style="display:flex;flex-direction:column;gap:10px"></div>
+              </section>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+  <script>
+    'use strict';
+
+    /* Demo record — in a real app this comes from ?id= via the API */
+    const cfg = {
+      key: 'orders.auto_accept', label: 'Auto-accept orders', desc: 'Automatically accept incoming orders without staff review',
+      type: 'boolean', value: 'true', active: true, group: 'Orders',
+      history: [
+        { at: '2026-11-17 14:02', by: 'Tsering W.', note: 'Enabled after the Diwali rush' },
+        { at: '2026-11-12 09:41', by: 'Rita D.',    note: 'Disabled — kitchen overload' },
+        { at: '2026-10-30 18:20', by: 'System',     note: 'Config created' },
+      ],
+    };
+
+    const isBool = cfg.type === 'boolean';
+    document.getElementById('f-key').value = cfg.key;
+    document.getElementById('f-label').value = cfg.label;
+    document.getElementById('f-desc').value = cfg.desc;
+    document.getElementById('f-type-ro').value = cfg.type;
+    document.getElementById('f-active').checked = cfg.active;
+    document.getElementById('wrap-bool').hidden = !isBool;
+    document.getElementById('wrap-value').hidden = isBool;
+    if (isBool) document.getElementById('f-bool').checked = cfg.value === 'true';
+    else document.getElementById('f-value').value = cfg.value;
+
+    document.getElementById('history').innerHTML = cfg.history.map(h =>
+      '<div><div style="display:flex;justify-content:space-between;font-size:.75rem"><b>' + h.by + '</b><span style="color:var(--muted-foreground)">' + h.at + '</span></div>'
+      + '<div style="font-size:.78rem;color:var(--muted-foreground)">' + h.note + '</div></div>').join('');
+
+    function live() {
+      if (isBool) document.getElementById('bool-lab').textContent = document.getElementById('f-bool').checked ? 'Enabled' : 'Disabled';
+    }
+    document.getElementById('f-bool').addEventListener('change', live);
+
+    document.getElementById('cfg-form').addEventListener('submit', e => {
+      e.preventDefault();
+      if (!document.getElementById('f-label').value.trim()) {
+        const g = document.getElementById('g-label');
+        g.querySelector('.input').classList.add('is-error');
+        showToast('Label is required');
+        return;
+      }
+      showToast('Config "' + cfg.key + '" saved');
+    });
+
+    function del() {
+      window.openModal({
+        title: 'Delete config?',
+        body: 'Permanently delete <b>' + cfg.key + '</b>? Code reading this key will fall back to defaults.',
+        okText: 'Delete', ok: () => { showToast('Config deleted'); setTimeout(() => window.location.href = './config-list.html', 500); },
+      });
+    }
+    window.page = { del };
+  </script>
+</body>
+</html>

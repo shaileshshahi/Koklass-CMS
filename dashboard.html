@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Koklass-CMS Ember</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== Sidebar (shared: rendered by admin-sidebar.js) ===== -->
+    <aside class="sidebar" data-sidebar-active="dashboard"></aside>
+
+    <!-- ===== Main ===== -->
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="crumb">Home / Overview</div>
+        </div>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" placeholder="Search…" />
+        </div>
+        <button class="icon-btn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="avatar">TW</div>
+          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+        </div>
+        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+      </header>
+
+      <main class="content">
+        <!-- Stat cards -->
+        <section class="stats">
+          <div class="card stat">
+            <div class="row"><span class="label">Today's revenue</span><span class="badge badge-brand">Live</span></div>
+            <div class="value">Rs. 428,900 <svg class="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
+            <div class="row"><span style="font-size:0.72rem;color:var(--muted-foreground);">vs yesterday</span><span class="badge badge-success">+12.4%</span></div>
+          </div>
+          <div class="card stat" onclick="window.location.href='./orders.html'" style="cursor:pointer;" title="View Orders">
+            <div class="row"><span class="label">Orders</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <div class="value">1,284</div>
+            <div class="progress" title="Daily target"><i style="width:72%"></i></div>
+            <div style="font-size:0.7rem;color:var(--muted-foreground);">72% of 1,800 target</div>
+          </div>
+          <div class="card stat">
+            <div class="row"><span class="label">Avg. basket</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+            <div class="value">Rs. 334</div>
+            <div class="row"><span style="font-size:0.72rem;color:var(--muted-foreground);">last 7 days avg</span><span class="badge badge-muted">Rs. 318</span></div>
+          </div>
+          <div class="card stat">
+            <div class="row"><span class="label">Active outlets</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
+            <div class="value">14 <span class="badge badge-success">2 closing soon</span></div>
+            <div style="font-size:0.7rem;color:var(--muted-foreground);">Across 3 provinces</div>
+          </div>
+        </section>
+
+        <!-- Chart + side panel -->
+        <section class="dashboard-grid">
+          <div class="card">
+            <div class="card-head">
+              <h3>Revenue this week</h3>
+              <span class="legend"><span><i style="background:var(--primary)"></i>Revenue</span><span><i style="background:var(--success)"></i>Target</span></span>
+            </div>
+            <div class="card-pad">
+              <svg class="area-chart" viewBox="0 0 520 180" preserveAspectRatio="none" role="img" aria-label="Revenue chart">
+                <line class="grid" x1="0" y1="45" x2="520" y2="45"/>
+                <line class="grid" x1="0" y1="90" x2="520" y2="90"/>
+                <line class="grid" x1="0" y1="135" x2="520" y2="135"/>
+                <path class="fill" d="M0,140 C60,120 90,95 140,100 C190,105 220,60 270,65 C320,70 350,40 400,45 C450,50 480,30 520,35 L520,180 L0,180 Z"/>
+                <path class="line" d="M0,140 C60,120 90,95 140,100 C190,105 220,60 270,65 C320,70 350,40 400,45 C450,50 480,30 520,35"/>
+                <path d="M0,160 C120,150 240,120 360,110 C440,103 480,100 520,98" fill="none" stroke="#2FBF71" stroke-width="2" stroke-dasharray="5 5"/>
+                <text x="8" y="175">Mon</text><text x="150" y="175">Wed</text><text x="290" y="175">Fri</text><text x="480" y="175">Sun</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Orders to review</h3>
+              <a href="./orders.html" class="hint" style="color:var(--ring);font-weight:700;">View all →</a>
+            </div>
+            <div class="card-pad" style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">KB</div>
+                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2941</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Durbar Marg · 2 min ago</div></div>
+                <span class="badge badge-warning">Pending</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">JH</div>
+                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2940</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Jhamsikhel · 6 min ago</div></div>
+                <span class="badge badge-warning">Pending</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">SK</div>
+                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2939</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Suryabinayak · 9 min ago</div></div>
+                <span class="badge badge-danger">Payment issue</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">LM</div>
+                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2938</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Lakeside · 12 min ago</div></div>
+                <span class="badge badge-info">Refund</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent activity table -->
+        <section class="card">
+          <div class="card-head">
+            <h3>Recent activity</h3>
+            <a href="#" class="hint" style="color:var(--ring);font-weight:700;">View all →</a>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table">
+              <thead>
+                <tr><th>User</th><th>Action</th><th>Module</th><th>Time</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="cell-user"><div class="avatar">TW</div><div><b>Tsering W.</b><span>admin@koklass</span></div></div></td>
+                  <td><span class="badge badge-brand">Updated outlet hours</span></td><td>Settings</td><td class="cell-num">2 min ago</td>
+                </tr>
+                <tr>
+                  <td><div class="cell-user"><div class="avatar" style="background:var(--success)">RD</div><div><b>Rita D.</b><span>manager@koklass</span></div></div></td>
+                  <td><span class="badge badge-success">Approved refund</span></td><td>Orders</td><td class="cell-num">18 min ago</td>
+                </tr>
+                <tr>
+                  <td><div class="cell-user"><div class="avatar" style="background:var(--info)">BK</div><div><b>Bikash K.</b><span>staff@koklass</span></div></div></td>
+                  <td><span class="badge badge-info">Created employee</span></td><td>Employees</td><td class="cell-num">1 hr ago</td>
+                </tr>
+                <tr>
+                  <td><div class="cell-user"><div class="avatar" style="background:var(--destructive)">SP</div><div><b>Sita P.</b><span>finance@koklass</span></div></div></td>
+                  <td><span class="badge badge-danger">Disabled coupon</span></td><td>Marketing</td><td class="cell-num">3 hr ago</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+</body>
+</html>
