@@ -219,19 +219,21 @@
     const filter = el('filter', { id: uid + '-glow', x: '-20%', y: '-20%', width: '140%', height: '140%' }, defs);
     el('feDropShadow', { dx: '0', dy: '6', stdDeviation: '5', 'flood-color': s0Color, 'flood-opacity': '0.35' }, filter);
 
-    // Weekend background shading without overlapping text
+    // Weekend background shading without overlapping text or bleeding out
     const satIdx = labels.findIndex(lb => lb.toLowerCase().includes('sat'));
     const sunIdx = labels.findIndex(lb => lb.toLowerCase().includes('sun'));
     if (satIdx >= 0) {
       const halfStep = stepX / 2;
-      const wStart = px(satIdx) - halfStep;
-      const wEnd = (sunIdx >= 0 ? px(sunIdx) : px(satIdx)) + halfStep;
-      el('rect', {
-        x: wStart, y: P.t,
-        width: wEnd - wStart, height: H - P.t - P.b,
-        fill: 'var(--chart-weekend-bg, rgba(236, 56, 118, 0.045))',
-        rx: '6'
-      }, svg);
+      const wStart = Math.max(P.l, px(satIdx) - halfStep);
+      const wEnd = Math.min(W - P.r, (sunIdx >= 0 ? px(sunIdx) : px(satIdx)) + halfStep);
+      if (wEnd > wStart) {
+        el('rect', {
+          x: wStart, y: P.t,
+          width: wEnd - wStart, height: H - P.t - P.b,
+          fill: 'var(--chart-weekend-bg, color-mix(in srgb, var(--primary, #EC3876) 5.5%, transparent))',
+          rx: '6'
+        }, svg);
+      }
     }
 
     // Vertical gridlines across full chart width

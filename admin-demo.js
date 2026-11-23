@@ -160,6 +160,7 @@
       rs.setProperty('--on-primary-soft', b.darkOnSoft);
       rs.setProperty('--ring', b.dark);
       rs.setProperty('--focus-ring', hexToRgba(b.dark, 0.45));
+      rs.setProperty('--chart-weekend-bg', hexToRgba(b.dark, 0.08));
     } else {
       rs.setProperty('--primary', b.primary);
       rs.setProperty('--primary-hover', b.hover);
@@ -167,6 +168,7 @@
       rs.setProperty('--on-primary-soft', b.onSoft);
       rs.setProperty('--ring', b.primary);
       rs.setProperty('--focus-ring', hexToRgba(b.primary, 0.35));
+      rs.setProperty('--chart-weekend-bg', hexToRgba(b.primary, 0.055));
     }
 
     /* ---- Typography & Geometry tokens ---- */
@@ -237,6 +239,7 @@
       rs.setProperty('--on-primary-soft', b.darkOnSoft);
       rs.setProperty('--ring', b.dark);
       rs.setProperty('--focus-ring', hexToRgba(b.dark, 0.45));
+      rs.setProperty('--chart-weekend-bg', hexToRgba(b.dark, 0.08));
     } else {
       rs.setProperty('--primary', b.primary);
       rs.setProperty('--primary-hover', b.hover);
@@ -244,6 +247,7 @@
       rs.setProperty('--on-primary-soft', b.onSoft);
       rs.setProperty('--ring', b.primary);
       rs.setProperty('--focus-ring', hexToRgba(b.primary, 0.35));
+      rs.setProperty('--chart-weekend-bg', hexToRgba(b.primary, 0.055));
     }
 
     const fontHeading = cfg.fontHeading || 'Nunito';
