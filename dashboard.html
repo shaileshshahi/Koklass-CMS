@@ -3,146 +3,429 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — Koklass-CMS Ember</title>
+  <title>Executive Dashboard — Koklass-CMS Ember</title>
   <link rel="stylesheet" href="./ember-variables.css" />
   <link rel="stylesheet" href="./admin-demo.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="app">
     <!-- ===== Sidebar (shared: rendered by admin-sidebar.js) ===== -->
     <aside class="sidebar" data-sidebar-active="dashboard"></aside>
 
-    <!-- ===== Main ===== -->
+    <!-- ===== Main Content Area ===== -->
     <div class="main">
       <header class="topbar">
         <div>
-          <div class="page-title">Dashboard</div>
-          <div class="crumb">Home / Overview</div>
+          <div class="page-title">Executive Dashboard</div>
+          <div class="crumb">Home / Overview & Performance</div>
         </div>
+
         <div class="topbar-search">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="search" placeholder="Search…" />
+          <input type="search" placeholder="Search orders, outlets, staff…" />
         </div>
-        <button class="icon-btn" aria-label="Notifications">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span class="dot"></span>
-        </button>
-        <div class="topbar-user">
-          <div class="avatar">TW</div>
-          <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-sm btn-outline d-none-mobile" id="btn-export-dash" title="Export weekly telemetry report">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="icon-btn" aria-label="Notifications" title="Live notifications">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="dot"></span>
+          </button>
+          <div class="topbar-user">
+            <div class="avatar">TW</div>
+            <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+          </div>
+          <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
         </div>
-        <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
       </header>
 
       <main class="content">
-        <!-- Stat cards -->
-        <section class="stats">
-          <div class="card stat">
-            <div class="row"><span class="label">Today's revenue</span><span class="badge badge-brand">Live</span></div>
-            <div class="value">Rs. 428,900 <svg class="spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
-            <div class="row"><span style="font-size:0.72rem;color:var(--muted-foreground);">vs yesterday</span><span class="badge badge-success">+12.4%</span></div>
+        <!-- 1. Top Executive KPI Cards: 4 Balanced Cards with Clear Trend Indicators -->
+        <section class="dashboard-stats" id="dashboard-kpis">
+          <!-- Card 1: Today's Revenue -->
+          <div class="card stat" style="border-left: 3px solid var(--primary)">
+            <div class="row">
+              <span class="label">Today's Revenue</span>
+              <div class="stat-icon" style="background:var(--primary-soft, rgba(236,56,118,0.12));color:var(--primary)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <div class="value">
+              Rs. 428,900
+              <span class="badge badge-brand" style="font-size:0.68rem;padding:2px 6px;">Live</span>
+            </div>
+            <div class="row" style="margin-top:2px;">
+              <span class="badge badge-success">▲ +12.4%</span>
+              <span class="trend-sub">vs yesterday (Rs. 381.5k)</span>
+            </div>
+            <div class="row" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;">
+              <span class="trend-sub">Hourly run-rate: <b style="color:var(--foreground)">Rs. 53.6k / hr</b></span>
+              <div class="spark" id="dash-sp1" style="width:64px;height:20px;"></div>
+            </div>
           </div>
-          <div class="card stat" onclick="window.location.href='./orders.html'" style="cursor:pointer;" title="View Orders">
-            <div class="row"><span class="label">Orders</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
-            <div class="value">1,284</div>
-            <div class="progress" title="Daily target"><i style="width:72%"></i></div>
-            <div style="font-size:0.7rem;color:var(--muted-foreground);">72% of 1,800 target</div>
+
+          <!-- Card 2: Total Orders -->
+          <div class="card stat" onclick="window.location.href='./orders.html'" style="cursor:pointer;border-left: 3px solid var(--info)" title="Click to view all orders">
+            <div class="row">
+              <span class="label">Total Orders</span>
+              <div class="stat-icon" style="background:rgba(86,145,234,0.12);color:var(--info)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              </div>
+            </div>
+            <div class="value">
+              1,284
+              <span class="badge badge-success">▲ +8.2%</span>
+            </div>
+            <div class="row" style="margin-top:2px;">
+              <span class="trend-sub">Target pace: <b style="color:var(--foreground)">72% of 1,800</b></span>
+              <span style="font-size:0.72rem;color:var(--info);font-weight:700;">516 to go</span>
+            </div>
+            <div style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;">
+              <div class="progress" style="height:6px;margin:0;"><i style="width:72%;background:var(--info)"></i></div>
+            </div>
           </div>
-          <div class="card stat">
-            <div class="row"><span class="label">Avg. basket</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-            <div class="value">Rs. 334</div>
-            <div class="row"><span style="font-size:0.72rem;color:var(--muted-foreground);">last 7 days avg</span><span class="badge badge-muted">Rs. 318</span></div>
+
+          <!-- Card 3: Avg Basket Value -->
+          <div class="card stat" style="border-left: 3px solid var(--success)">
+            <div class="row">
+              <span class="label">Avg. Basket Value</span>
+              <div class="stat-icon" style="background:rgba(47,191,113,0.12);color:var(--success)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+            </div>
+            <div class="value">
+              Rs. 334
+              <span class="badge badge-success">▲ +5.0%</span>
+            </div>
+            <div class="row" style="margin-top:2px;">
+              <span class="badge badge-muted">Rs. 318 baseline</span>
+              <span class="trend-sub">last 7 days avg</span>
+            </div>
+            <div class="row" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;">
+              <span class="trend-sub">Average basket: <b style="color:var(--foreground)">2.4 items / ticket</b></span>
+              <div class="spark" id="dash-sp3" style="width:64px;height:20px;"></div>
+            </div>
           </div>
-          <div class="card stat">
-            <div class="row"><span class="label">Active outlets</span><svg class="spark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
-            <div class="value">14 <span class="badge badge-success">2 closing soon</span></div>
-            <div style="font-size:0.7rem;color:var(--muted-foreground);">Across 3 provinces</div>
+
+          <!-- Card 4: Active Outlets -->
+          <div class="card stat" style="border-left: 3px solid var(--warning)">
+            <div class="row">
+              <span class="label">Active Outlets</span>
+              <div class="stat-icon" style="background:rgba(255,194,80,0.14);color:var(--warning)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+              </div>
+            </div>
+            <div class="value">
+              14
+              <span style="font-size:0.92rem;color:var(--muted-foreground);font-weight:600">/ 16 total</span>
+              <span class="badge badge-success" style="margin-left:auto;font-size:0.68rem;">All Online</span>
+            </div>
+            <div class="row" style="margin-top:2px;">
+              <span class="badge badge-warning">2 closing soon</span>
+              <span class="trend-sub">Across 3 provinces</span>
+            </div>
+            <div class="row" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;">
+              <span class="trend-sub">Network health: <b style="color:var(--success)">98.5% uptime</b></span>
+              <div class="spark" id="dash-sp4" style="width:64px;height:20px;"></div>
+            </div>
           </div>
         </section>
 
-        <!-- Chart + side panel -->
-        <section class="dashboard-grid">
-          <div class="card">
-            <div class="card-head">
-              <h3>Revenue this week</h3>
-              <span class="legend"><span><i style="background:var(--primary)"></i>Revenue</span><span><i style="background:var(--success)"></i>Target</span></span>
+        <!-- 2. Full-Width 'Revenue this week' Chart Section -->
+        <section class="card dashboard-revenue-card">
+          <div class="card-head" style="flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <h3 style="margin:0;font-size:1.05rem;">Revenue this week</h3>
+                <span class="badge badge-brand">Rs. 2,956,000 Total</span>
+                <span class="badge badge-success">▲ +14.8% vs target</span>
+              </div>
+              <span class="hint" style="margin-top:3px;display:block;">Daily revenue trajectory across all outlets compared to target benchmark</span>
             </div>
-            <div class="card-pad">
-              <svg class="area-chart" viewBox="0 0 520 180" preserveAspectRatio="none" role="img" aria-label="Revenue chart">
-                <line class="grid" x1="0" y1="45" x2="520" y2="45"/>
-                <line class="grid" x1="0" y1="90" x2="520" y2="90"/>
-                <line class="grid" x1="0" y1="135" x2="520" y2="135"/>
-                <path class="fill" d="M0,140 C60,120 90,95 140,100 C190,105 220,60 270,65 C320,70 350,40 400,45 C450,50 480,30 520,35 L520,180 L0,180 Z"/>
-                <path class="line" d="M0,140 C60,120 90,95 140,100 C190,105 220,60 270,65 C320,70 350,40 400,45 C450,50 480,30 520,35"/>
-                <path d="M0,160 C120,150 240,120 360,110 C440,103 480,100 520,98" fill="none" stroke="#2FBF71" stroke-width="2" stroke-dasharray="5 5"/>
-                <text x="8" y="175">Mon</text><text x="150" y="175">Wed</text><text x="290" y="175">Fri</text><text x="480" y="175">Sun</text>
-              </svg>
+
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <!-- Clear Revenue vs. Target Legend -->
+              <div class="chart-legend-deck">
+                <span class="legend-chip">
+                  <i class="legend-color-dot" style="background:var(--primary)"></i>
+                  <span>Revenue (Actual)</span>
+                </span>
+                <span class="legend-chip">
+                  <i class="legend-color-dash" style="border-top:2px dashed var(--success)"></i>
+                  <span>Target Benchmark</span>
+                </span>
+              </div>
+
+              <!-- Timeframe & Quick Link -->
+              <div class="segmented-control">
+                <button class="segmented-btn active" id="btn-chart-range-7d">This Week</button>
+                <button class="segmented-btn" onclick="window.location.href='./graphs-sample.html'" title="Open detailed analytics page">Full Analytics →</button>
+              </div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Orders to review</h3>
-              <a href="./orders.html" class="hint" style="color:var(--ring);font-weight:700;">View all →</a>
+          <!-- Interactive Area Chart Container -->
+          <div class="card-pad" style="padding: 16px 20px 8px;">
+            <div id="dashboard-revenue-chart" style="width:100%;height:300px;min-height:300px;position:relative;"></div>
+          </div>
+
+          <!-- Summary Metric Footer Strip -->
+          <div class="chart-footer-metrics">
+            <div class="metric-item">
+              <span class="sublabel">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                Peak Performance
+              </span>
+              <span class="subval">Saturday • Rs. 524,000</span>
             </div>
-            <div class="card-pad" style="display:flex;flex-direction:column;gap:14px;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">KB</div>
-                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2941</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Durbar Marg · 2 min ago</div></div>
-                <span class="badge badge-warning">Pending</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">JH</div>
-                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2940</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Jhamsikhel · 6 min ago</div></div>
-                <span class="badge badge-warning">Pending</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">SK</div>
-                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2939</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Suryabinayak · 9 min ago</div></div>
-                <span class="badge badge-danger">Payment issue</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar" style="background:var(--secondary);color:var(--secondary-foreground);">LM</div>
-                <div style="flex:1;min-width:0;"><b style="font-size:0.82rem;">#ORD-2938</b><div style="font-size:0.7rem;color:var(--muted-foreground);">Lakeside · 12 min ago</div></div>
-                <span class="badge badge-info">Refund</span>
-              </div>
+            <div class="metric-item">
+              <span class="sublabel">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Daily Run-Rate
+              </span>
+              <span class="subval">Rs. 422,285 / day</span>
+            </div>
+            <div class="metric-item">
+              <span class="sublabel">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                Target Attainment
+              </span>
+              <span class="subval" style="color:var(--success)">108.4% (Exceeded)</span>
+            </div>
+            <div class="metric-item">
+              <span class="sublabel">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:-1px"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Trailing Delta
+              </span>
+              <span class="subval" style="color:var(--primary)">+14.8% vs last week</span>
             </div>
           </div>
         </section>
 
-        <!-- Recent activity table -->
-        <section class="card">
-          <div class="card-head">
-            <h3>Recent activity</h3>
-            <a href="#" class="hint" style="color:var(--ring);font-weight:700;">View all →</a>
+        <!-- 3. Dual-Column Layout: Scannable Orders to Review + Recent Activity -->
+        <section class="dashboard-bottom-grid">
+          <!-- Left: Orders to Review with Scannable Status Pills and Quick Action Triggers -->
+          <div class="card" id="card-orders-review">
+            <div class="card-head" style="flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <h3 style="margin:0;">Orders to review</h3>
+                <span class="badge badge-warning" id="orders-review-counter">4 Action Required</span>
+              </div>
+              <a href="./orders.html" class="hint" style="color:var(--ring);font-weight:700;">View all orders (28) →</a>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="orders-filter-toolbar">
+              <button class="orders-filter-btn active" data-filter="all">All (4)</button>
+              <button class="orders-filter-btn" data-filter="pending">Pending (2)</button>
+              <button class="orders-filter-btn" data-filter="issue">Payment Issue (1)</button>
+              <button class="orders-filter-btn" data-filter="refund">Refund (1)</button>
+            </div>
+
+            <!-- Scannable Order List -->
+            <div class="orders-review-list" id="orders-review-list">
+              <!-- Order 1: Pending -->
+              <div class="order-review-item" data-category="pending" id="order-row-2941">
+                <div class="order-main-info">
+                  <div class="avatar" style="background:rgba(236,56,118,0.12);color:var(--primary);font-weight:700;">KB</div>
+                  <div class="order-desc">
+                    <div class="order-title-line">
+                      <b class="order-id">#ORD-2941</b>
+                      <span class="order-outlet">Durbar Marg</span>
+                      <span class="order-time">• 2 min ago</span>
+                    </div>
+                    <div class="order-items-snippet">2x Zinger Combos, 1x Krushers • <b style="color:var(--foreground)">Rs. 1,450</b> • Dine-in</div>
+                  </div>
+                </div>
+                <div class="order-status-actions">
+                  <span class="badge badge-warning order-badge">Pending Review</span>
+                  <div class="order-btn-group">
+                    <button class="btn btn-xs btn-primary order-action-trigger" data-action="accept" data-id="ORD-2941" title="Accept order into kitchen">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Accept
+                    </button>
+                    <button class="btn btn-xs btn-outline order-action-trigger" data-action="details" data-id="ORD-2941" title="Inspect details">
+                      Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order 2: Kitchen Queue -->
+              <div class="order-review-item" data-category="pending" id="order-row-2940">
+                <div class="order-main-info">
+                  <div class="avatar" style="background:rgba(86,145,234,0.12);color:var(--info);font-weight:700;">JH</div>
+                  <div class="order-desc">
+                    <div class="order-title-line">
+                      <b class="order-id">#ORD-2940</b>
+                      <span class="order-outlet">Jhamsikhel Hub</span>
+                      <span class="order-time">• 6 min ago</span>
+                    </div>
+                    <div class="order-items-snippet">4x Chicken Burgers, 2x Jumbo Fries • <b style="color:var(--foreground)">Rs. 3,200</b> • Delivery</div>
+                  </div>
+                </div>
+                <div class="order-status-actions">
+                  <span class="badge badge-warning order-badge">Kitchen Queue</span>
+                  <div class="order-btn-group">
+                    <button class="btn btn-xs btn-primary order-action-trigger" data-action="dispatch" data-id="ORD-2940" title="Dispatch order">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                      Dispatch
+                    </button>
+                    <button class="btn btn-xs btn-outline order-action-trigger" data-action="details" data-id="ORD-2940" title="Inspect details">
+                      Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order 3: Payment Issue -->
+              <div class="order-review-item" data-category="issue" id="order-row-2939">
+                <div class="order-main-info">
+                  <div class="avatar" style="background:rgba(240,86,78,0.12);color:var(--destructive);font-weight:700;">SK</div>
+                  <div class="order-desc">
+                    <div class="order-title-line">
+                      <b class="order-id">#ORD-2939</b>
+                      <span class="order-outlet">Suryabinayak</span>
+                      <span class="order-time">• 9 min ago</span>
+                    </div>
+                    <div class="order-items-snippet">1x Family Bucket Box, 1x Dip Combo • <b style="color:var(--foreground)">Rs. 2,150</b> • Card Declined</div>
+                  </div>
+                </div>
+                <div class="order-status-actions">
+                  <span class="badge badge-danger order-badge">Payment Failed</span>
+                  <div class="order-btn-group">
+                    <button class="btn btn-xs btn-danger order-action-trigger" data-action="retry" data-id="ORD-2939" title="Resend payment link via SMS/Email">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                      Retry Gateway
+                    </button>
+                    <button class="btn btn-xs btn-ghost order-action-trigger" data-action="contact" data-id="ORD-2939" title="Call customer">
+                      Contact
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order 4: Refund -->
+              <div class="order-review-item" data-category="refund" id="order-row-2938">
+                <div class="order-main-info">
+                  <div class="avatar" style="background:rgba(86,145,234,0.12);color:var(--info);font-weight:700;">LM</div>
+                  <div class="order-desc">
+                    <div class="order-title-line">
+                      <b class="order-id">#ORD-2938</b>
+                      <span class="order-outlet">Lakeside Pokhara</span>
+                      <span class="order-time">• 12 min ago</span>
+                    </div>
+                    <div class="order-items-snippet">Missing beverage in takeout combo • Claim: <b style="color:var(--destructive)">Rs. 650 Refund</b></div>
+                  </div>
+                </div>
+                <div class="order-status-actions">
+                  <span class="badge badge-info order-badge">Refund Requested</span>
+                  <div class="order-btn-group">
+                    <button class="btn btn-xs btn-success order-action-trigger" data-action="approve" data-id="ORD-2938" title="Approve refund claim">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Approve
+                    </button>
+                    <button class="btn btn-xs btn-outline order-action-trigger" data-action="reject" data-id="ORD-2938" title="Decline refund request">
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div style="overflow-x:auto;">
-            <table class="table">
-              <thead>
-                <tr><th>User</th><th>Action</th><th>Module</th><th>Time</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><div class="cell-user"><div class="avatar">TW</div><div><b>Tsering W.</b><span>admin@koklass</span></div></div></td>
-                  <td><span class="badge badge-brand">Updated outlet hours</span></td><td>Settings</td><td class="cell-num">2 min ago</td>
-                </tr>
-                <tr>
-                  <td><div class="cell-user"><div class="avatar" style="background:var(--success)">RD</div><div><b>Rita D.</b><span>manager@koklass</span></div></div></td>
-                  <td><span class="badge badge-success">Approved refund</span></td><td>Orders</td><td class="cell-num">18 min ago</td>
-                </tr>
-                <tr>
-                  <td><div class="cell-user"><div class="avatar" style="background:var(--info)">BK</div><div><b>Bikash K.</b><span>staff@koklass</span></div></div></td>
-                  <td><span class="badge badge-info">Created employee</span></td><td>Employees</td><td class="cell-num">1 hr ago</td>
-                </tr>
-                <tr>
-                  <td><div class="cell-user"><div class="avatar" style="background:var(--destructive)">SP</div><div><b>Sita P.</b><span>finance@koklass</span></div></div></td>
-                  <td><span class="badge badge-danger">Disabled coupon</span></td><td>Marketing</td><td class="cell-num">3 hr ago</td>
-                </tr>
-              </tbody>
-            </table>
+
+          <!-- Right: Recent Activity Audit & Quick Actions -->
+          <div class="card">
+            <div class="card-head">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <h3 style="margin:0;">Recent activity</h3>
+                <span class="badge badge-muted">Live audit</span>
+              </div>
+              <a href="#" class="hint" style="color:var(--ring);font-weight:700;">Full audit log →</a>
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="table" style="font-size:0.8rem;">
+                <thead>
+                  <tr><th>User</th><th>Action</th><th>Module</th><th>Time</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="cell-user">
+                        <div class="avatar">TW</div>
+                        <div><b>Tsering W.</b><span>admin@koklass</span></div>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-brand">Updated outlet hours</span></td>
+                    <td><span style="font-weight:600;color:var(--muted-foreground)">Settings</span></td>
+                    <td class="cell-num">2 min ago</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="cell-user">
+                        <div class="avatar" style="background:rgba(47,191,113,0.15);color:var(--success)">RD</div>
+                        <div><b>Rita D.</b><span>manager@koklass</span></div>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-success">Approved refund</span></td>
+                    <td><span style="font-weight:600;color:var(--muted-foreground)">Orders</span></td>
+                    <td class="cell-num">18 min ago</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="cell-user">
+                        <div class="avatar" style="background:rgba(86,145,234,0.15);color:var(--info)">BK</div>
+                        <div><b>Bikash K.</b><span>staff@koklass</span></div>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-info">Created employee</span></td>
+                    <td><span style="font-weight:600;color:var(--muted-foreground)">Staff</span></td>
+                    <td class="cell-num">1 hr ago</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="cell-user">
+                        <div class="avatar" style="background:rgba(240,86,78,0.15);color:var(--destructive)">SP</div>
+                        <div><b>Sita P.</b><span>finance@koklass</span></div>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-danger">Disabled coupon</span></td>
+                    <td><span style="font-weight:600;color:var(--muted-foreground)">Marketing</span></td>
+                    <td class="cell-num">3 hr ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Quick Operations Shortcut Deck -->
+            <div class="dashboard-quick-ops">
+              <span style="font-size:0.72rem;font-weight:700;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:0.04em">Quick Operations:</span>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                <a href="./orders.html" class="btn btn-xs btn-outline">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  New Order
+                </a>
+                <a href="./employee-create.html" class="btn btn-xs btn-outline">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                  Add Staff
+                </a>
+                <a href="./config-theme.html" class="btn btn-xs btn-outline">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Theme Studio
+                </a>
+                <a href="./graphs-sample.html" class="btn btn-xs btn-outline">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18 L9 12 L15 15 L21 7"/></svg>
+                  Analytics & Trends
+                </a>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -151,5 +434,241 @@
 
   <script src="./admin-sidebar.js"></script>
   <script src="./admin-demo.js"></script>
+  <script src="./admin-charts.js"></script>
+  <script>
+    'use strict';
+
+    /* Helper: dynamic computed theme colors */
+    function colors() {
+      const cs = getComputedStyle(document.documentElement);
+      return {
+        primary: cs.getPropertyValue('--primary').trim() || '#EC3876',
+        success: cs.getPropertyValue('--success').trim() || '#2FBF71',
+        info: cs.getPropertyValue('--info').trim() || '#5691EA',
+        warning: cs.getPropertyValue('--warning').trim() || '#FFC250',
+        destructive: cs.getPropertyValue('--destructive').trim() || '#F0564E',
+        muted: cs.getPropertyValue('--muted-foreground').trim() || '#64748b'
+      };
+    }
+
+    /* Render full-width Weekly Revenue Chart with readable axes and interactive tooltips */
+    function renderRevenueChart() {
+      const chArea = document.getElementById('dashboard-revenue-chart');
+      if (!chArea || !window.EmberCharts) return;
+      chArea.innerHTML = '';
+
+      const C = colors();
+      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const curData = [342000, 385000, 360000, 412000, 468000, 524000, 480000];
+      const tgtData = [320000, 350000, 370000, 390000, 430000, 480000, 450000];
+
+      EmberCharts.area(chArea, {
+        labels: labels,
+        height: 300,
+        series: [
+          {
+            name: 'Actual Revenue',
+            color: C.primary,
+            data: curData,
+            dots: true,
+            fill: true
+          },
+          {
+            name: 'Target Benchmark',
+            color: C.success,
+            data: tgtData,
+            dashed: true,
+            dots: false,
+            fill: false
+          }
+        ],
+        formatY: v => {
+          if (v >= 1e6) return 'Rs. ' + (v / 1e6).toFixed(1) + 'M';
+          if (v >= 1e3) return 'Rs. ' + Math.round(v / 1e3) + 'k';
+          return 'Rs. ' + v;
+        },
+        formatTip: v => {
+          if (v >= 1e6) return 'Rs. ' + (v / 1e6).toFixed(2) + 'M';
+          if (v >= 1e3) return 'Rs. ' + (v / 1e3).toFixed(1) + 'k';
+          return 'Rs. ' + Math.round(v).toLocaleString();
+        }
+      });
+    }
+
+    /* Render top KPI card sparklines */
+    function renderSparklines() {
+      if (!window.EmberCharts) return;
+      const C = colors();
+
+      const sp1 = document.getElementById('dash-sp1');
+      if (sp1) {
+        sp1.innerHTML = '';
+        EmberCharts.sparkline(sp1, { data: [38, 42, 40, 48, 56, 68, 64], color: C.primary });
+      }
+
+      const sp3 = document.getElementById('dash-sp3');
+      if (sp3) {
+        sp3.innerHTML = '';
+        EmberCharts.sparkline(sp3, { data: [310, 320, 315, 325, 330, 345, 334], color: C.success });
+      }
+
+      const sp4 = document.getElementById('dash-sp4');
+      if (sp4) {
+        sp4.innerHTML = '';
+        EmberCharts.sparkline(sp4, { data: [14, 14, 13, 14, 14, 14, 14], color: C.warning });
+      }
+    }
+
+    /* Orders to Review Interaction & Quick Action Triggers */
+    function setupOrderActions() {
+      const filterBtns = document.querySelectorAll('.orders-filter-btn');
+      const orderItems = document.querySelectorAll('.order-review-item');
+      const counterEl = document.getElementById('orders-review-counter');
+
+      // Filter tabs
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const filter = btn.dataset.filter || 'all';
+
+          orderItems.forEach(item => {
+            if (filter === 'all' || item.dataset.category === filter) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Quick action triggers
+      const toast = msg => {
+        if (window.EmberDemo && window.EmberDemo.toast) {
+          window.EmberDemo.toast(msg);
+        }
+      };
+
+      document.querySelectorAll('.order-action-trigger').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const orderId = btn.dataset.id;
+          const row = document.getElementById('order-row-' + orderId.replace('ORD-', ''));
+          if (!row) return;
+
+          const badge = row.querySelector('.order-badge');
+
+          if (action === 'accept') {
+            btn.innerHTML = '✓ Accepted';
+            btn.className = 'btn btn-xs btn-outline';
+            btn.disabled = true;
+            if (badge) {
+              badge.textContent = 'Accepted';
+              badge.className = 'badge badge-success order-badge';
+            }
+            toast(`Order #${orderId} accepted and sent to kitchen.`);
+          } else if (action === 'dispatch') {
+            btn.innerHTML = '✓ Dispatched';
+            btn.className = 'btn btn-xs btn-outline';
+            btn.disabled = true;
+            if (badge) {
+              badge.textContent = 'Dispatched';
+              badge.className = 'badge badge-brand order-badge';
+            }
+            toast(`Order #${orderId} handed over to delivery courier.`);
+          } else if (action === 'retry') {
+            btn.innerHTML = '✓ Link Sent';
+            btn.className = 'btn btn-xs btn-outline';
+            btn.disabled = true;
+            if (badge) {
+              badge.textContent = 'Link Sent';
+              badge.className = 'badge badge-warning order-badge';
+            }
+            toast(`Payment gateway retry link dispatched for #${orderId}.`);
+          } else if (action === 'approve') {
+            btn.innerHTML = '✓ Approved';
+            btn.className = 'btn btn-xs btn-outline';
+            btn.disabled = true;
+            if (badge) {
+              badge.textContent = 'Refund Approved';
+              badge.className = 'badge badge-success order-badge';
+            }
+            toast(`Refund approved for #${orderId}.`);
+          } else if (action === 'reject') {
+            btn.innerHTML = 'Declined';
+            btn.className = 'btn btn-xs btn-ghost';
+            btn.disabled = true;
+            if (badge) {
+              badge.textContent = 'Claim Declined';
+              badge.className = 'badge badge-muted order-badge';
+            }
+            toast(`Refund claim declined for #${orderId}.`);
+          } else if (action === 'contact') {
+            toast(`Calling customer for #${orderId} at +977 9801234567…`);
+          } else if (action === 'details') {
+            window.location.href = './orders.html';
+          }
+
+          // Update active pending counter
+          const pendingCount = Array.from(document.querySelectorAll('.order-review-item'))
+            .filter(r => !r.querySelector('.badge-success, .badge-muted')).length;
+          if (counterEl) {
+            counterEl.textContent = `${pendingCount} Action Required`;
+            if (pendingCount === 0) {
+              counterEl.className = 'badge badge-success';
+              counterEl.textContent = 'All Caught Up!';
+            }
+          }
+        });
+      });
+
+      // Export report button
+      const btnExport = document.getElementById('btn-export-dash');
+      if (btnExport) {
+        btnExport.addEventListener('click', () => {
+          const csv = 'Day,Actual Revenue,Target Benchmark\n' +
+            'Mon,342000,320000\n' +
+            'Tue,385000,350000\n' +
+            'Wed,360000,370000\n' +
+            'Thu,412000,390000\n' +
+            'Fri,468000,430000\n' +
+            'Sat,524000,480000\n' +
+            'Sun,480000,450000\n';
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'koklass-dashboard-weekly-revenue.csv';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          toast('Weekly telemetry CSV exported successfully.');
+        });
+      }
+    }
+
+    /* Master Render Function */
+    function renderDashboard() {
+      renderRevenueChart();
+      renderSparklines();
+    }
+
+    // Initialize
+    renderDashboard();
+    setupOrderActions();
+
+    // Re-render when theme or dark mode changes
+    new MutationObserver(renderDashboard).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'data-theme']
+    });
+
+    // Responsive debounce resize handler
+    window.addEventListener('resize', () => {
+      clearTimeout(window.__dashResizeTimer);
+      window.__dashResizeTimer = setTimeout(renderDashboard, 150);
+    });
+  </script>
 </body>
 </html>

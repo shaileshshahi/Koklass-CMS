@@ -2486,6 +2486,266 @@ input[type='range'].range::-moz-range-thumb {
   display: none;
 }
 
+/* ==========================================================================
+   Executive Dashboard Redesign Styles
+   ========================================================================== */
+
+/* Balanced Top 4-Column KPI Grid */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dashboard-stats .stat {
+  padding: 16px 18px;
+  gap: 8px;
+  border-radius: var(--radius);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-stats .stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-stats .stat .value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 2px 0;
+  line-height: 1.15;
+}
+
+.dashboard-stats .stat .trend-sub {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+/* Full-Width Revenue Card */
+.dashboard-revenue-card {
+  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+.chart-legend-deck {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.legend-color-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-color-dash {
+  display: inline-block;
+  width: 14px;
+  height: 0px;
+  border-top: 2px dashed var(--success);
+  flex-shrink: 0;
+}
+
+/* Dual Column Bottom Grid */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Orders to Review Component */
+.orders-filter-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--secondary);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.orders-filter-btn {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 120ms ease;
+  white-space: nowrap;
+}
+
+.orders-filter-btn:hover {
+  color: var(--foreground);
+}
+
+.orders-filter-btn.active {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.orders-review-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background 140ms ease;
+}
+
+.order-review-item:last-child {
+  border-bottom: none;
+}
+
+.order-review-item:hover {
+  background: var(--muted);
+}
+
+.order-main-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.order-desc {
+  min-width: 0;
+  flex: 1;
+}
+
+.order-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.order-id {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.order-outlet {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.order-time {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+
+.order-items-snippet {
+  font-size: 0.74rem;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-status-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.order-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Small Button helper */
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: calc(var(--radius) - 3px);
+  line-height: 1.25;
+}
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.btn-success:hover {
+  filter: brightness(0.92);
+}
+
+/* Quick Ops shortcut panel */
+.dashboard-quick-ops {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--secondary);
+}
+
+@media (max-width: 1080px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .order-review-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .order-status-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .d-none-mobile {
+    display: none !important;
+  }
+}
+
 /* ---------- Responsive & Mobile Drawer ---------- */
 .mobile-menu-btn {
   display: none;
