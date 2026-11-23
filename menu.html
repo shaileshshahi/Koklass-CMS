@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu Management — Koklass CMS</title>
+  <link rel="stylesheet" href="./ember-variables.css" />
+  <link rel="stylesheet" href="./admin-demo.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ---------------- Menu Management Page Specific Styles ---------------- */
+    .menu-header-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .menu-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Category Navigation Tabs */
+    .category-pills-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .cat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+    .cat-pill:hover {
+      border-color: var(--ring);
+      color: var(--foreground);
+    }
+    .cat-pill.active {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px -1px color-mix(in srgb, var(--primary) 40%, transparent);
+    }
+    .cat-pill .count {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: var(--muted);
+      color: var(--muted-foreground);
+      transition: all 140ms ease;
+    }
+    .cat-pill.active .count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    /* Filter Toolbar Card */
+    .menu-filter-card {
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .filter-row-primary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box-wrap {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box-wrap svg {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      stroke: var(--muted-foreground);
+      fill: none;
+      pointer-events: none;
+    }
+    .search-box-wrap input {
+      width: 100%;
+      height: 38px;
+      padding-left: 36px;
+      padding-right: 32px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--background);
+      color: var(--foreground);
+      font-size: 0.84rem;
+      outline: none;
+      transition: border-color 140ms ease;
+    }
+    .search-box-wrap input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    .clear-search-btn {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      display: none;
+    }
+
+    .filter-controls-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-select {
+      height: 38px;
+      padding: 0 28px 0 12px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--background);
+      color: var(--foreground);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23888%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .filter-select:focus {
+      border-color: var(--ring);
+    }
+
+    .view-switch-deck {
+      display: inline-flex;
+      background: var(--muted);
+      padding: 3px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+    }
+    .view-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: calc(var(--radius) - 4px);
+      border: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .view-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+    .view-btn.active {
+      background: var(--card);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Active filter tags row */
+    .active-tags-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.76rem;
+      color: var(--muted-foreground);
+    }
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      font-weight: 600;
+    }
+    .tag-chip button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      font-size: 11px;
+      line-height: 1;
+    }
+    .tag-chip button:hover {
+      color: var(--destructive);
+    }
+
+    /* Dishes Grid Layout */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    /* Individual Dish Card */
+    .dish-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      position: relative;
+    }
+    .dish-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+    }
+
+    /* Top graphic banner with food aesthetic */
+    .dish-visual-banner {
+      height: 100px;
+      position: relative;
+      background: linear-gradient(135deg, var(--muted) 0%, color-mix(in srgb, var(--primary) 8%, var(--muted)) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .dish-emoji-big {
+      font-size: 42px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+      transition: transform 200ms ease;
+    }
+    .dish-card:hover .dish-emoji-big {
+      transform: scale(1.12);
+    }
+
+    /* Badges positioned over banner */
+    .dish-badge-overlay-left {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dish-badge-overlay-right {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Dietary Mark: Indian/Nepali standard packaging mark */
+    .diet-mark {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1.5px solid;
+      display: grid;
+      place-items: center;
+      background: var(--card);
+      box-shadow: var(--shadow-xs);
+    }
+    .diet-mark.veg {
+      border-color: #16a34a;
+    }
+    .diet-mark.veg .diet-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+    .diet-mark.non-veg {
+      border-color: #dc2626;
+    }
+    .diet-mark.non-veg .diet-triangle {
+      width: 0;
+      height: 0;
+      border-left: 4.5px solid transparent;
+      border-right: 4.5px solid transparent;
+      border-bottom: 8px solid #dc2626;
+    }
+
+    .dish-code-pill {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted-foreground);
+      box-shadow: var(--shadow-xs);
+      letter-spacing: 0.04em;
+    }
+
+    .dish-special-pill {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+      box-shadow: var(--shadow-xs);
+    }
+    .dark .dish-special-pill {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* Dish Card Body */
+    .dish-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+    }
+
+    .dish-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .dish-name {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--foreground);
+      line-height: 1.3;
+    }
+    .dish-cat-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      background: var(--secondary);
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    .dish-desc {
+      font-size: 0.78rem;
+      color: var(--muted-foreground);
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .dish-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.74rem;
+      color: var(--muted-foreground);
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+    }
+    .meta-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dish-outlets-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .outlet-micro-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--muted);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+    }
+
+    /* Dish Card Footer */
+    .dish-footer {
+      padding: 10px 16px;
+      background: var(--secondary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .dish-price-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .price-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+    }
+    .price-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--foreground);
+    }
+
+    .dish-actions-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Stock Status Interactive Button */
+    .stock-badge-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .stock-badge-btn.in-stock {
+      background: rgba(47, 191, 113, 0.14);
+      color: #16a34a;
+      border-color: rgba(47, 191, 113, 0.3);
+    }
+    .dark .stock-badge-btn.in-stock {
+      background: rgba(47, 191, 113, 0.18);
+      color: #34d399;
+      border-color: rgba(47, 191, 113, 0.35);
+    }
+    .stock-badge-btn.low-stock {
+      background: rgba(245, 158, 11, 0.14);
+      color: #d97706;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .dark .stock-badge-btn.low-stock {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .stock-badge-btn.sold-out {
+      background: rgba(239, 68, 68, 0.14);
+      color: #dc2626;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .dark .stock-badge-btn.sold-out {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+    .stock-badge-btn .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .dish-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted-foreground);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .dish-icon-btn:hover {
+      border-color: var(--ring);
+      color: var(--foreground);
+    }
+    .dish-icon-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Table View Container */
+    .menu-table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 30px;
+      display: none;
+    }
+
+    /* Modal Form Extensions */
+    .modal-xl {
+      max-width: 640px;
+      width: 95vw;
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .outlet-checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding: 10px;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+    }
+
+    .custom-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--foreground);
+      cursor: pointer;
+    }
+
+    /* QR Code Display in Modal */
+    .qr-preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--background);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+      gap: 12px;
+    }
+    .mock-qr-code {
+      width: 160px;
+      height: 160px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      display: grid;
+      place-items: center;
+    }
+
+    /* Empty state */
+    .empty-menu-state {
+      padding: 48px 20px;
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+    }
+    .empty-icon {
+      font-size: 48px;
+    }
+
+    textarea.input {
+      height: auto;
+      padding: 10px 12px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.45;
+    }
+
+    /* Mobile Responsive rules */
+    @media (max-width: 768px) {
+      .category-pills-wrap {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .category-pills-wrap::-webkit-scrollbar {
+        display: none;
+      }
+      .menu-header-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .menu-header-actions {
+        width: 100%;
+      }
+      .menu-header-actions > * {
+        flex: 1;
+        justify-content: center;
+      }
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .outlet-checkbox-group {
+        grid-template-columns: 1fr;
+      }
+      .filter-row-primary {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-controls-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .filter-select {
+        width: 100%;
+      }
+      .view-switch-deck {
+        grid-column: span 2;
+        justify-self: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Shared Sidebar slot -->
+    <aside class="sidebar" data-sidebar-active="menu"></aside>
+
+    <div class="main">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div>
+          <div class="page-title">Menu Management</div>
+          <div class="crumb">Home / Kitchen & Menu</div>
+        </div>
+
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="topbar-global-search" placeholder="Search dish, code, ingredient…" />
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="icon-btn" aria-label="Notifications" title="Notifications">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="dot"></span>
+          </button>
+          <div class="topbar-user">
+            <div class="avatar">TW</div>
+            <div class="who"><b>Tsering W.</b><span>Super admin</span></div>
+          </div>
+          <button class="icon-btn" data-mode-toggle data-mode-icon aria-label="Toggle dark mode">🌙</button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="content">
+        <!-- Top Action & Title Bar -->
+        <div class="menu-header-bar">
+          <div>
+            <h2 style="font-size:1.35rem;font-weight:800;margin:0 0 4px 0;">Food & Beverage Catalog</h2>
+            <p class="hint" style="margin:0;">Manage dish details, pricing, regional outlet availability, and real-time kitchen inventory status.</p>
+          </div>
+          <div class="menu-header-actions">
+            <button class="btn btn-outline" id="btn-open-qr" title="View customer digital QR menu">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+              Digital QR Menu
+            </button>
+            <button class="btn btn-primary" id="btn-add-dish">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add New Dish
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. Executive Menu KPI Cards Deck -->
+        <section class="dashboard-stats" id="menu-kpis" style="margin-bottom:20px;">
+          <!-- Card 1: Total Dishes -->
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Total catalog</span>
+              <span class="badge badge-brand">Catalog</span>
+            </div>
+            <div class="value" id="kpi-total-dishes">68 Dishes</div>
+            <div class="stat-trend-line">
+              <span class="badge badge-muted">6 Categories</span>
+              <span class="stat-context">Across 4 outlets</span>
+            </div>
+          </div>
+
+          <!-- Card 2: In-Stock Items -->
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Kitchen available</span>
+              <span class="badge badge-success">Live</span>
+            </div>
+            <div class="value" id="kpi-available-dishes">62 Dishes</div>
+            <div class="stat-trend-line">
+              <span class="badge badge-success">91.2%</span>
+              <span class="stat-context">Ready for orders</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Stock Attention -->
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Inventory alerts</span>
+              <span class="badge badge-danger" id="kpi-alert-badge">6 Items</span>
+            </div>
+            <div class="value" id="kpi-alert-dishes">6 Out/Low</div>
+            <div class="stat-trend-line">
+              <span class="badge badge-warning">Restock</span>
+              <span class="stat-context">Needs kitchen attention</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Top Best Seller -->
+          <div class="card stat">
+            <div class="row">
+              <span class="label">Top best seller</span>
+              <span class="badge badge-brand">★ Popular</span>
+            </div>
+            <div class="value" style="font-size:1.15rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Buff Momo</div>
+            <div class="stat-trend-line">
+              <span class="badge badge-success">Rs. 280</span>
+              <span class="stat-context">1,420 orders this mo</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Category Navigation Tabs -->
+        <div class="category-pills-wrap" id="category-tabs">
+          <button class="cat-pill active" data-cat="all">
+            <span>All Items</span>
+            <span class="count" id="count-all">68</span>
+          </button>
+          <button class="cat-pill" data-cat="momo">
+            <span>🥟 Momos & Starters</span>
+            <span class="count" id="count-momo">18</span>
+          </button>
+          <button class="cat-pill" data-cat="thali">
+            <span>🍛 Nepali Thali & Mains</span>
+            <span class="count" id="count-thali">18</span>
+          </button>
+          <button class="cat-pill" data-cat="sekuwa">
+            <span>🍗 Tandoor & Grills</span>
+            <span class="count" id="count-sekuwa">12</span>
+          </button>
+          <button class="cat-pill" data-cat="rice">
+            <span>🍚 Biryani & Noodles</span>
+            <span class="count" id="count-rice">10</span>
+          </button>
+          <button class="cat-pill" data-cat="drinks">
+            <span>🍹 Craft Brews & Drinks</span>
+            <span class="count" id="count-drinks">6</span>
+          </button>
+          <button class="cat-pill" data-cat="dessert">
+            <span>🍨 Desserts</span>
+            <span class="count" id="count-dessert">4</span>
+          </button>
+        </div>
+
+        <!-- 3. Filter & Controls Toolbar -->
+        <div class="menu-filter-card">
+          <div class="filter-row-primary">
+            <!-- Real-time search box -->
+            <div class="search-box-wrap">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="menu-search-input" placeholder="Search dish, code, or tag…" />
+              <button class="clear-search-btn" id="btn-clear-search" title="Clear search">✕</button>
+            </div>
+
+            <!-- Filter Controls Group -->
+            <div class="filter-controls-group">
+              <!-- Outlet Select -->
+              <select class="filter-select" id="filter-outlet">
+                <option value="all">All Outlets</option>
+                <option value="Durbar Marg">Durbar Marg</option>
+                <option value="Jhamsikhel">Jhamsikhel</option>
+                <option value="Lakeside">Lakeside Pokhara</option>
+                <option value="Bouddha">Bouddha</option>
+              </select>
+
+              <!-- Dietary Select -->
+              <select class="filter-select" id="filter-dietary">
+                <option value="all">All Dietary</option>
+                <option value="veg">🟢 Pure Veg</option>
+                <option value="non-veg">🔴 Non-Veg</option>
+                <option value="special">⭐ Chef's Special</option>
+                <option value="spicy">🌶️ Spicy Only</option>
+              </select>
+
+              <!-- Stock Status Select -->
+              <select class="filter-select" id="filter-stock">
+                <option value="all">All Stock Status</option>
+                <option value="in-stock">In Stock</option>
+                <option value="low-stock">Low Stock</option>
+                <option value="sold-out">Sold Out</option>
+              </select>
+
+              <!-- Sort Order Select -->
+              <select class="filter-select" id="filter-sort">
+                <option value="popular">Most Popular</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+
+              <!-- Grid vs Table View Switch -->
+              <div class="view-switch-deck">
+                <button class="view-btn active" id="btn-view-grid" title="Grid cards view">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </button>
+                <button class="view-btn" id="btn-view-table" title="Table rows view">
+                  <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Filter Tags Strip -->
+          <div class="active-tags-strip" id="active-tags-container" style="display:none;">
+            <span>Filtered by:</span>
+            <div id="active-tags-list" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></div>
+            <button class="btn btn-xs btn-outline" id="btn-reset-all-filters" style="margin-left:auto;">Reset filters</button>
+          </div>
+        </div>
+
+        <!-- 4. Dishes Grid View Container -->
+        <div class="menu-grid" id="menu-grid-view">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- 5. Dishes Table View Container (Alternating with grid) -->
+        <div class="menu-table-card" id="menu-table-view">
+          <div style="overflow-x:auto;">
+            <table class="table" style="font-size:0.83rem;">
+              <thead>
+                <tr>
+                  <th>Dish Item</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Dietary</th>
+                  <th>Outlets</th>
+                  <th>Prep & Rating</th>
+                  <th>Inventory Status</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="menu-table-tbody">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 6. Empty State Container -->
+        <div class="empty-menu-state" id="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <h3 style="margin:0;font-size:1.1rem;font-weight:800;">No matching dishes found</h3>
+          <p class="hint" style="max-width:380px;margin:0;">We couldn't find any menu items matching your search query or active filters. Try clearing your filters or adding a new dish.</p>
+          <button class="btn btn-outline" id="btn-empty-reset" style="margin-top:6px;">Reset all filters</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Add / Edit Dish Modal -->
+  <div class="modal-backdrop" id="dish-modal-backdrop">
+    <div class="modal modal-xl">
+      <div class="modal-head">
+        <div>
+          <h3 id="dish-modal-title">Add New Menu Dish</h3>
+          <span class="hint" id="dish-modal-sub">Create a new dish entry in your restaurant catalog</span>
+        </div>
+        <button class="icon-btn" id="btn-close-dish-modal" style="margin-left:auto;">✕</button>
+      </div>
+
+      <form id="dish-form">
+        <div class="modal-body" style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;max-height:72vh;overflow-y:auto;">
+          <input type="hidden" id="form-dish-id" value="" />
+
+          <!-- Row 1: Name & Code -->
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="label">Dish Name *</label>
+              <input type="text" class="input" id="form-name" required placeholder="e.g. Steamed Buff Momo (10 pcs)" />
+            </div>
+            <div class="form-group">
+              <label class="label">Item Code / SKU *</label>
+              <input type="text" class="input" id="form-code" required placeholder="e.g. MM-01" />
+            </div>
+          </div>
+
+          <!-- Row 2: Category & Price -->
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="label">Category *</label>
+              <select class="input" id="form-category" required>
+                <option value="momo">🥟 Momos & Starters</option>
+                <option value="thali">🍛 Nepali Thali & Mains</option>
+                <option value="sekuwa">🍗 Tandoor & Grills</option>
+                <option value="rice">🍚 Biryani & Noodles</option>
+                <option value="drinks">🍹 Craft Brews & Drinks</option>
+                <option value="dessert">🍨 Desserts</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="label">Price in NPR (Rs.) *</label>
+              <input type="number" class="input" id="form-price" required min="10" step="5" placeholder="e.g. 280" />
+            </div>
+          </div>
+
+          <!-- Row 3: Dietary, Spicy & Prep Time -->
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="label">Dietary Classification *</label>
+              <select class="input" id="form-dietary">
+                <option value="non-veg">🔴 Non-Veg</option>
+                <option value="veg">🟢 Pure Veg</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="label">Spicy Level</label>
+              <select class="input" id="form-spicy">
+                <option value="None">None</option>
+                <option value="Mild">🌶️ Mild</option>
+                <option value="Medium">🌶️🌶️ Medium</option>
+                <option value="Hot">🌶️🌶️🌶️ Hot</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="label">Preparation Time</label>
+              <input type="text" class="input" id="form-prep" placeholder="e.g. 12-15m" value="15m" />
+            </div>
+            <div class="form-group">
+              <label class="label">Inventory Status *</label>
+              <select class="input" id="form-stock">
+                <option value="in-stock">In Stock (Available)</option>
+                <option value="low-stock">Low Stock (Limited)</option>
+                <option value="sold-out">Sold Out (Unavailable)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 4: Chef's Special Checkbox -->
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--secondary);border-radius:8px;">
+            <input type="checkbox" id="form-special" style="width:16px;height:16px;cursor:pointer;" />
+            <label for="form-special" style="font-size:0.83rem;font-weight:700;cursor:pointer;">
+              Mark as Chef's Special / Featured Dish ⭐
+            </label>
+          </div>
+
+          <!-- Row 5: Available Outlets -->
+          <div class="form-group">
+            <label class="label">Available in Outlets</label>
+            <div class="outlet-checkbox-group">
+              <label class="custom-check-item">
+                <input type="checkbox" name="form-outlets" value="Durbar Marg" checked /> Durbar Marg (HQ)
+              </label>
+              <label class="custom-check-item">
+                <input type="checkbox" name="form-outlets" value="Jhamsikhel" checked /> Jhamsikhel
+              </label>
+              <label class="custom-check-item">
+                <input type="checkbox" name="form-outlets" value="Lakeside" checked /> Lakeside Pokhara
+              </label>
+              <label class="custom-check-item">
+                <input type="checkbox" name="form-outlets" value="Bouddha" checked /> Bouddha
+              </label>
+            </div>
+          </div>
+
+          <!-- Row 6: Description -->
+          <div class="form-group">
+            <label class="label">Description / Ingredients</label>
+            <textarea class="input" id="form-desc" rows="3" placeholder="Brief description of the dish, seasoning, accompaniments, or allergens…"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn btn-outline" id="btn-cancel-dish">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-dish">Save Dish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Digital QR Menu Preview Modal -->
+  <div class="modal-backdrop" id="qr-modal-backdrop">
+    <div class="modal" style="max-width:440px;">
+      <div class="modal-head">
+        <div>
+          <h3>Digital QR Menu</h3>
+          <span class="hint">Instant customer contactless ordering menu</span>
+        </div>
+        <button class="icon-btn" id="btn-close-qr-modal" style="margin-left:auto;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding:16px 20px;">
+        <div class="qr-preview-box">
+          <div class="mock-qr-code">
+            <!-- Stylized SVG QR Code Representation -->
+            <svg viewBox="0 0 100 100" width="140" height="140">
+              <rect x="0" y="0" width="100" height="100" fill="#ffffff"/>
+              <!-- Position markers -->
+              <rect x="5" y="5" width="26" height="26" fill="#1e293b" rx="4"/>
+              <rect x="9" y="9" width="18" height="18" fill="#ffffff" rx="2"/>
+              <rect x="13" y="13" width="10" height="10" fill="#EC3876" rx="2"/>
+
+              <rect x="69" y="5" width="26" height="26" fill="#1e293b" rx="4"/>
+              <rect x="73" y="9" width="18" height="18" fill="#ffffff" rx="2"/>
+              <rect x="77" y="13" width="10" height="10" fill="#EC3876" rx="2"/>
+
+              <rect x="5" y="69" width="26" height="26" fill="#1e293b" rx="4"/>
+              <rect x="9" y="73" width="18" height="18" fill="#ffffff" rx="2"/>
+              <rect x="13" y="77" width="10" height="10" fill="#EC3876" rx="2"/>
+
+              <!-- QR data pattern blocks -->
+              <rect x="36" y="8" width="8" height="8" fill="#1e293b"/>
+              <rect x="48" y="14" width="8" height="8" fill="#1e293b"/>
+              <rect x="8" y="36" width="8" height="8" fill="#1e293b"/>
+              <rect x="20" y="44" width="8" height="8" fill="#1e293b"/>
+              <rect x="36" y="36" width="28" height="28" fill="#EC3876" rx="4"/>
+              <text x="50" y="54" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">K</text>
+              <rect x="70" y="38" width="8" height="8" fill="#1e293b"/>
+              <rect x="82" y="46" width="8" height="8" fill="#1e293b"/>
+              <rect x="38" y="72" width="8" height="8" fill="#1e293b"/>
+              <rect x="52" y="78" width="8" height="8" fill="#1e293b"/>
+              <rect x="74" y="72" width="16" height="8" fill="#1e293b"/>
+              <rect x="82" y="84" width="8" height="8" fill="#1e293b"/>
+            </svg>
+          </div>
+          <div>
+            <b style="font-size:0.95rem;color:var(--foreground);">Scan for Live Digital Menu</b>
+            <div class="hint" style="font-size:0.75rem;margin-top:2px;">Points to live outlet digital menu URL</div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--primary);word-break:break-all;font-family:monospace;background:var(--card);padding:6px 10px;border-radius:6px;border:1px solid var(--border);">
+            https://menu.koklass.com/table/qr-live
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn btn-outline" id="btn-copy-menu-link">Copy URL</button>
+        <button class="btn btn-primary" id="btn-print-qr">Print QR Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Delete Confirmation Modal -->
+  <div class="modal-backdrop" id="delete-modal-backdrop">
+    <div class="modal" style="max-width:390px;">
+      <div class="modal-head">
+        <div class="modal-warn">
+          <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </div>
+        <div>
+          <h3>Delete Menu Dish</h3>
+          <span class="hint">Are you sure you want to remove this dish?</span>
+        </div>
+      </div>
+      <div class="modal-body" style="padding:14px 20px;">
+        <p style="font-size:0.83rem;margin:0;color:var(--muted-foreground);" id="delete-modal-msg">
+          This dish will be removed from your catalog and will no longer be available for online or POS orders.
+        </p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-outline" id="btn-cancel-delete">Cancel</button>
+        <button class="btn btn-danger" id="btn-confirm-delete">Delete Dish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Sidebar and Core Scripts -->
+  <script src="./admin-sidebar.js"></script>
+  <script src="./admin-demo.js"></script>
+
+  <!-- Menu Management Application Logic -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* --- Realistic Nepalese & Continental Restaurant Initial Catalog --- */
+      const DEFAULT_DISHES = [
+        {
+          id: 1,
+          code: 'MM-01',
+          name: 'Steamed Buff Momo (10 pcs)',
+          category: 'momo',
+          price: 280,
+          dietary: 'non-veg',
+          spicy: 'Medium',
+          special: true,
+          emoji: '🥟',
+          prep: '12-15m',
+          rating: '4.9',
+          orders: '1,420',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Handmade minced water buffalo dumplings infused with Nepali spices, served with roasted timur tomato achar.'
+        },
+        {
+          id: 2,
+          code: 'MM-02',
+          name: 'Kothey Chicken Momo (10 pcs)',
+          category: 'momo',
+          price: 320,
+          dietary: 'non-veg',
+          spicy: 'Mild',
+          special: false,
+          emoji: '🥟',
+          prep: '15m',
+          rating: '4.8',
+          orders: '980',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Pan-fried crispy bottom dumplings stuffed with juicy minced chicken, spring onions, and ginger.'
+        },
+        {
+          id: 3,
+          code: 'MM-03',
+          name: 'Paneer Jhol Momo (10 pcs)',
+          category: 'momo',
+          price: 310,
+          dietary: 'veg',
+          spicy: 'Hot',
+          special: true,
+          emoji: '🥣',
+          prep: '12m',
+          rating: '4.7',
+          orders: '620',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside'],
+          desc: 'Steamed cottage cheese dumplings immersed in warm, tangy roasted sesame, soybean, and coriander broth.'
+        },
+        {
+          id: 4,
+          code: 'TH-01',
+          name: 'Thakali Mutton Thali Set',
+          category: 'thali',
+          price: 750,
+          dietary: 'non-veg',
+          spicy: 'Medium',
+          special: true,
+          emoji: '🍛',
+          prep: '20m',
+          rating: '5.0',
+          orders: '2,150',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside'],
+          desc: 'Slow-cooked Himalayan goat curry, Jimbu-tempered black lentils, Gundruk sadeko, ghee-infused Marsi rice & tomato achar.'
+        },
+        {
+          id: 5,
+          code: 'TH-02',
+          name: 'Mustang Organic Veg Thali',
+          category: 'thali',
+          price: 520,
+          dietary: 'veg',
+          spicy: 'Mild',
+          special: false,
+          emoji: '🥗',
+          prep: '15m',
+          rating: '4.8',
+          orders: '840',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Seasonal organic saag, Mustang aloo dum, fermented bamboo shoot curry, timur radish pickle & buckwheat roti.'
+        },
+        {
+          id: 6,
+          code: 'SK-01',
+          name: 'Sekuwa Pork Belly Skewers',
+          category: 'sekuwa',
+          price: 580,
+          dietary: 'non-veg',
+          spicy: 'Hot',
+          special: true,
+          emoji: '🍢',
+          prep: '18m',
+          rating: '4.9',
+          orders: '1,100',
+          stock: 'low-stock',
+          outlets: ['Jhamsikhel', 'Lakeside'],
+          desc: 'Charcoal wood-fired marinated pork belly skewers seasoned with local mountain spices & green chive chutney.'
+        },
+        {
+          id: 7,
+          code: 'SK-02',
+          name: 'Crispy Kurkure Bhindi',
+          category: 'sekuwa',
+          price: 290,
+          dietary: 'veg',
+          spicy: 'Mild',
+          special: false,
+          emoji: '🌶️',
+          prep: '10m',
+          rating: '4.6',
+          orders: '340',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Julienne okra tossed in roasted gram flour, chaat masala, mango powder, and cold-pressed mustard oil.'
+        },
+        {
+          id: 8,
+          code: 'BR-01',
+          name: 'Hyderabadi Dum Chicken Biryani',
+          category: 'rice',
+          price: 540,
+          dietary: 'non-veg',
+          spicy: 'Medium',
+          special: false,
+          emoji: '🍚',
+          prep: '20m',
+          rating: '4.8',
+          orders: '1,280',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Slow-cooked aged basmati rice layered with saffron-marinated succulent chicken thighs, mint raita & mirchi salan.'
+        },
+        {
+          id: 9,
+          code: 'ND-02',
+          name: 'Wok-Tossed Buff Sukuti Chowmein',
+          category: 'rice',
+          price: 360,
+          dietary: 'non-veg',
+          spicy: 'Hot',
+          special: false,
+          emoji: '🍜',
+          prep: '12m',
+          rating: '4.7',
+          orders: '780',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Handmade wheat noodles wok-tossed with sun-dried smoked buffalo meat, crunchy greens, garlic and dark chili soy.'
+        },
+        {
+          id: 10,
+          code: 'BV-01',
+          name: 'Himalayan Masala Chai Brew',
+          category: 'drinks',
+          price: 140,
+          dietary: 'veg',
+          spicy: 'None',
+          special: true,
+          emoji: '☕',
+          prep: '5m',
+          rating: '4.9',
+          orders: '3,200',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Ilam high-altitude CTC tea leaves simmered with whole cardamom, cinnamon bark, fresh mountain ginger and whole milk.'
+        },
+        {
+          id: 11,
+          code: 'BV-02',
+          name: 'Fresh Mint & Litchi Cooler',
+          category: 'drinks',
+          price: 260,
+          dietary: 'veg',
+          spicy: 'None',
+          special: false,
+          emoji: '🍹',
+          prep: '5m',
+          rating: '4.6',
+          orders: '420',
+          stock: 'sold-out',
+          outlets: ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'],
+          desc: 'Muddled garden mint, litchi fruit reduction, sparkling soda, fresh lime and Himalayan black salt rim.'
+        },
+        {
+          id: 12,
+          code: 'DS-01',
+          name: 'Gudpak Cheesecake with Pistachio',
+          category: 'dessert',
+          price: 380,
+          dietary: 'veg',
+          spicy: 'None',
+          special: true,
+          emoji: '🍰',
+          prep: '5m',
+          rating: '4.9',
+          orders: '890',
+          stock: 'in-stock',
+          outlets: ['Durbar Marg', 'Jhamsikhel'],
+          desc: 'Fusion baked New York cheesecake resting on a traditional Newari Gudpak crust crowned with crushed pistachios.'
+        }
+      ];
+
+      const STORAGE_KEY = 'koklass-menu-catalog';
+
+      function loadDishes() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return DEFAULT_DISHES;
+      }
+
+      function saveDishes(list) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        } catch (e) {}
+      }
+
+      let dishes = loadDishes();
+      let activeCategory = 'all';
+      let searchQuery = '';
+      let filterOutlet = 'all';
+      let filterDietary = 'all';
+      let filterStock = 'all';
+      let sortOrder = 'popular';
+      let activeView = 'grid'; // 'grid' | 'table'
+      let itemToDeleteId = null;
+
+      const toast = msg => {
+        if (window.EmberDemo && window.EmberDemo.toast) {
+          window.EmberDemo.toast(msg);
+        } else {
+          alert(msg);
+        }
+      };
+
+      /* Category metadata dictionary */
+      const CAT_NAMES = {
+        momo: 'Momos & Starters',
+        thali: 'Nepali Thali & Mains',
+        sekuwa: 'Tandoor & Grills',
+        rice: 'Biryani & Noodles',
+        drinks: 'Craft Brews & Drinks',
+        dessert: 'Desserts'
+      };
+
+      const CAT_EMOJIS = {
+        momo: '🥟',
+        thali: '🍛',
+        sekuwa: '🍗',
+        rice: '🍚',
+        drinks: '🍹',
+        dessert: '🍨'
+      };
+
+      /* Calculate and update KPI stats */
+      function updateKpis() {
+        const total = dishes.length;
+        const available = dishes.filter(d => d.stock === 'in-stock').length;
+        const alerts = dishes.filter(d => d.stock === 'low-stock' || d.stock === 'sold-out').length;
+
+        const elTotal = document.getElementById('kpi-total-dishes');
+        const elAvail = document.getElementById('kpi-available-dishes');
+        const elAlert = document.getElementById('kpi-alert-dishes');
+        const elBadge = document.getElementById('kpi-alert-badge');
+
+        if (elTotal) elTotal.textContent = total + ' Dishes';
+        if (elAvail) elAvail.textContent = available + ' Dishes';
+        if (elAlert) elAlert.textContent = alerts + ' Out/Low';
+        if (elBadge) elBadge.textContent = alerts + ' Items';
+
+        // Update category counts
+        const countMap = { all: total, momo: 0, thali: 0, sekuwa: 0, rice: 0, drinks: 0, dessert: 0 };
+        dishes.forEach(d => {
+          if (countMap[d.category] !== undefined) countMap[d.category]++;
+        });
+        for (const [k, v] of Object.entries(countMap)) {
+          const elCount = document.getElementById('count-' + k);
+          if (elCount) elCount.textContent = v;
+        }
+      }
+
+      /* Filter and sort dishes */
+      function getFilteredDishes() {
+        return dishes.filter(d => {
+          // Category filter
+          if (activeCategory !== 'all' && d.category !== activeCategory) return false;
+
+          // Search Query
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const matchName = d.name.toLowerCase().includes(q);
+            const matchCode = d.code.toLowerCase().includes(q);
+            const matchDesc = d.desc && d.desc.toLowerCase().includes(q);
+            if (!matchName && !matchCode && !matchDesc) return false;
+          }
+
+          // Outlet filter
+          if (filterOutlet !== 'all') {
+            if (!d.outlets || !d.outlets.some(o => o.toLowerCase().includes(filterOutlet.toLowerCase()))) {
+              return false;
+            }
+          }
+
+          // Dietary filter
+          if (filterDietary === 'veg' && d.dietary !== 'veg') return false;
+          if (filterDietary === 'non-veg' && d.dietary !== 'non-veg') return false;
+          if (filterDietary === 'special' && !d.special) return false;
+          if (filterDietary === 'spicy' && (d.spicy === 'None' || !d.spicy)) return false;
+
+          // Stock filter
+          if (filterStock !== 'all' && d.stock !== filterStock) return false;
+
+          return true;
+        }).sort((a, b) => {
+          if (sortOrder === 'price-asc') return a.price - b.price;
+          if (sortOrder === 'price-desc') return b.price - a.price;
+          if (sortOrder === 'name') return a.name.localeCompare(b.name);
+          // 'popular'
+          return (parseInt((b.orders || '0').replace(/,/g, ''), 10) || 0) -
+                 (parseInt((a.orders || '0').replace(/,/g, ''), 10) || 0);
+        });
+      }
+
+      /* Render Active Filter Chips */
+      function updateFilterChips() {
+        const wrap = document.getElementById('active-tags-container');
+        const list = document.getElementById('active-tags-list');
+        if (!wrap || !list) return;
+
+        const tags = [];
+        if (activeCategory !== 'all') tags.push({ key: 'cat', label: CAT_NAMES[activeCategory] || activeCategory });
+        if (searchQuery) tags.push({ key: 'search', label: 'Search: "' + searchQuery + '"' });
+        if (filterOutlet !== 'all') tags.push({ key: 'outlet', label: 'Outlet: ' + filterOutlet });
+        if (filterDietary !== 'all') tags.push({ key: 'diet', label: 'Diet: ' + filterDietary });
+        if (filterStock !== 'all') tags.push({ key: 'stock', label: 'Stock: ' + filterStock });
+
+        if (tags.length === 0) {
+          wrap.style.display = 'none';
+          list.innerHTML = '';
+          return;
+        }
+
+        wrap.style.display = 'flex';
+        list.innerHTML = tags.map(t => `
+          <span class="tag-chip">
+            ${t.label}
+            <button data-remove-filter="${t.key}" title="Remove filter">✕</button>
+          </span>
+        `).join('');
+
+        list.querySelectorAll('button[data-remove-filter]').forEach(b => {
+          b.addEventListener('click', () => {
+            const k = b.dataset.removeFilter;
+            if (k === 'cat') {
+              activeCategory = 'all';
+              document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === 'all'));
+            } else if (k === 'search') {
+              searchQuery = '';
+              document.getElementById('menu-search-input').value = '';
+              document.getElementById('btn-clear-search').style.display = 'none';
+            } else if (k === 'outlet') {
+              filterOutlet = 'all';
+              document.getElementById('filter-outlet').value = 'all';
+            } else if (k === 'diet') {
+              filterDietary = 'all';
+              document.getElementById('filter-dietary').value = 'all';
+            } else if (k === 'stock') {
+              filterStock = 'all';
+              document.getElementById('filter-stock').value = 'all';
+            }
+            renderAll();
+          });
+        });
+      }
+
+      /* Render Grid View Cards */
+      function renderGrid(items) {
+        const grid = document.getElementById('menu-grid-view');
+        if (!grid) return;
+
+        grid.innerHTML = items.map(d => {
+          const isVeg = d.dietary === 'veg';
+          const dietHtml = isVeg
+            ? '<span class="diet-mark veg" title="Pure Vegetarian"><span class="diet-dot"></span></span>'
+            : '<span class="diet-mark non-veg" title="Non-Vegetarian"><span class="diet-triangle"></span></span>';
+
+          const specialBadge = d.special
+            ? '<span class="dish-special-pill">★ Chef\'s Pick</span>'
+            : '';
+
+          const spicyTag = d.spicy && d.spicy !== 'None'
+            ? `<span class="meta-chip" title="Spiciness: ${d.spicy}">🌶️ ${d.spicy}</span>`
+            : '';
+
+          const stockText = d.stock === 'in-stock' ? 'In Stock' : d.stock === 'low-stock' ? 'Low Stock' : 'Sold Out';
+          const stockCls = d.stock;
+
+          const outletsHtml = (d.outlets || []).map(o => `<span class="outlet-micro-pill">${o}</span>`).join('');
+
+          return `
+            <div class="dish-card" data-dish-id="${d.id}">
+              <!-- Visual Food Graphic Banner -->
+              <div class="dish-visual-banner">
+                <span class="dish-emoji-big">${d.emoji || CAT_EMOJIS[d.category] || '🍽️'}</span>
+                
+                <div class="dish-badge-overlay-left">
+                  ${dietHtml}
+                  <span class="dish-code-pill">${d.code}</span>
+                </div>
+
+                <div class="dish-badge-overlay-right">
+                  ${specialBadge}
+                </div>
+              </div>
+
+              <!-- Body Details -->
+              <div class="dish-body">
+                <div class="dish-title-row">
+                  <div class="dish-name">${d.name}</div>
+                  <span class="dish-cat-tag">${CAT_NAMES[d.category] || d.category}</span>
+                </div>
+
+                <p class="dish-desc">${d.desc || 'Prepared fresh with chef curated spices and local seasonal ingredients.'}</p>
+
+                <div class="dish-meta-row">
+                  <span class="meta-chip">⏱️ ${d.prep || '15m'}</span>
+                  ${spicyTag}
+                  <span class="meta-chip" style="margin-left:auto;color:var(--foreground);font-weight:700;">★ ${d.rating || '4.8'}</span>
+                </div>
+
+                <div class="dish-outlets-row">
+                  ${outletsHtml}
+                </div>
+              </div>
+
+              <!-- Card Footer with Price and Status Control -->
+              <div class="dish-footer">
+                <div class="dish-price-wrap">
+                  <span class="price-label">Price</span>
+                  <span class="price-value">Rs. ${d.price.toLocaleString()}</span>
+                </div>
+
+                <div class="dish-actions-wrap">
+                  <!-- Toggle stock on click -->
+                  <button class="stock-badge-btn ${stockCls}" data-action="toggle-stock" data-id="${d.id}" title="Click to cycle stock status (In Stock / Low Stock / Sold Out)">
+                    <span class="dot"></span>
+                    <span>${stockText}</span>
+                  </button>
+
+                  <!-- Edit Dish -->
+                  <button class="dish-icon-btn" data-action="edit" data-id="${d.id}" title="Edit dish">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </button>
+
+                  <!-- Duplicate Dish -->
+                  <button class="dish-icon-btn" data-action="duplicate" data-id="${d.id}" title="Duplicate dish">
+                    <svg viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+
+                  <!-- Delete Dish -->
+                  <button class="dish-icon-btn" data-action="delete" data-id="${d.id}" title="Delete dish">
+                    <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      /* Render Table View Rows */
+      function renderTable(items) {
+        const tbody = document.getElementById('menu-table-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = items.map(d => {
+          const isVeg = d.dietary === 'veg';
+          const dietHtml = isVeg
+            ? '<span class="diet-mark veg" title="Vegetarian" style="display:inline-grid;"><span class="diet-dot"></span></span>'
+            : '<span class="diet-mark non-veg" title="Non-Vegetarian" style="display:inline-grid;"><span class="diet-triangle"></span></span>';
+
+          const stockText = d.stock === 'in-stock' ? 'In Stock' : d.stock === 'low-stock' ? 'Low Stock' : 'Sold Out';
+          const stockCls = d.stock;
+
+          const outletsText = (d.outlets || []).join(', ');
+
+          return `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  ${dietHtml}
+                  <div>
+                    <div style="font-weight:700;color:var(--foreground);">${d.name}</div>
+                    <span class="hint" style="font-size:0.72rem;letter-spacing:0.04em;font-weight:700;">#${d.code}</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-muted">${CAT_NAMES[d.category] || d.category}</span></td>
+              <td><b style="color:var(--foreground);font-size:0.92rem;">Rs. ${d.price.toLocaleString()}</b></td>
+              <td>
+                <span class="badge ${isVeg ? 'badge-success' : 'badge-danger'}">
+                  ${isVeg ? 'Veg' : 'Non-Veg'}
+                </span>
+                ${d.special ? '<span class="badge badge-brand" style="margin-left:4px;">Special</span>' : ''}
+              </td>
+              <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span class="hint" style="font-size:0.75rem;">${outletsText}</span>
+              </td>
+              <td>
+                <div style="font-size:0.75rem;color:var(--foreground);font-weight:600;">⏱️ ${d.prep || '15m'} · ★ ${d.rating || '4.8'}</div>
+              </td>
+              <td>
+                <button class="stock-badge-btn ${stockCls}" data-action="toggle-stock" data-id="${d.id}" title="Toggle status">
+                  <span class="dot"></span>
+                  <span>${stockText}</span>
+                </button>
+              </td>
+              <td style="text-align:right;">
+                <div style="display:inline-flex;gap:6px;">
+                  <button class="dish-icon-btn" data-action="edit" data-id="${d.id}" title="Edit dish">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </button>
+                  <button class="dish-icon-btn" data-action="duplicate" data-id="${d.id}" title="Duplicate dish">
+                    <svg viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                  <button class="dish-icon-btn" data-action="delete" data-id="${d.id}" title="Delete dish">
+                    <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      /* Master Render Function */
+      function renderAll() {
+        updateKpis();
+        updateFilterChips();
+
+        const filtered = getFilteredDishes();
+        const elEmpty = document.getElementById('empty-state');
+        const elGrid = document.getElementById('menu-grid-view');
+        const elTable = document.getElementById('menu-table-view');
+
+        if (filtered.length === 0) {
+          if (elEmpty) elEmpty.style.display = 'flex';
+          if (elGrid) elGrid.style.display = 'none';
+          if (elTable) elTable.style.display = 'none';
+          return;
+        }
+
+        if (elEmpty) elEmpty.style.display = 'none';
+
+        if (activeView === 'grid') {
+          if (elGrid) elGrid.style.display = 'grid';
+          if (elTable) elTable.style.display = 'none';
+          renderGrid(filtered);
+        } else {
+          if (elGrid) elGrid.style.display = 'none';
+          if (elTable) elTable.style.display = 'block';
+          renderTable(filtered);
+        }
+
+        attachCardHandlers();
+      }
+
+      /* Attach interactive click handlers to cards and table buttons */
+      function attachCardHandlers() {
+        document.querySelectorAll('[data-action]').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const action = btn.dataset.action;
+            const id = parseInt(btn.dataset.id, 10);
+            const dish = dishes.find(d => d.id === id);
+            if (!dish) return;
+
+            if (action === 'toggle-stock') {
+              // Cycle stock: in-stock -> low-stock -> sold-out -> in-stock
+              const nextStatus = dish.stock === 'in-stock' ? 'low-stock'
+                : dish.stock === 'low-stock' ? 'sold-out' : 'in-stock';
+              dish.stock = nextStatus;
+              saveDishes(dishes);
+              const label = nextStatus === 'in-stock' ? 'In Stock' : nextStatus === 'low-stock' ? 'Low Stock' : 'Sold Out';
+              toast(`"${dish.name}" inventory updated to ${label}`);
+              renderAll();
+            } else if (action === 'edit') {
+              openDishModal(dish);
+            } else if (action === 'duplicate') {
+              const newDish = Object.assign({}, dish, {
+                id: Date.now(),
+                code: dish.code + '-CP',
+                name: dish.name + ' (Copy)',
+                orders: '0'
+              });
+              dishes.unshift(newDish);
+              saveDishes(dishes);
+              toast(`Duplicated "${dish.name}"`);
+              renderAll();
+            } else if (action === 'delete') {
+              itemToDeleteId = id;
+              const msgEl = document.getElementById('delete-modal-msg');
+              if (msgEl) msgEl.textContent = `Are you sure you want to delete "${dish.name}" (${dish.code})? This action cannot be undone.`;
+              openModal('delete-modal-backdrop');
+            }
+          };
+        });
+      }
+
+      /* Modal helpers */
+      function openModal(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('open');
+      }
+      function closeModal(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('open');
+      }
+
+      /* Open Dish Add / Edit Modal */
+      function openDishModal(dish) {
+        const isEdit = Boolean(dish);
+        document.getElementById('dish-modal-title').textContent = isEdit ? 'Edit Menu Dish' : 'Add New Menu Dish';
+        document.getElementById('dish-modal-sub').textContent = isEdit ? 'Update dish details and outlet availability' : 'Create a new dish entry in your restaurant catalog';
+        document.getElementById('form-dish-id').value = isEdit ? dish.id : '';
+        document.getElementById('form-name').value = isEdit ? dish.name : '';
+        document.getElementById('form-code').value = isEdit ? dish.code : 'MM-' + (dishes.length + 1).toString().padStart(2, '0');
+        document.getElementById('form-category').value = isEdit ? dish.category : (activeCategory !== 'all' ? activeCategory : 'momo');
+        document.getElementById('form-price').value = isEdit ? dish.price : '';
+        document.getElementById('form-dietary').value = isEdit ? dish.dietary : 'non-veg';
+        document.getElementById('form-spicy').value = isEdit ? (dish.spicy || 'None') : 'None';
+        document.getElementById('form-prep').value = isEdit ? (dish.prep || '15m') : '15m';
+        document.getElementById('form-stock').value = isEdit ? dish.stock : 'in-stock';
+        document.getElementById('form-special').checked = isEdit ? Boolean(dish.special) : false;
+        document.getElementById('form-desc').value = isEdit ? (dish.desc || '') : '';
+
+        // Outlets checkboxes
+        const selectedOutlets = isEdit ? (dish.outlets || []) : ['Durbar Marg', 'Jhamsikhel', 'Lakeside', 'Bouddha'];
+        document.querySelectorAll('input[name="form-outlets"]').forEach(cb => {
+          cb.checked = selectedOutlets.includes(cb.value);
+        });
+
+        openModal('dish-modal-backdrop');
+      }
+
+      /* Save Dish Form Submit Handler */
+      document.getElementById('dish-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const idVal = document.getElementById('form-dish-id').value;
+        const isEdit = Boolean(idVal);
+
+        const outlets = [];
+        document.querySelectorAll('input[name="form-outlets"]:checked').forEach(cb => outlets.push(cb.value));
+
+        const cat = document.getElementById('form-category').value;
+        const dishData = {
+          code: document.getElementById('form-code').value.trim(),
+          name: document.getElementById('form-name').value.trim(),
+          category: cat,
+          price: parseInt(document.getElementById('form-price').value, 10) || 0,
+          dietary: document.getElementById('form-dietary').value,
+          spicy: document.getElementById('form-spicy').value,
+          special: document.getElementById('form-special').checked,
+          prep: document.getElementById('form-prep').value.trim() || '15m',
+          stock: document.getElementById('form-stock').value,
+          outlets: outlets.length ? outlets : ['Durbar Marg'],
+          desc: document.getElementById('form-desc').value.trim(),
+          emoji: CAT_EMOJIS[cat] || '🍽️'
+        };
+
+        if (isEdit) {
+          const id = parseInt(idVal, 10);
+          const idx = dishes.findIndex(d => d.id === id);
+          if (idx >= 0) {
+            dishes[idx] = Object.assign({}, dishes[idx], dishData);
+            toast(`Updated "${dishData.name}"`);
+          }
+        } else {
+          dishData.id = Date.now();
+          dishData.rating = '4.8';
+          dishData.orders = '1';
+          dishes.unshift(dishData);
+          toast(`Added new dish "${dishData.name}"`);
+        }
+
+        saveDishes(dishes);
+        closeModal('dish-modal-backdrop');
+        renderAll();
+      });
+
+      /* Wire Event Listeners */
+      function setupListeners() {
+        // Category Pills
+        document.querySelectorAll('.cat-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            activeCategory = pill.dataset.cat;
+            renderAll();
+          });
+        });
+
+        // Search Input
+        const searchInput = document.getElementById('menu-search-input');
+        const clearBtn = document.getElementById('btn-clear-search');
+        searchInput.addEventListener('input', () => {
+          searchQuery = searchInput.value.trim();
+          clearBtn.style.display = searchQuery ? 'block' : 'none';
+          renderAll();
+        });
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          searchQuery = '';
+          clearBtn.style.display = 'none';
+          renderAll();
+        });
+
+        // Topbar global search sync
+        const topSearch = document.getElementById('topbar-global-search');
+        if (topSearch) {
+          topSearch.addEventListener('input', () => {
+            searchInput.value = topSearch.value;
+            searchQuery = topSearch.value.trim();
+            clearBtn.style.display = searchQuery ? 'block' : 'none';
+            renderAll();
+          });
+        }
+
+        // Dropdown Filters
+        document.getElementById('filter-outlet').addEventListener('change', (e) => {
+          filterOutlet = e.target.value;
+          renderAll();
+        });
+        document.getElementById('filter-dietary').addEventListener('change', (e) => {
+          filterDietary = e.target.value;
+          renderAll();
+        });
+        document.getElementById('filter-stock').addEventListener('change', (e) => {
+          filterStock = e.target.value;
+          renderAll();
+        });
+        document.getElementById('filter-sort').addEventListener('change', (e) => {
+          sortOrder = e.target.value;
+          renderAll();
+        });
+
+        // Reset Filters Buttons
+        const resetFilters = () => {
+          activeCategory = 'all';
+          searchQuery = '';
+          filterOutlet = 'all';
+          filterDietary = 'all';
+          filterStock = 'all';
+          document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === 'all'));
+          searchInput.value = '';
+          if (topSearch) topSearch.value = '';
+          clearBtn.style.display = 'none';
+          document.getElementById('filter-outlet').value = 'all';
+          document.getElementById('filter-dietary').value = 'all';
+          document.getElementById('filter-stock').value = 'all';
+          renderAll();
+        };
+        document.getElementById('btn-reset-all-filters').addEventListener('click', resetFilters);
+        document.getElementById('btn-empty-reset').addEventListener('click', resetFilters);
+
+        // Grid vs Table View Buttons
+        const btnGrid = document.getElementById('btn-view-grid');
+        const btnTable = document.getElementById('btn-view-table');
+        btnGrid.addEventListener('click', () => {
+          activeView = 'grid';
+          btnGrid.classList.add('active');
+          btnTable.classList.remove('active');
+          renderAll();
+        });
+        btnTable.addEventListener('click', () => {
+          activeView = 'table';
+          btnTable.classList.add('active');
+          btnGrid.classList.remove('active');
+          renderAll();
+        });
+
+        // Add Dish Button
+        document.getElementById('btn-add-dish').addEventListener('click', () => openDishModal(null));
+        document.getElementById('btn-close-dish-modal').addEventListener('click', () => closeModal('dish-modal-backdrop'));
+        document.getElementById('btn-cancel-dish').addEventListener('click', () => closeModal('dish-modal-backdrop'));
+
+        // Delete Modal Handlers
+        document.getElementById('btn-cancel-delete').addEventListener('click', () => closeModal('delete-modal-backdrop'));
+        document.getElementById('btn-confirm-delete').addEventListener('click', () => {
+          if (itemToDeleteId) {
+            const dish = dishes.find(d => d.id === itemToDeleteId);
+            dishes = dishes.filter(d => d.id !== itemToDeleteId);
+            saveDishes(dishes);
+            toast(`Deleted "${dish ? dish.name : 'dish'}"`);
+            itemToDeleteId = null;
+            closeModal('delete-modal-backdrop');
+            renderAll();
+          }
+        });
+
+        // QR Modal Handlers
+        document.getElementById('btn-open-qr').addEventListener('click', () => openModal('qr-modal-backdrop'));
+        document.getElementById('btn-close-qr-modal').addEventListener('click', () => closeModal('qr-modal-backdrop'));
+        document.getElementById('btn-copy-menu-link').addEventListener('click', () => {
+          navigator.clipboard.writeText('https://menu.koklass.com/table/qr-live');
+          toast('Copied menu link to clipboard!');
+        });
+        document.getElementById('btn-print-qr').addEventListener('click', () => {
+          toast('Opening printer dialog for QR sheet…');
+          window.print();
+        });
+
+        // Close on backdrop click
+        ['dish-modal-backdrop', 'qr-modal-backdrop', 'delete-modal-backdrop'].forEach(id => {
+          const el = document.getElementById(id);
+          el.addEventListener('click', (e) => {
+            if (e.target === el) closeModal(id);
+          });
+        });
+      }
+
+      // Initialize
+      setupListeners();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
