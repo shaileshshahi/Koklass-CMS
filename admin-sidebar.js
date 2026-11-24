@@ -22,21 +22,31 @@
     {
       group: 'Main',
       items: [
-        { id: 'dashboard', label: 'Dashboard', href: './dashboard.html',
-          icon: 'M3 3h7v9H3ZM14 3h7v5h-7ZM14 12h7v9h-7ZM3 16h7v5H3Z' },
-        { id: 'employees', label: 'Employees', href: './employee-list.html',
-          icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM23 21v-2a4 4 0 0 0-3-3.87' },
-        { id: 'orders', label: 'Orders', href: './orders.html',
-          icon: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0' },
-        { id: 'menu', label: 'Menu', href: './menu.html',
-          icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
+        {
+          id: 'dashboard', label: 'Dashboard', href: './dashboard.html',
+          icon: 'M3 3h7v9H3ZM14 3h7v5h-7ZM14 12h7v9h-7ZM3 16h7v5H3Z'
+        },
+        {
+          id: 'employees', label: 'Employees', href: './employee-list.html',
+          icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM23 21v-2a4 4 0 0 0-3-3.87'
+        },
+        {
+          id: 'orders', label: 'Orders', href: './orders.html',
+          icon: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0'
+        },
+        {
+          id: 'menu', label: 'Menu', href: './menu.html',
+          icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'
+        },
       ],
     },
     {
       group: 'Configs',
       items: [
-        { id: 'configs-theme', label: 'Theme config', href: './config-theme.html',
-          icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z' },
+        {
+          id: 'configs-theme', label: 'Theme config', href: './config-theme.html',
+          icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z'
+        },
       ],
     },
     {
@@ -72,7 +82,7 @@
   }
 
   function setOpenState(state) {
-    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { }
   }
 
   function icon(d) {
@@ -91,7 +101,7 @@
     var activeId = (aside.getAttribute('data-sidebar-active') || '').trim();
     var open = getOpenState();
     var collapsed = false;
-    try { collapsed = localStorage.getItem(COLLAPSE_KEY) === 'true'; } catch (e) {}
+    try { collapsed = localStorage.getItem(COLLAPSE_KEY) === 'true'; } catch (e) { }
     var parts = [];
 
     parts.push(
@@ -200,7 +210,7 @@
         if (lbl) lbl.textContent = nowCollapsed ? 'Expand' : 'Collapse';
         var ic = sbToggle.querySelector('svg path');
         if (ic) ic.setAttribute('d', nowCollapsed ? 'm13 17 5-5-5-5M6 17l5-5-5-5' : 'm11 17-5-5 5-5M18 17l-5-5 5-5');
-        try { localStorage.setItem(COLLAPSE_KEY, String(nowCollapsed)); } catch (err) {}
+        try { localStorage.setItem(COLLAPSE_KEY, String(nowCollapsed)); } catch (err) { }
         var resizeEvt = new Event('ember:sidebar-toggle');
         window.dispatchEvent(resizeEvt);
         e.preventDefault();
@@ -213,7 +223,7 @@
         /* Icon-rail mode: clicking a group expands the panel and opens it. */
         if (aside.classList.contains('collapsed')) {
           aside.classList.remove('collapsed');
-          try { localStorage.setItem(COLLAPSE_KEY, 'false'); } catch (err) {}
+          try { localStorage.setItem(COLLAPSE_KEY, 'false'); } catch (err) { }
           itemEl.classList.add('open');
           var subNow = itemEl.querySelector('.nav-sub');
           if (subNow) subNow.hidden = false;
