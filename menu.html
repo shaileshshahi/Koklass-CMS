@@ -489,110 +489,130 @@
       border: 1px solid var(--border);
     }
 
-    /* Dish Card Footer */
+    /* Dish Card Footer - Modern, Balanced, Spacious */
     .dish-footer {
-      padding: 10px 16px;
-      background: var(--secondary);
+      padding: 11px 15px;
+      background: color-mix(in srgb, var(--secondary) 65%, var(--card));
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      position: relative;
     }
 
     .dish-price-wrap {
       display: flex;
       flex-direction: column;
-    }
-    .price-label {
-      font-size: 0.66rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted-foreground);
+      gap: 1px;
+      min-width: 0;
     }
     .price-value {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--foreground);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
     }
     .margin-sub {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       color: var(--success);
       font-weight: 700;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
     }
 
     .dish-actions-wrap {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
     }
 
-    /* Stock Status Interactive Button */
+    /* Stock Status Interactive Button - Single Line Pill */
     .stock-badge-btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 9px;
+      gap: 6px;
+      padding: 5px 11px;
       border-radius: 999px;
       font-size: 0.72rem;
       font-weight: 700;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: all 120ms ease;
+      transition: all 130ms ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .stock-badge-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+    .stock-badge-btn:active {
+      transform: translateY(0) scale(0.97);
     }
     .stock-badge-btn.in-stock {
-      background: rgba(47, 191, 113, 0.14);
+      background: rgba(22, 163, 74, 0.12);
       color: #16a34a;
-      border-color: rgba(47, 191, 113, 0.3);
+      border-color: rgba(22, 163, 74, 0.28);
     }
     .dark .stock-badge-btn.in-stock {
-      background: rgba(47, 191, 113, 0.18);
-      color: #34d399;
-      border-color: rgba(47, 191, 113, 0.35);
+      background: rgba(34, 197, 94, 0.16);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.35);
     }
     .stock-badge-btn.low-stock {
       background: rgba(245, 158, 11, 0.14);
       color: #d97706;
-      border-color: rgba(245, 158, 11, 0.3);
+      border-color: rgba(245, 158, 11, 0.32);
     }
     .dark .stock-badge-btn.low-stock {
-      background: rgba(245, 158, 11, 0.18);
+      background: rgba(245, 158, 11, 0.20);
       color: #fbbf24;
-      border-color: rgba(245, 158, 11, 0.35);
+      border-color: rgba(245, 158, 11, 0.38);
     }
     .stock-badge-btn.sold-out {
-      background: rgba(239, 68, 68, 0.14);
+      background: rgba(239, 68, 68, 0.13);
       color: #dc2626;
       border-color: rgba(239, 68, 68, 0.3);
     }
     .dark .stock-badge-btn.sold-out {
-      background: rgba(239, 68, 68, 0.18);
+      background: rgba(239, 68, 68, 0.20);
       color: #f87171;
-      border-color: rgba(239, 68, 68, 0.35);
+      border-color: rgba(239, 68, 68, 0.38);
     }
     .stock-badge-btn .dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: currentColor;
+      flex-shrink: 0;
     }
 
     .dish-icon-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--card);
       color: var(--muted-foreground);
       display: grid;
       place-items: center;
       cursor: pointer;
-      transition: all 120ms ease;
+      transition: all 130ms ease;
+      flex-shrink: 0;
     }
     .dish-icon-btn:hover {
       border-color: var(--ring);
-      color: var(--foreground);
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 8%, var(--card));
+    }
+    .dish-icon-btn:active {
+      transform: scale(0.95);
     }
     .dish-icon-btn svg {
       width: 14px;
@@ -600,6 +620,86 @@
       stroke: currentColor;
       fill: none;
       stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    /* Action Dropdown Menu */
+    .dish-menu-wrap {
+      position: relative;
+    }
+    .dish-card:has(.dish-menu-wrap.open) {
+      z-index: 25;
+    }
+    .dish-dropdown-menu {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      min-width: 165px;
+      background: var(--popover, var(--card));
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      padding: 5px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 60;
+      animation: dishMenuPop 130ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dish-menu-wrap.open .dish-dropdown-menu {
+      display: flex;
+    }
+    @keyframes dishMenuPop {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .dish-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px 10px;
+      border: none;
+      background: transparent;
+      color: var(--foreground);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: calc(var(--radius) - 4px);
+      cursor: pointer;
+      text-align: left;
+      transition: background 120ms ease, color 120ms ease;
+      white-space: nowrap;
+    }
+    .dish-menu-item:hover {
+      background: var(--secondary);
+      color: var(--primary);
+    }
+    .dish-menu-item svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+    .dish-menu-item.danger {
+      color: var(--destructive);
+    }
+    .dish-menu-item.danger:hover {
+      background: color-mix(in srgb, var(--destructive) 10%, transparent);
+      color: var(--destructive);
+    }
+    .dish-menu-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 3px 0;
     }
 
     /* Table & Matrix View Containers */
@@ -2156,37 +2256,43 @@
               <!-- Card Footer with Price and Status Control -->
               <div class="dish-footer">
                 <div class="dish-price-wrap">
-                  <span class="price-label">Price</span>
                   <span class="price-value">Rs. ${d.price.toLocaleString()}</span>
                   <span class="margin-sub">+${mg.marginPct}% margin</span>
                 </div>
 
                 <div class="dish-actions-wrap">
                   <!-- Toggle stock on click -->
-                  <button class="stock-badge-btn ${stockCls}" data-action="toggle-stock" data-id="${d.id}" title="Click to cycle status (In Stock / Low Stock / Sold Out)">
+                  <button type="button" class="stock-badge-btn ${stockCls}" data-action="toggle-stock" data-id="${d.id}" title="Click to cycle status (In Stock / Low Stock / Sold Out)">
                     <span class="dot"></span>
                     <span>${stockText}</span>
                   </button>
 
-                  <!-- Quick View Drawer -->
-                  <button class="dish-icon-btn" data-action="quick-view" data-id="${d.id}" title="Quick view details">
-                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </button>
-
-                  <!-- Edit Dish -->
-                  <button class="dish-icon-btn" data-action="edit" data-id="${d.id}" title="Edit dish">
+                  <!-- Quick Edit -->
+                  <button type="button" class="dish-icon-btn" data-action="edit" data-id="${d.id}" title="Edit dish">
                     <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                   </button>
 
-                  <!-- Duplicate Dish -->
-                  <button class="dish-icon-btn" data-action="duplicate" data-id="${d.id}" title="Duplicate dish">
-                    <svg viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  </button>
-
-                  <!-- Delete Dish -->
-                  <button class="dish-icon-btn" data-action="delete" data-id="${d.id}" title="Delete dish">
-                    <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                  </button>
+                  <!-- More Actions Dropdown -->
+                  <div class="dish-menu-wrap">
+                    <button type="button" class="dish-icon-btn" data-action="open-menu" data-id="${d.id}" title="More options" aria-haspopup="true">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
+                    </button>
+                    <div class="dish-dropdown-menu">
+                      <button type="button" class="dish-menu-item" data-action="quick-view" data-id="${d.id}">
+                        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>View Details</span>
+                      </button>
+                      <button type="button" class="dish-menu-item" data-action="duplicate" data-id="${d.id}">
+                        <svg viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>Duplicate</span>
+                      </button>
+                      <div class="dish-menu-divider"></div>
+                      <button type="button" class="dish-menu-item danger" data-action="delete" data-id="${d.id}">
+                        <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        <span>Delete Dish</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2430,6 +2536,19 @@
             const dish = dishes.find(d => d.id === id);
             if (!dish) return;
 
+            if (action === 'open-menu') {
+              const wrap = btn.closest('.dish-menu-wrap');
+              const wasOpen = wrap && wrap.classList.contains('open');
+              document.querySelectorAll('.dish-menu-wrap.open').forEach(w => w.classList.remove('open'));
+              if (wrap && !wasOpen) {
+                wrap.classList.add('open');
+              }
+              return;
+            }
+
+            // Close open menus when an action is selected
+            document.querySelectorAll('.dish-menu-wrap.open').forEach(w => w.classList.remove('open'));
+
             if (action === 'toggle-stock') {
               const nextStatus = dish.stock === 'in-stock' ? 'low-stock'
                 : dish.stock === 'low-stock' ? 'sold-out' : 'in-stock';
@@ -2461,6 +2580,16 @@
             }
           };
         });
+
+        // Close action dropdowns when clicking anywhere outside
+        if (!window._dishMenuDismissAttached) {
+          window._dishMenuDismissAttached = true;
+          document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dish-menu-wrap')) {
+              document.querySelectorAll('.dish-menu-wrap.open').forEach(w => w.classList.remove('open'));
+            }
+          });
+        }
       }
 
       /* Modal & Drawer helpers */
