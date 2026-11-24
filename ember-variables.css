@@ -75,8 +75,8 @@
 
   /* Ember extras (new code only) */
   --primary-hover: #D31255;
-  --primary-soft: #FEE6EF;
-  --on-primary-soft: #8D0C39;
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, #FFFFFF);
+  --on-primary-soft: color-mix(in srgb, var(--primary) 75%, #000000);
   --scrim: rgba(20, 24, 31, 0.5);
   --surface-raised: #FFFFFF;
   --surface-sunken: #EFF1F4;
@@ -85,12 +85,12 @@
   --shadow-sm: 0 1px 2px rgba(16, 18, 24, 0.08);
   --shadow-md: 0 2px 6px rgba(16, 18, 24, 0.08), 0 1px 2px rgba(16, 18, 24, 0.06);
   --shadow-lg: 0 12px 32px -8px rgba(16, 18, 24, 0.18);
-  --focus-ring: 0 0 0 3px rgba(236, 56, 118, 0.35);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 35%, transparent);
 
   /* Sidebar Tokens (Light) */
   --sidebar-top: #FFFFFF;
   --sidebar-bottom: #F5F7FA;
-  --sidebar-hover: rgba(236, 56, 118, 0.08);
+  --sidebar-hover: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .dark {
@@ -158,8 +158,8 @@
 
   /* Ember extras (dark) */
   --primary-hover: #F66A9D;
-  --primary-soft: #3A1122;
-  --on-primary-soft: #FA9EBE;
+  --primary-soft: color-mix(in srgb, var(--primary) 18%, #14181F);
+  --on-primary-soft: color-mix(in srgb, var(--primary) 70%, #FFFFFF);
   --scrim: rgba(6, 8, 12, 0.68);
   --surface-raised: #242B36;
   --surface-sunken: #0E1218;
@@ -168,10 +168,10 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
-  --focus-ring: 0 0 0 3px rgba(243, 79, 135, 0.45);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 40%, transparent);
 
   /* Sidebar Tokens (Dark) */
   --sidebar-top: #1C222B;
   --sidebar-bottom: #14181F;
-  --sidebar-hover: rgba(243, 79, 135, 0.14);
+  --sidebar-hover: color-mix(in srgb, var(--primary) 14%, transparent);
 }

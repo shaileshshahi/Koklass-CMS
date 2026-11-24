@@ -98,6 +98,24 @@
     var aside = document.querySelector('aside.sidebar[data-sidebar-active]');
     if (!aside) return;
 
+    // Early theme check: ensure --primary is assigned before generating sidebar markup
+    try {
+      var rawCfg = localStorage.getItem('koklass-theme-config');
+      if (rawCfg) {
+        var parsed = JSON.parse(rawCfg);
+        if (parsed && parsed.primary) {
+          var root = document.documentElement;
+          var curPrimary = root.style.getPropertyValue('--primary');
+          if (!curPrimary || curPrimary.trim() !== parsed.primary) {
+            root.style.setProperty('--primary', parsed.primary);
+            root.style.setProperty('--ring', parsed.primary);
+            root.style.setProperty('--sidebar-hover', 'color-mix(in srgb, ' + parsed.primary + ' 8%, transparent)');
+            root.style.setProperty('--primary-soft', 'color-mix(in srgb, ' + parsed.primary + ' 10%, #FFFFFF)');
+          }
+        }
+      }
+    } catch (e) { }
+
     var activeId = (aside.getAttribute('data-sidebar-active') || '').trim();
 
     // Canonical alias normalization
@@ -136,8 +154,14 @@
 
     parts.push(
       '<div class="sidebar-brand">'
-      + '<div class="brand-mark"><img data-brand-logo src="./logo.svg" alt="" style="width:22px;height:auto;display:block;" /></div>'
+      + '<a href="./dashboard.html" class="sidebar-brand-link" title="Koklass Dashboard">'
+      + '<div class="brand-mark">'
+      + '<svg data-brand-logo viewBox="0 0 47.068 41.637" style="width:22px;height:auto;display:block;" fill="currentColor" aria-hidden="true">'
+      + '<path d="M5891.241,47.992a2.175,2.175,0,0,1,0-2.607l2.909-3.819L5912.71,16.1h-14.216a5.3,5.3,0,0,0-4.241,2.111l-14.834,19.333-3.183,4.155a.836.836,0,0,1-1.189.134.868.868,0,0,1-.316-.663v-18.7a3.3,3.3,0,0,0-1.162-2.522,3.523,3.523,0,0,0-.4-.294L5872,18.924h6.427a3.044,3.044,0,0,1,3.016,3.062V29.98l2.787-3.644V19.156l4.017-3.057h-18.124l-4.479,5.641h.125l5.725.246a.459.459,0,0,1,.357.18.479.479,0,0,1,.1.289V45.772a2.069,2.069,0,0,0,1.394,1.988,2.146,2.146,0,0,0,.688.118,2.022,2.022,0,0,0,1.608-.814l19.741-25.75a5.994,5.994,0,0,1,4.8-2.366h6.864L5892.394,39.3l-2.589,3.374a1.633,1.633,0,0,1-1.176.672,1.551,1.551,0,0,1-1.346-.63l-2.058-3.015-1.762,2.31,3.718,5.177a1.964,1.964,0,0,0,.167.18h0l7.63,10.369.055-.081a3.921,3.921,0,0,0-.041-4.6Z" transform="translate(-5865.643 -16.099)"/>'
+      + '</svg>'
+      + '</div>'
       + '<div class="brand-text"><div class="brand-name" data-brand-name>Koklass</div><div class="brand-sub">Admin panel</div></div>'
+      + '</a>'
       + '<button type="button" class="sidebar-close-btn" aria-label="Close navigation">'
       + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
       + '</button>'

@@ -208,18 +208,35 @@
       rs.setProperty('--login-glow', hexToRgba(dark ? b.dark : b.primary, 0.13));
     } else {
       ['--background', '--card', '--popover', '--secondary', '--muted', '--surface-raised',
-        '--sidebar-top', '--sidebar-bottom', '--sidebar-hover', '--badge-brand-bg', '--login-glow']
+        '--sidebar-top', '--sidebar-bottom', '--badge-brand-bg', '--login-glow']
         .forEach(k => rs.removeProperty(k));
+      rs.setProperty('--sidebar-hover', isDark ? hexToRgba(b.dark, 0.16) : hexToRgba(b.primary, 0.08));
     }
 
     const name = (cfg.name || '').trim() || THEME_DEFAULTS.name;
     document.querySelectorAll('[data-brand-name]').forEach(el => { el.textContent = name; });
 
     const logo = cfg.logo || THEME_DEFAULTS.logo;
-    document.querySelectorAll('[data-brand-logo]').forEach(img => {
-      img.style.display = '';
-      img.src = logo;
-      img.onerror = () => { img.style.display = 'none'; };
+    const isDefaultLogo = !logo || logo === './logo.svg' || logo.endsWith('/logo.svg');
+    document.querySelectorAll('[data-brand-logo]').forEach(el => {
+      if (isDefaultLogo) {
+        // If already an inline SVG, keep it so it dynamically inherits var(--primary) via fill="currentColor"
+        if (el.tagName.toLowerCase() === 'svg') {
+          el.style.display = '';
+        } else {
+          // If it's an img pointing to logo.svg, replace with inline SVG to inherit active theme color
+          el.outerHTML = '<svg data-brand-logo viewBox="0 0 47.068 41.637" style="width:22px;height:auto;display:block;" fill="currentColor" aria-hidden="true"><path d="M5891.241,47.992a2.175,2.175,0,0,1,0-2.607l2.909-3.819L5912.71,16.1h-14.216a5.3,5.3,0,0,0-4.241,2.111l-14.834,19.333-3.183,4.155a.836.836,0,0,1-1.189.134.868.868,0,0,1-.316-.663v-18.7a3.3,3.3,0,0,0-1.162-2.522,3.523,3.523,0,0,0-.4-.294L5872,18.924h6.427a3.044,3.044,0,0,1,3.016,3.062V29.98l2.787-3.644V19.156l4.017-3.057h-18.124l-4.479,5.641h.125l5.725.246a.459.459,0,0,1,.357.18.479.479,0,0,1,.1.289V45.772a2.069,2.069,0,0,0,1.394,1.988,2.146,2.146,0,0,0,.688.118,2.022,2.022,0,0,0,1.608-.814l19.741-25.75a5.994,5.994,0,0,1,4.8-2.366h6.864L5892.394,39.3l-2.589,3.374a1.633,1.633,0,0,1-1.176.672,1.551,1.551,0,0,1-1.346-.63l-2.058-3.015-1.762,2.31,3.718,5.177a1.964,1.964,0,0,0,.167.18h0l7.63,10.369.055-.081a3.921,3.921,0,0,0-.041-4.6Z" transform="translate(-5865.643 -16.099)"/></svg>';
+        }
+      } else {
+        // Custom uploaded logo image
+        if (el.tagName.toLowerCase() === 'img') {
+          el.style.display = '';
+          el.src = logo;
+          el.onerror = () => { el.style.display = 'none'; };
+        } else {
+          el.outerHTML = '<img data-brand-logo src="' + logo + '" alt="" style="width:22px;height:auto;display:block;" />';
+        }
+      }
     });
   }
 
