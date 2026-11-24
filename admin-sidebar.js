@@ -99,6 +99,36 @@
     if (!aside) return;
 
     var activeId = (aside.getAttribute('data-sidebar-active') || '').trim();
+
+    // Canonical alias normalization
+    var ALIAS_MAP = {
+      'employee-list': 'employees',
+      'employee-create': 'employees',
+      'employee-edit': 'employees',
+      'employee': 'employees',
+      'theme-config': 'configs-theme',
+      'config-theme': 'configs-theme'
+    };
+    if (ALIAS_MAP[activeId]) {
+      activeId = ALIAS_MAP[activeId];
+    }
+
+    // Current page filename for fallback URL matching
+    var curFile = '';
+    try {
+      var pathname = window.location.pathname.toLowerCase();
+      curFile = pathname.substring(pathname.lastIndexOf('/') + 1) || 'index.html';
+      if (!curFile || curFile === 'index.html') curFile = 'dashboard.html';
+    } catch (e) {
+      curFile = '';
+    }
+
+    function isHrefMatch(href) {
+      if (!href || !curFile) return false;
+      var target = href.substring(href.lastIndexOf('/') + 1).toLowerCase();
+      return target && target === curFile;
+    }
+
     var open = getOpenState();
     var collapsed = false;
     try { collapsed = localStorage.getItem(COLLAPSE_KEY) === 'true'; } catch (e) { }
@@ -119,9 +149,9 @@
       parts.push('<div class="nav-group"><span>' + section.group + '</span></div>');
       section.items.forEach(function (item) {
         var hasChildren = !!(item.children && item.children.length);
-        var selfActive = item.id === activeId;
+        var selfActive = item.id === activeId || isHrefMatch(item.href) || (item.id === 'employees' && curFile.indexOf('employee') === 0);
         var child = hasChildren
-          ? item.children.filter(function (c) { return c.id === activeId; })[0]
+          ? item.children.filter(function (c) { return c.id === activeId || isHrefMatch(c.href); })[0]
           : null;
         var childActive = !!child;
         var idForState = childActive ? item.id + ':' + child.id : item.id;
@@ -137,10 +167,11 @@
           return;
         }
 
-        /* Expandable group */
-        var isOpen = open[item.id] !== undefined ? !!open[item.id] : childActive;
+        /* Expandable group: if a child is active, the group is always open so the user sees the highlighted page */
+        var isOpen = childActive || (open[item.id] !== undefined ? !!open[item.id] : false);
         var subItems = item.children.map(function (c) {
-          var subCls = c.id === activeId ? 'nav-sub-link active' : 'nav-sub-link';
+          var isThisChildActive = c.id === activeId || isHrefMatch(c.href);
+          var subCls = isThisChildActive ? 'nav-sub-link active' : 'nav-sub-link';
           var subHref = c.href ? ' href="' + c.href + '"' : '';
           var subToast = c.href ? '' : ' data-toast="Demo: ' + esc(c.label) + ' is not wired yet"';
           return '<a class="' + subCls + '"' + subHref + subToast + '><span>' + c.label + '</span></a>';
