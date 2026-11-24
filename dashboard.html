@@ -99,34 +99,96 @@
 
         <!-- 2. Balanced 2-Column Middle Grid: 65% Revenue Chart + 35% Orders to Review -->
         <section class="dashboard-main-grid">
-          <!-- Left Column (65%): Revenue this week chart -->
+          <!-- Left Column (65%): Revenue Trajectory & Forecasting Chart Card -->
           <div class="card">
-            <div class="card-head">
+            <div class="card-head" style="gap:12px;flex-wrap:wrap;">
               <div>
-                <h3 style="margin:0;font-size:1.02rem;">Revenue this week</h3>
-                <span class="hint" style="margin-top:2px;">Daily trajectory vs. target benchmark</span>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <h3 id="dash-chart-title" style="margin:0;font-size:1.02rem;">Revenue Trajectory &amp; Forecasting</h3>
+                  <span class="badge badge-brand" style="font-size:0.7rem;padding:2px 7px;">All Outlets</span>
+                </div>
+                <span class="hint" id="dash-chart-sub" style="margin-top:2px;">Showing 7-day trajectory across All Outlets · Target exceeded by Rs. 38.5k</span>
               </div>
 
-              <div class="chart-legend-deck">
-                <span class="legend-chip">
-                  <i class="legend-color-dot" style="background:var(--primary)"></i>
-                  <span>Revenue</span>
-                </span>
-                <span class="legend-chip">
-                  <i class="legend-color-dash"></i>
-                  <span>Target</span>
-                </span>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <!-- Granularity: Daily / Weekly / Monthly -->
+                <div class="segmented-control" id="dash-granularity-control" role="group" aria-label="Timeframe granularity">
+                  <button class="segmented-btn active" data-gran="daily">Daily</button>
+                  <button class="segmented-btn" data-gran="weekly">Weekly</button>
+                  <button class="segmented-btn" data-gran="monthly">Monthly</button>
+                </div>
+
+                <!-- View Type: Trend vs Columns -->
+                <div class="segmented-control" id="dash-type-control" role="group" aria-label="Chart representation">
+                  <button class="segmented-btn active" data-type="area" title="Smooth Area Trend View">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><path d="M3 18 L9 12 L15 15 L21 7"/></svg>
+                    Trend
+                  </button>
+                  <button class="segmented-btn" data-type="bars" title="Column Volume View">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="5" width="4" height="16"/><rect x="17" y="13" width="4" height="8"/></svg>
+                    Columns
+                  </button>
+                </div>
+
+                <!-- Legend Deck -->
+                <div class="chart-legend-deck">
+                  <span class="legend-chip">
+                    <i class="legend-color-dot" style="background:var(--primary)"></i>
+                    <span>Current</span>
+                  </span>
+                  <span class="legend-chip">
+                    <i class="legend-color-dash" style="border-top-color:var(--info, #5691ea)"></i>
+                    <span>Previous</span>
+                  </span>
+                  <span class="legend-chip">
+                    <i class="legend-color-dash" style="border-top-color:var(--success, #2fbf71)"></i>
+                    <span>Target</span>
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div class="card-pad" style="padding: 12px 18px 4px;">
+            <!-- Subcards: Current Period, Previous Period, Target Quota -->
+            <div class="dash-chart-subcards">
+              <div class="dash-subcard">
+                <span class="dash-subcard-label">
+                  <i class="dash-subcard-dot" style="background:var(--primary)"></i> Current Period
+                </span>
+                <div class="dash-subcard-val-row">
+                  <span class="dash-subcard-val" id="dash-val-current">Rs. 428,500</span>
+                  <span class="badge badge-success" id="dash-badge-current">▲ +14.8%</span>
+                </div>
+              </div>
+              <div class="dash-subcard">
+                <span class="dash-subcard-label">
+                  <i class="dash-subcard-dot" style="background:var(--info, #5691ea)"></i> Previous Period
+                </span>
+                <div class="dash-subcard-val-row">
+                  <span class="dash-subcard-val" id="dash-val-prev">Rs. 360.9k</span>
+                  <span class="badge badge-muted">Benchmark</span>
+                </div>
+              </div>
+              <div class="dash-subcard">
+                <span class="dash-subcard-label">
+                  <i class="dash-subcard-dot" style="background:var(--success, #2fbf71)"></i> Target Quota
+                </span>
+                <div class="dash-subcard-val-row">
+                  <span class="dash-subcard-val" id="dash-val-target">Rs. 382.0k</span>
+                  <span class="badge badge-brand" id="dash-badge-target">108.4% Hit</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-pad" style="padding: 6px 18px 4px;">
               <div id="dashboard-revenue-chart" style="width:100%;height:270px;min-height:270px;position:relative;"></div>
             </div>
 
             <div class="card-footer-summary">
-              <span>Peak: <b style="color:var(--foreground)">Saturday (Rs. 524k)</b></span>
-              <span>Daily Avg: <b style="color:var(--foreground)">Rs. 422k</b></span>
-              <span>Attainment: <b style="color:var(--success)">108.4%</b></span>
+              <span id="dash-stat-peak">Peak slot: <b style="color:var(--foreground)">Saturday · Rs. 84.6k</b></span>
+              <span class="sep">·</span>
+              <span id="dash-stat-avg">Daily Run-Rate: <b style="color:var(--foreground)">Rs. 61.2k / day</b></span>
+              <span class="sep">·</span>
+              <span id="dash-stat-attainment">Attainment: <b style="color:var(--success)">108.4% (Exceeded)</b></span>
             </div>
           </div>
 
@@ -295,9 +357,88 @@
       const cs = getComputedStyle(document.documentElement);
       return {
         primary: cs.getPropertyValue('--primary').trim() || '#EC3876',
+        info: cs.getPropertyValue('--info').trim() || '#5691EA',
         success: cs.getPropertyValue('--success').trim() || '#2FBF71',
         muted: cs.getPropertyValue('--muted-foreground').trim() || '#64748b'
       };
+    }
+
+    /* Revenue Datasets for Daily, Weekly, and Monthly */
+    const REVENUE_DATASETS = {
+      daily: {
+        title: 'Revenue Trajectory & Forecasting',
+        sub: 'Showing 7-day trajectory across All Outlets · Target exceeded by Rs. 38.5k',
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        current: [42500, 48800, 52400, 58400, 73800, 84600, 68000],
+        prev:    [46000, 42000, 39500, 48200, 60800, 68400, 56000],
+        target:  [40000, 44000, 48000, 54000, 62000, 70000, 64000],
+        currVal: 'Rs. 428,500',
+        currBadge: '▲ +14.8%',
+        prevVal: 'Rs. 360.9k',
+        targetVal: 'Rs. 382.0k',
+        targetHit: '108.4% Hit',
+        peak: 'Saturday · Rs. 84.6k',
+        avgLabel: 'Daily Run-Rate',
+        avgVal: 'Rs. 61.2k / day',
+        attainment: '108.4% (Exceeded)'
+      },
+      weekly: {
+        title: 'Revenue Trajectory & Forecasting',
+        sub: 'Trailing 4-week consolidated GMV across dining & digital channels',
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        current: [385000, 418000, 442000, 482000],
+        prev:    [360000, 372000, 388000, 410000],
+        target:  [370000, 395000, 420000, 450000],
+        currVal: 'Rs. 1,727,000',
+        currBadge: '▲ +13.7%',
+        prevVal: 'Rs. 1.53M',
+        targetVal: 'Rs. 1.64M',
+        targetHit: '107.1% Hit',
+        peak: 'Week 4 · Rs. 482k',
+        avgLabel: 'Weekly Run-Rate',
+        avgVal: 'Rs. 431.8k / week',
+        attainment: '107.1% (Exceeded)'
+      },
+      monthly: {
+        title: 'Revenue Trajectory & Forecasting',
+        sub: 'Quarter-to-date revenue milestone across 4 active branches',
+        labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        current: [1420000, 1580000, 1690000, 1840000, 1980000, 2150000],
+        prev:    [1300000, 1360000, 1440000, 1580000, 1690000, 1820000],
+        target:  [1350000, 1480000, 1600000, 1750000, 1880000, 2050000],
+        currVal: 'Rs. 10,660,000',
+        currBadge: '▲ +15.2%',
+        prevVal: 'Rs. 9.19M',
+        targetVal: 'Rs. 10.11M',
+        targetHit: '105.4% Hit',
+        peak: 'December · Rs. 2.15M',
+        avgLabel: 'Monthly Run-Rate',
+        avgVal: 'Rs. 1.78M / month',
+        attainment: '105.4% (Exceeded)'
+      }
+    };
+
+    let dashState = {
+      granularity: 'daily',
+      viewType: 'area'
+    };
+
+    function formatVal(v) {
+      if (Math.abs(v) >= 1e6) {
+        const m = v / 1e6;
+        return 'Rs. ' + (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + 'M';
+      }
+      if (Math.abs(v) >= 1e3) {
+        const k = v / 1e3;
+        return 'Rs. ' + (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
+      }
+      return 'Rs. ' + Math.round(v);
+    }
+
+    function formatTooltipVal(v) {
+      if (Math.abs(v) >= 1e6) return 'Rs. ' + (v / 1e6).toFixed(2) + 'M';
+      if (Math.abs(v) >= 1e3) return 'Rs. ' + (v / 1e3).toFixed(1) + 'k';
+      return 'Rs. ' + Math.round(v).toLocaleString();
     }
 
     /* Render Weekly Revenue Chart */
@@ -307,41 +448,119 @@
       chArea.innerHTML = '';
 
       const C = colors();
-      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      const curData = [342000, 385000, 360000, 412000, 468000, 524000, 480000];
-      const tgtData = [320000, 350000, 370000, 390000, 430000, 480000, 450000];
+      const d = REVENUE_DATASETS[dashState.granularity] || REVENUE_DATASETS.daily;
 
-      EmberCharts.area(chArea, {
-        labels: labels,
-        height: 270,
-        series: [
-          {
-            name: 'Revenue',
-            color: C.primary,
-            data: curData,
-            dots: true,
-            fill: true
-          },
-          {
-            name: 'Target',
-            color: C.muted,
-            data: tgtData,
-            dashed: true,
-            dots: false,
-            fill: false
-          }
-        ],
-        formatY: v => {
-          if (v >= 1e6) return 'Rs. ' + (v / 1e6).toFixed(1) + 'M';
-          if (v >= 1e3) return 'Rs. ' + Math.round(v / 1e3) + 'k';
-          return 'Rs. ' + v;
-        },
-        formatTip: v => {
-          if (v >= 1e6) return 'Rs. ' + (v / 1e6).toFixed(2) + 'M';
-          if (v >= 1e3) return 'Rs. ' + (v / 1e3).toFixed(1) + 'k';
-          return 'Rs. ' + Math.round(v).toLocaleString();
-        }
-      });
+      // Update text callouts
+      const titleEl = document.getElementById('dash-chart-title');
+      const subEl = document.getElementById('dash-chart-sub');
+      if (titleEl) titleEl.textContent = d.title;
+      if (subEl) subEl.textContent = d.sub;
+
+      // Update subcards
+      const valCurr = document.getElementById('dash-val-current');
+      const badgeCurr = document.getElementById('dash-badge-current');
+      const valPrev = document.getElementById('dash-val-prev');
+      const valTgt = document.getElementById('dash-val-target');
+      const badgeTgt = document.getElementById('dash-badge-target');
+
+      if (valCurr) valCurr.textContent = d.currVal;
+      if (badgeCurr) badgeCurr.textContent = d.currBadge;
+      if (valPrev) valPrev.textContent = d.prevVal;
+      if (valTgt) valTgt.textContent = d.targetVal;
+      if (badgeTgt) badgeTgt.textContent = d.targetHit;
+
+      // Update footer summary
+      const peakEl = document.getElementById('dash-stat-peak');
+      const avgEl = document.getElementById('dash-stat-avg');
+      const attEl = document.getElementById('dash-stat-attainment');
+
+      if (peakEl) peakEl.innerHTML = `Peak slot: <b style="color:var(--foreground)">${d.peak}</b>`;
+      if (avgEl) avgEl.innerHTML = `${d.avgLabel}: <b style="color:var(--foreground)">${d.avgVal}</b>`;
+      if (attEl) attEl.innerHTML = `Attainment: <b style="color:var(--success)">${d.attainment}</b>`;
+
+      if (dashState.viewType === 'bars') {
+        EmberCharts.bars(chArea, {
+          labels: d.labels,
+          height: 270,
+          grouped: true,
+          series: [
+            { name: 'Current Period', color: C.primary, data: d.current },
+            { name: 'Previous Period', color: C.info, data: d.prev },
+            { name: 'Target Quota', color: C.success, data: d.target }
+          ],
+          formatY: formatVal,
+          formatTip: formatTooltipVal
+        });
+      } else {
+        EmberCharts.area(chArea, {
+          labels: d.labels,
+          height: 270,
+          series: [
+            {
+              name: 'Current Period',
+              color: C.primary,
+              data: d.current,
+              dots: true,
+              fill: true
+            },
+            {
+              name: 'Previous Period',
+              color: C.info,
+              data: d.prev,
+              dashed: true,
+              dots: false,
+              fill: false
+            },
+            {
+              name: 'Target Quota',
+              color: C.success,
+              data: d.target,
+              dashed: true,
+              dots: false,
+              fill: false
+            }
+          ],
+          formatY: formatVal,
+          formatTip: formatTooltipVal
+        });
+      }
+    }
+
+    /* Granularity and Chart Type Controls Setup */
+    function setupChartControls() {
+      // Granularity buttons: Daily / Weekly / Monthly
+      const granCtrl = document.getElementById('dash-granularity-control');
+      if (granCtrl) {
+        granCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const gran = btn.dataset.gran;
+            if (!gran || gran === dashState.granularity) return;
+            dashState.granularity = gran;
+            granCtrl.querySelectorAll('.segmented-btn').forEach(b => b.classList.toggle('active', b === btn));
+            renderRevenueChart();
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast(`Switched to ${btn.textContent} view`);
+            }
+          });
+        });
+      }
+
+      // View type buttons: Trend vs Columns
+      const typeCtrl = document.getElementById('dash-type-control');
+      if (typeCtrl) {
+        typeCtrl.querySelectorAll('.segmented-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const type = btn.dataset.type;
+            if (!type || type === dashState.viewType) return;
+            dashState.viewType = type;
+            typeCtrl.querySelectorAll('.segmented-btn').forEach(b => b.classList.toggle('active', b === btn));
+            renderRevenueChart();
+            if (window.EmberDemo && window.EmberDemo.toast) {
+              window.EmberDemo.toast(`Switched to ${type === 'bars' ? 'Columns' : 'Trend'} chart`);
+            }
+          });
+        });
+      }
     }
 
     /* Orders to Review Interaction */
@@ -392,6 +611,7 @@
 
     // Initialize
     renderRevenueChart();
+    setupChartControls();
     setupOrderActions();
 
     // Re-render when theme or dark mode changes

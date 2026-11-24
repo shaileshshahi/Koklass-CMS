@@ -857,7 +857,7 @@
       const pillEl = document.getElementById('hero-chart-pill');
 
       if (titleEl) titleEl.textContent = m.title;
-      if (headlineValEl) headlineValEl.textContent = d.headlineVal || (m.unit + fmt(d.current.reduce((a, b) => a + b, 0)));
+      if (headlineValEl) headlineValEl.textContent = d.headlineVal || (m.unit + formatVal(state.activeMetric, d.current.reduce((a, b) => a + b, 0)));
       if (headlineBadgeEl) {
         headlineBadgeEl.textContent = d.headlineBadge || d.variance;
         const isPositive = (d.headlineBadge || d.variance).includes('+') || (d.headlineBadge || d.variance).includes('Improved');

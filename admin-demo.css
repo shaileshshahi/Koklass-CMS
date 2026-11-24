@@ -2611,6 +2611,71 @@ input[type='range'].range::-moz-range-thumb {
   margin: 0 4px;
 }
 
+/* Dashboard Chart Subcards (Current, Previous, Target Quota) */
+.dash-chart-subcards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 18px 8px;
+}
+
+@media (max-width: 640px) {
+  .dash-chart-subcards {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 14px 8px;
+  }
+}
+
+.dash-subcard {
+  padding: 9px 12px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 140ms ease;
+}
+
+.dash-subcard:hover {
+  border-color: var(--ring);
+}
+
+.dash-subcard-label {
+  font-size: 0.70rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dash-subcard-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.dash-subcard-val-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.dash-subcard-val {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
 /* Restrained Orders to Review List (Clean, Calm, Scannable) */
 .orders-list-calm {
   display: flex;
